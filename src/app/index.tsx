@@ -1,4 +1,5 @@
 import useSeo from "@/hooks/useSeo"
+import { Banner } from "./home/components/Banner"
 
 export default function HomePage() {
   useSeo({
@@ -7,7 +8,7 @@ export default function HomePage() {
   })
   return (
     <main>
-
+      <Banner />
     </main>
   )
 }
