@@ -39,7 +39,7 @@ export default function Presidentes() {
                     <div className="flex-1">
                       <Link
                         to={`/academicos/membros/${presidente.presidente.id}`}
-                        className="text-lg font-medium text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                        className="text-lg font-medium text-[#c1a44e] hover:text-[#a68d3f] hover:underline transition-colors"
                       >
                         {presidente.presidente.nome}
                       </Link>

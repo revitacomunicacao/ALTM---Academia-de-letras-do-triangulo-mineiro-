@@ -30,8 +30,8 @@ export default function SociosCorrespondentes() {
         <div className="space-y-8">
           {socios && socios.map(({ id, socios, title }) => (
             <div key={id} className="bg-white rounded-lg shadow-md overflow-hidden">
-              <div className="px-6 py-4 bg-blue-50 border-b border-blue-200">
-                <h2 className="text-xl font-semibold text-blue-900">{title}</h2>
+              <div className="px-6 py-4 bg-[#f5f2e8] border-b border-[#c1a44e]">
+                <h2 className="text-xl font-semibold text-[#8b6f2a]">{title}</h2>
               </div>
               
               <div className="overflow-x-auto">

@@ -79,7 +79,7 @@ export default function Diretoria() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <Link
                           to={`/academicos/membros/${cargo.membro.id}`}
-                          className="text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                          className="text-sm font-medium text-[#c1a44e] hover:text-[#a68d3f] hover:underline transition-colors"
                         >
                           {cargo.membro.nome}
                         </Link>

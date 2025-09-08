@@ -174,7 +174,7 @@ export default function MembroDetails() {
                   onClick={() => setActiveTab('perfil')}
                   className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
                     activeTab === 'perfil'
-                      ? 'bg-blue-600 text-white'
+                      ? 'bg-[#c1a44e] text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
@@ -186,7 +186,7 @@ export default function MembroDetails() {
                     onClick={() => setActiveTab('biografia')}
                     className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
                       activeTab === 'biografia'
-                        ? 'bg-blue-600 text-white'
+                        ? 'bg-[#c1a44e] text-white'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
@@ -199,7 +199,7 @@ export default function MembroDetails() {
                     onClick={() => setActiveTab('bibliografia')}
                     className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
                       activeTab === 'bibliografia'
-                        ? 'bg-blue-600 text-white'
+                        ? 'bg-[#c1a44e] text-white'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
@@ -212,7 +212,7 @@ export default function MembroDetails() {
                     onClick={() => setActiveTab('textos')}
                     className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
                       activeTab === 'textos'
-                        ? 'bg-blue-600 text-white'
+                        ? 'bg-[#c1a44e] text-white'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >

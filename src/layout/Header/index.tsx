@@ -124,11 +124,11 @@ export const Header = () => {
                         {item.name}
                       </NavigationMenuTrigger>
                     ) : (
-                      <Link to={item.href}>
-                        <NavigationMenuLink className={`${navigationMenuTriggerStyle()} px-4 py-2 rounded-md`}>
+                      <NavigationMenuLink asChild>
+                        <Link to={item.href} className={`${navigationMenuTriggerStyle()} px-4 py-2 rounded-md`}>
                           {item.name}
-                        </NavigationMenuLink>
-                      </Link>
+                        </Link>
+                      </NavigationMenuLink>
                     )}
                     
                     {item.subMenu && (
