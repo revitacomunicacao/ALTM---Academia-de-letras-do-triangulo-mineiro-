@@ -43,7 +43,7 @@ export const ConhecaAltm = () => {
             Conheça a ALTM
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Explore os diferentes aspectos da Academia de Letras do Tocantins
+            Explore os diferentes aspectos da Academia de Letras do Triângulo Mineiro  
           </p>
         </div>
 
