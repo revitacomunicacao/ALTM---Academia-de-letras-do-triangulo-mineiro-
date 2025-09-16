@@ -1,13 +1,26 @@
 import { useContent } from "@/hooks/useContent"
 import { IArtigos } from "../types/IArtigos"
+import { PageHeader } from "@/components/PageHeader"
+import { FaBookOpen } from "react-icons/fa"
 
 export const ListArtigos = () => {
   const { data: artigos, loading, error, refetch } = useContent<IArtigos>("/artigos");
 
   return (
-    <section className="flex flex-col justify-center items-center">
-      <div className="w-[1200px] mt-35 flex flex-col gap-5">
-        <h1 className="text-[40px] font-semibold text-center">Artigos</h1>
+    <div className="min-h-screen bg-gray-50">
+      <PageHeader 
+        title="Artigos"
+        subtitle="Explore os artigos e textos dos acadêmicos da Academia de Letras do Triângulo Mineiro"
+        icon={<FaBookOpen />}
+        breadcrumb={[
+          { label: "Home", href: "/" },
+          { label: "Artigos" }
+        ]}
+      />
+      
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex flex-col justify-center items-center">
+          <div className="w-full flex flex-col gap-5">
         <ul className="flex flex-col gap-10">
           {artigos.map((
             { 
@@ -34,7 +47,9 @@ export const ListArtigos = () => {
               </li>  
           ))}
         </ul>
+          </div>
+        </div>
       </div>
-    </section>
+    </div>
   )
 }

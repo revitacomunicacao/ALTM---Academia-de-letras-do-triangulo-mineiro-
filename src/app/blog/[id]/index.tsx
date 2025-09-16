@@ -1,6 +1,8 @@
 import { IblogId } from "@/app/home/types/IBlog";
 import { useContent } from "@/hooks/useContent";
 import { useParams, Link } from "react-router-dom";
+import { PageHeader } from "@/components/PageHeader";
+import { FaNewspaper, FaCalendarAlt, FaArrowLeft } from "react-icons/fa";
 
 export default function DetailsBlog (){
 
@@ -36,6 +38,17 @@ export default function DetailsBlog (){
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <PageHeader 
+        title={blog.title}
+        subtitle={blog.resumo || blog.summary || "Post do blog da ALTM"}
+        icon={<FaNewspaper />}
+        breadcrumb={[
+          { label: "Home", href: "/" },
+          { label: "Blog", href: "/blog" },
+          { label: blog.title }
+        ]}
+      />
+      
       {/* Conteúdo Principal */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <article className="bg-white rounded-lg shadow-md overflow-hidden">

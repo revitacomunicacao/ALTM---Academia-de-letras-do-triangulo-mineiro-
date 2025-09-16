@@ -2,6 +2,8 @@ import { IArtigosId } from "../types/IArtigos"
 import { useParams } from "react-router-dom"
 import { useContentId } from "@/hooks/useContentId"
 import { Link } from "react-router-dom"
+import { PageHeader } from "@/components/PageHeader"
+import { FaBookOpen, FaUser, FaCalendarAlt, FaArrowLeft } from "react-icons/fa"
 
 export default function ArtigosDetails() {
   const { id } = useParams()
@@ -35,8 +37,19 @@ export default function ArtigosDetails() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 mt-25">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50">
+      <PageHeader 
+        title={artigo.title}
+        subtitle={`Por ${artigo.academico[0]?.nome || 'Autor'} • ${artigo.date || 'Data não informada'}`}
+        icon={<FaBookOpen />}
+        breadcrumb={[
+          { label: "Home", href: "/" },
+          { label: "Artigos", href: "/artigos" },
+          { label: artigo.title }
+        ]}
+      />
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Coluna Esquerda - Conteúdo Principal */}
           <div className="lg:col-span-2">

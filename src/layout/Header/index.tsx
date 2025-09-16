@@ -104,7 +104,7 @@ export const Header = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-25 relative">
         <div className="flex items-center justify-between h-full">
           {/* Logo - Posicionado para "vazar" */}
-          <div className="flex-shrink-0 -mb-20 relative z-50">
+          <div className="flex-shrink-0 -mb-5 relative z-50">
             <Link to="/" className="block">
               <img 
                 src={logo} 

@@ -1,6 +1,8 @@
 import { useContent } from "@/hooks/useContent"
 import type { IPresidente } from "./types/IPresidente"
 import { Link } from "react-router-dom"
+import { PageHeader } from "@/components/PageHeader"
+import { FaCrown } from "react-icons/fa"
 
 export default function Presidentes() {
   const { data: presidentes, loading, error, refetch } = useContent<IPresidente>("/presidentes")
@@ -18,12 +20,19 @@ export default function Presidentes() {
   )
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Presidentes da ALTM</h1>
-        </div>
+    <div className="min-h-screen bg-gray-50">
+      <PageHeader 
+        title="Presidentes da ALTM"
+        subtitle="Conheça a história dos presidentes da Academia de Letras do Triângulo Mineiro"
+        icon={<FaCrown />}
+        breadcrumb={[
+          { label: "Home", href: "/" },
+          { label: "Acadêmicos", href: "/academicos" },
+          { label: "Presidentes" }
+        ]}
+      />
+      
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
         {/* Lista de Presidentes */}
         <div className="bg-white rounded-lg shadow-md overflow-hidden">

@@ -1,6 +1,8 @@
 import { useContent } from "@/hooks/useContent";
 import { Iblog } from "../home/types/IBlog";
 import { Link } from "react-router-dom";
+import { PageHeader } from "@/components/PageHeader";
+import { FaNewspaper } from "react-icons/fa";
 
 export default function Blog() {
   const { data: blogs, loading, error, refetch } = useContent<Iblog>("/blog");
@@ -22,14 +24,18 @@ export default function Blog() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Blog
-          </h1>
-        </div>
+    <div className="min-h-screen bg-gray-50">
+      <PageHeader 
+        title="Blog"
+        subtitle="Fique por dentro das novidades e acontecimentos da Academia de Letras do Triângulo Mineiro"
+        icon={<FaNewspaper />}
+        breadcrumb={[
+          { label: "Home", href: "/" },
+          { label: "Blog" }
+        ]}
+      />
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
         {/* Grid de Posts */}
         {blogs && blogs.length > 0 ? (
