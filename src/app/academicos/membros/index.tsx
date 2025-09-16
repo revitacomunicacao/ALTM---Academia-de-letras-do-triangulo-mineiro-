@@ -3,6 +3,7 @@ import type { IMembros } from "./types/IMembros"
 import { useMemo, useState } from "react"
 import { Link } from "react-router-dom"
 import { PageHeader } from "@/components/PageHeader"
+import { Card } from "@/components/ui/card"
 import { FaGraduationCap, FaSearch, FaFilter, FaTimes, FaUser, FaCalendarAlt, FaMapMarkerAlt } from "react-icons/fa"
 import { Skeleton } from "@/components/ui/skeleton"
 
@@ -86,7 +87,7 @@ export default function Membros() {
   }, [membros, q, cadeira, posicao]);
 
   if(loading) return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-altm-page">
       <PageHeader 
         title="Membros da Academia"
         subtitle="Explore os membros e acadêmicos da Academia de Letras do Triângulo Mineiro"
@@ -110,7 +111,7 @@ export default function Membros() {
   )
 
   if(error) return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-altm-page">
       <PageHeader 
         title="Membros da Academia"
         subtitle="Erro ao carregar os dados dos membros"
@@ -142,7 +143,7 @@ export default function Membros() {
   )
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-altm-page">
       <PageHeader 
         title="Membros da Academia"
         subtitle="Explore os membros e acadêmicos da Academia de Letras do Triângulo Mineiro"
@@ -157,7 +158,7 @@ export default function Membros() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
         {/* Filtros */}
-        <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 mb-8">
+        <Card className="mb-8">
           <div className="flex items-center space-x-2 mb-6">
             <FaFilter className="w-5 h-5 text-altm-gold-600" />
             <h2 className="text-xl font-semibold text-gray-800">Filtros de Busca</h2>
@@ -235,7 +236,7 @@ export default function Membros() {
               </button>
             </div>
           )}
-        </div>
+        </Card>
 
         {/* Resultados */}
         <div className="mb-6">
@@ -257,8 +258,9 @@ export default function Membros() {
             <Link
               key={membro.id}
               to={`/academicos/membros/${membro.id}`}
-              className="group bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+              className="group overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
             >
+              <Card className="p-0 overflow-hidden">
               {/* Foto */}
               <div className="aspect-square overflow-hidden relative">
                 {membro.foto ? (
@@ -311,6 +313,7 @@ export default function Membros() {
                   </div>
                 </div>
               </div>
+              </Card>
             </Link>
           ))}
         </div>

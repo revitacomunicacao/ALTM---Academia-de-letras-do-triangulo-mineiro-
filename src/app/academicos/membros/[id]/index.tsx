@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom"
 import { useState } from "react"
 import type { IMembros } from "../types/IMembros"
 import { PageHeader } from "@/components/PageHeader"
+import { Card } from "@/components/ui/card"
 import { FaGraduationCap, FaUser, FaBookOpen, FaFileAlt, FaCalendarAlt, FaTimes, FaMapMarkerAlt, FaBirthdayCake, FaHeart, FaCrown, FaArrowLeft } from "react-icons/fa"
 import { Skeleton } from "@/components/ui/skeleton"
 
@@ -62,7 +63,7 @@ export default function MembroDetails() {
   const { data: membro, loading, error } = useContentId<IMembros>("/membros", Number(id))
 
   if(loading) return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-altm-page">
       <PageHeader 
         title="Carregando..."
         subtitle="Buscando informações do membro"
@@ -89,7 +90,7 @@ export default function MembroDetails() {
   )
 
   if(error) return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-altm-page">
       <PageHeader 
         title="Erro ao carregar"
         subtitle="Não foi possível carregar as informações do membro"
@@ -122,7 +123,7 @@ export default function MembroDetails() {
   )
 
   if(!membro) return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-altm-page">
       <PageHeader 
         title="Membro não encontrado"
         subtitle="O membro solicitado não foi encontrado"
@@ -274,7 +275,7 @@ export default function MembroDetails() {
         return (
           <div className="space-y-4">
             <div className="flex items-center justify-center space-x-3 mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-              <div className="p-2 bg-altm-gold-600 rounded-lg">
+              <div className="p-2 bg-altm-gold-600 rounded-lg ">
                 <FaBookOpen className="w-5 h-5 text-white" />
               </div>
               <h2 className="text-2xl font-bold text-gray-800">Biografia</h2>
@@ -360,7 +361,7 @@ export default function MembroDetails() {
   }
 
   return (
-      <div className="min-h-screen bg-[#f7efd9]">
+      <div className="min-h-screen bg-altm-page">
       <PageHeader 
         title={membro.title}
         subtitle={`Cadeira ${membro.cadeira || 'N/A'} • ${membro.posicao || 'Membro'}`}
@@ -377,7 +378,7 @@ export default function MembroDetails() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Coluna Esquerda - Foto e Menu */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 sticky top-8">
+            <Card sticky minHeight="500px">
               {/* Foto */}
               {membro.foto ? (
                 <div className="mb-6 flex flex-col justify-center items-center">
@@ -471,14 +472,14 @@ export default function MembroDetails() {
                   </button>
                 )}
               </nav>
-            </div>
+            </Card>
           </div>
           
           {/* Coluna Direita - Conteúdo */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 min-h-[500px]">
+            <Card minHeight="500px">
               {renderContent()}
-            </div>
+            </Card>
           </div>
         </div>
       </div>

@@ -7,7 +7,6 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel"
-import { Card, CardContent } from "@/components/ui/card"
 import { useEffect, useState } from "react"
 
 export const Banner = () => {
@@ -54,15 +53,14 @@ export const Banner = () => {
         <CarouselContent className="-ml-0">
           {banners.map((banner, index) => (
             <CarouselItem key={index} className="pl-0 basis-full">
-              <Card className="border-0 shadow-none rounded-none w-full">
-                <CardContent className="p-0 w-full">
+              <div className="border-0 shadow-none rounded-none w-full">
+
                   <img
                     src={banner.img}
                     alt={banner.alt}
                     className="w-full h-[400px] object-cover"
                   />
-                </CardContent>
-              </Card>
+              </div>
             </CarouselItem>
           ))}
         </CarouselContent>
