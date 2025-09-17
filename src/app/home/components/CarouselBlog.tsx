@@ -1,36 +1,93 @@
 import { useContent } from "@/hooks/useContent"
 import { Iblog } from "../types/IBlog"
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
+import { FaNewspaper, FaCalendarAlt, FaArrowRight, FaTimes } from "react-icons/fa"
 import { Link } from "react-router-dom"
+
+// Componente de skeleton para o carrossel de blog
+const BlogCardSkeleton = () => (
+  <Card className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
+    <Skeleton className="aspect-video w-full" />
+    <div className="p-6 space-y-4">
+      <Skeleton className="h-6 w-full" />
+      <Skeleton className="h-4 w-3/4" />
+      <Skeleton className="h-4 w-1/2" />
+      <Skeleton className="h-10 w-full" />
+    </div>
+  </Card>
+)
 
 export const CarouselBlog = () => {
   const { data: blog, loading, error, refetch } = useContent<Iblog>("/blog")
 
-  if(loading) return (
-    <div className="flex justify-center items-center py-12">
-      <div className="text-lg text-gray-600">Carregando notícias...</div>
-    </div>
-  )
+  if(loading) {
+    return (
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <div className="flex items-center justify-center space-x-3 mb-4">
+              <Skeleton className="h-8 w-48" />
+            </div>
+            <Skeleton className="h-4 w-96 mx-auto" />
+          </div>
+          
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            className="w-full"
+          >
+            <CarouselContent>
+              {[...Array(3)].map((_, i) => (
+                <CarouselItem key={i} className="md:basis-1/2 lg:basis-1/3">
+                  <BlogCardSkeleton />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="bg-white/90 hover:bg-white border-altm-gold-600 text-altm-gold-600 hover:text-altm-gold-700 shadow-lg" />
+            <CarouselNext className="bg-white/90 hover:bg-white border-altm-gold-600 text-altm-gold-600 hover:text-altm-gold-700 shadow-lg" />
+          </Carousel>
+        </div>
+      </section>
+    )
+  }
 
-  if(error) return (
-    <div className="flex justify-center items-center py-12">
-      <div className="text-lg text-red-600">Erro ao carregar notícias</div>
-    </div>
-  )
+  if(error) {
+    return (
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h3 className="text-xl font-semibold text-gray-900 mb-3">Erro ao carregar notícias</h3>
+            <p className="text-gray-600 mb-6">Não foi possível carregar as notícias no momento.</p>
+            <button 
+              onClick={() => refetch()}
+              className="inline-flex items-center space-x-2 px-6 py-3 bg-altm-gold-600 text-white font-medium rounded-lg hover:bg-altm-gold-700 transition-colors"
+            >
+              <FaNewspaper className="w-4 h-4" />
+              <span>Tentar novamente</span>
+            </button>
+          </div>
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section className="py-16 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header da seção */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Últimas Notícias
-          </h2>
+          <div className="flex items-center justify-center space-x-3 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-800">Últimas Notícias</h2>
+          </div>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Fique por dentro das novidades e acontecimentos da Academia de Letras do Triângulo Mineiro
           </p>
         </div>
+
         {/* Carrossel de notícias */}
         <Carousel 
           opts={{
@@ -39,7 +96,7 @@ export const CarouselBlog = () => {
           }}
           className="w-full"
         >
-          <CarouselContent className="-ml-2 md:-ml-4">
+          <CarouselContent>
             {blog && blog.map(({ 
               id,
               imagem_destacada,
@@ -47,59 +104,60 @@ export const CarouselBlog = () => {
               summary,
               title
             }) => (
-              <CarouselItem key={id} className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3">
-                <div className="h-full overflow-hidden hover:shadow-lg transition-shadow duration-300 border-1 rounded-2xl">
-                  <CardContent className="p-0">
-                    {/* Imagem da notícia */}
-                    <div className="aspect-video overflow-hidden">
-                      <img 
-                        src={imagem_destacada} 
-                        alt={`Imagem da notícia: ${title}`}
-                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                      />
+              <CarouselItem key={id} className="md:basis-1/2 lg:basis-1/3">
+                <Card className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 group">
+                  {/* Imagem da notícia */}
+                  <div className="aspect-video overflow-hidden relative">
+                    <img 
+                      src={imagem_destacada} 
+                      alt={`Imagem da notícia: ${title}`}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 rounded-2xl"
+                    />
+                    <div className="absolute top-4 left-4">
+                      <div className="flex items-center space-x-1 px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full">
+                        <FaNewspaper className="w-3 h-3 text-altm-gold-600" />
+                        <span className="text-xs font-medium text-gray-700">Notícia</span>
+                      </div>
                     </div>
+                  </div>
+                  
+                  {/* Conteúdo da notícia */}
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold text-gray-800 mb-3 line-clamp-2 group-hover:text-altm-gold-600 transition-colors">
+                      {title}
+                    </h3>
                     
-                    {/* Conteúdo da notícia */}
-                    <div className="p-6">
-                      <h3 className="text-xl font-semibold text-gray-900 mb-3 line-clamp-2">
-                        {title}
-                      </h3>
-                      
-                      <p className="text-gray-600 text-sm leading-relaxed line-clamp-3 mb-4">
-                        {resumo || summary || "Confira esta notícia completa..."}
-                      </p>
-                      
-                      <Link 
-                        to={`/blog/${id}`}
-                        className="inline-flex items-center text-[#c1a44e] hover:text-[#a68d3f] font-medium text-sm transition-colors"
-                      >
-                        Ler mais
-                        <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                      </Link>
-                    </div>
-                  </CardContent>
-                </div>
+                    <p className="text-gray-600 text-sm leading-relaxed line-clamp-3 mb-6">
+                      {resumo || summary || "Confira esta notícia completa..."}
+                    </p>
+                    
+                    <Link 
+                      to={`/blog/${id}`}
+                      className="inline-flex items-center space-x-2 w-full justify-center px-4 py-3 bg-gradient-to-r from-altm-gold-500 to-altm-gold-600 text-white font-medium rounded-lg hover:from-altm-gold-600 hover:to-altm-gold-700 transition-all duration-300 group-hover:shadow-lg"
+                    >
+                      <span className="text-black">Ler Notícia</span>
+                      <FaArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  </div>
+                </Card>
               </CarouselItem>
             ))}
           </CarouselContent>
           
           {/* Setas de navegação */}
-          <CarouselPrevious className="left-4 bg-white hover:bg-gray-50 text-gray-800 border-gray-200 hover:border-gray-300 shadow-md" />
-          <CarouselNext className="right-4 bg-white hover:bg-gray-50 text-gray-800 border-gray-200 hover:border-gray-300 shadow-md" />
+          <CarouselPrevious className="bg-white/90 hover:bg-white border-altm-gold-600 text-altm-gold-600 hover:text-altm-gold-700 shadow-lg" />
+          <CarouselNext className="bg-white/90 hover:bg-white border-altm-gold-600 text-altm-gold-600 hover:text-altm-gold-700 shadow-lg" />
         </Carousel>
 
         {/* Link para ver todas as notícias */}
-        <div className="text-center mt-8">
+        <div className="text-center mt-12">
           <Link 
             to="/blog"
-            className="inline-flex items-center px-6 py-3 bg-[#c1a44e] text-white font-medium rounded-lg hover:bg-[#a68d3f] transition-colors"
+            className="inline-flex items-center space-x-2 px-8 py-4 bg-white text-altm-gold-600 font-semibold rounded-xl border-2 border-altm-gold-600 hover:bg-altm-gold-600 hover:text-white transition-all duration-300 shadow-lg hover:shadow-xl"
           >
-            Ver todas as notícias
-            <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
+            <FaNewspaper className="w-5 h-5" />
+            <span className="text-black">Ver Todas as Notícias</span>
+            <FaArrowRight className="w-4 h-4" />
           </Link>
         </div>
       </div>
