@@ -54,12 +54,11 @@ export const Banner = () => {
           {banners.map((banner, index) => (
             <CarouselItem key={index} className="pl-0 basis-full">
               <div className="border-0 shadow-none rounded-none w-full">
-
-                  <img
-                    src={banner.img}
-                    alt={banner.alt}
-                    className="w-full h-[400px] object-cover"
-                  />
+                <img
+                  src={banner.img}
+                  alt={banner.alt}
+                  className="w-full h-[400px] object-cover"
+                />
               </div>
             </CarouselItem>
           ))}

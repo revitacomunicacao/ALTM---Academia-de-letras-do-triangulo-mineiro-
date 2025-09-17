@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/PageHeader"
 import { Card } from "@/components/ui/card"
 import { FaGraduationCap, FaSearch, FaFilter, FaTimes, FaUser, FaCalendarAlt, FaMapMarkerAlt } from "react-icons/fa"
 import { Skeleton } from "@/components/ui/skeleton"
+import banner from "@/assets/background.jpg"
 
 // Componente de skeleton para card de membro
 const MemberCardSkeleton = () => (
@@ -91,6 +92,7 @@ export default function Membros() {
       <PageHeader 
         title="Membros da Academia"
         subtitle="Explore os membros e acadêmicos da Academia de Letras do Triângulo Mineiro"
+        imagem_topo={banner}
         icon={<FaGraduationCap size={50} />}
         breadcrumb={[
           { label: "Home", href: "/" },
@@ -115,6 +117,7 @@ export default function Membros() {
       <PageHeader 
         title="Membros da Academia"
         subtitle="Erro ao carregar os dados dos membros"
+        imagem_topo={banner}
         icon={<FaGraduationCap />}
         breadcrumb={[
           { label: "Home", href: "/" },
@@ -147,6 +150,7 @@ export default function Membros() {
       <PageHeader 
         title="Membros da Academia"
         subtitle="Explore os membros e acadêmicos da Academia de Letras do Triângulo Mineiro"
+        imagem_topo={banner}
         icon={<FaGraduationCap size={50} />}
         breadcrumb={[
           { label: "Home", href: "/" },

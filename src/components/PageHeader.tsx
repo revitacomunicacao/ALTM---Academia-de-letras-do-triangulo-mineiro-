@@ -10,6 +10,7 @@ interface PageHeaderProps {
   subtitle?: string
   icon?: ReactNode
   breadcrumb?: Array<{ label: string; href?: string }>
+  imagem_topo?: string
 }
 
 const getIconForPage = (path: string) => {
@@ -24,10 +25,11 @@ export const PageHeader = ({
   title, 
   subtitle, 
   icon, 
-  breadcrumb 
+  breadcrumb,
+  imagem_topo
 }: PageHeaderProps) => {
   return (
-    <div className="relative bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url(${banner2})` }}>
+    <div className="relative bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url(${imagem_topo})` }}>
       {/* Overlay para melhorar a legibilidade */}
       <div className="absolute inset-0 bg-[#30270c]/90"></div>
       

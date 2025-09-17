@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/PageHeader"
 import { Card } from "@/components/ui/card"
 import { FaGraduationCap, FaUser, FaBookOpen, FaFileAlt, FaCalendarAlt, FaTimes, FaMapMarkerAlt, FaBirthdayCake, FaHeart, FaCrown, FaArrowLeft } from "react-icons/fa"
 import { Skeleton } from "@/components/ui/skeleton"
+import banner from "@/assets/background.jpg"
 
 type TabType = 'perfil' | 'biografia' | 'bibliografia' | 'textos'
 
@@ -67,6 +68,7 @@ export default function MembroDetails() {
       <PageHeader 
         title="Carregando..."
         subtitle="Buscando informações do membro"
+        imagem_topo={banner}
         icon={<FaGraduationCap size={50} />}
         breadcrumb={[
           { label: "Home", href: "/" },
@@ -93,6 +95,7 @@ export default function MembroDetails() {
     <div className="min-h-screen bg-altm-page">
       <PageHeader 
         title="Erro ao carregar"
+        imagem_topo={banner}
         subtitle="Não foi possível carregar as informações do membro"
         icon={<FaGraduationCap size={50} />}
         breadcrumb={[
@@ -127,6 +130,7 @@ export default function MembroDetails() {
       <PageHeader 
         title="Membro não encontrado"
         subtitle="O membro solicitado não foi encontrado"
+        imagem_topo={banner}
         icon={<FaGraduationCap size={50} />}
         breadcrumb={[
           { label: "Home", href: "/" },
