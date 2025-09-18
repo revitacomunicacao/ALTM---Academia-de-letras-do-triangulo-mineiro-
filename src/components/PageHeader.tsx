@@ -1,7 +1,3 @@
-import banner from "@/assets/banner-internas.jpg"
-import banner2 from "@/assets/background.jpg"
-import banner3 from "@/assets/background-2.jpg"
-
 import { ReactNode } from "react"
 import { FaBookOpen, FaGraduationCap, FaUsers, FaNewspaper, FaInfoCircle, FaCrown, FaHandshake } from "react-icons/fa"
 

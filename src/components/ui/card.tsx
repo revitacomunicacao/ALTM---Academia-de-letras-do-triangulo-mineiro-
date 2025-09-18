@@ -30,9 +30,9 @@ export const Card = ({
 
   return (
     <div 
-      className={`bg-white rounded-[30px] shadow-lg border-2 ${paddingClasses[padding]} ${stickyClass} ${className}`}
+      className={`bg-white rounded-[10px] shadow-lg border-1 ${paddingClasses[padding]} ${stickyClass} ${className}`}
       style={{ 
-        borderColor: '#c3a855',
+        borderColor: '#727272',
         minHeight: minHeight
       }}
     >

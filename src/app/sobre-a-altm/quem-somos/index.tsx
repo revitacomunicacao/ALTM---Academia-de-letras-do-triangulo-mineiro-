@@ -102,12 +102,13 @@ export default function QuemSomos() {
         galeria_de_fotos,
         id,
         imagem_topo,
+        subtitulo,
         title
       }) => (
         <div key={id}>
           <PageHeader
             title={title} 
-            subtitle="Conheça a história e os valores da Academia de Letras do Triângulo Mineiro"
+            subtitle={subtitulo}
             icon={<FaInfoCircle size={50} />}
             imagem_topo={imagem_topo}
             breadcrumb={[
