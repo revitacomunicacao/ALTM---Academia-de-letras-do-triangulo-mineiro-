@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/PageHeader"
 import { Card } from "@/components/ui/card"
 import { FaHandshake, FaTimes, FaArrowLeft } from "react-icons/fa"
 import { Skeleton } from "@/components/ui/skeleton"
+import { IAcademicoConteudo } from "@/types/IAcademicoConteudo"
 
 // Componente de skeleton para tabela
 const TableSkeleton = () => (
@@ -41,12 +42,12 @@ const TableSkeleton = () => (
 export default function SociosCorrespondentes() {
 
   const { data: socios, loading, error, refetch } = useContent<ISocios>("/socios-correspondentes")
-  
+  const { data: conteudo, loading: isLoading, error: isError, refetch: isRefetch } = useContent<IAcademicoConteudo>("/socios-conteudo")
 
   if(loading) return (
     <div className="min-h-screen bg-altm-page">
       <PageHeader 
-        title="Sócios Correspondentes"
+        title="Carregando"
         subtitle="Carregando informações dos sócios correspondentes"
         icon={<FaHandshake size={50} />}
         breadcrumb={[
@@ -69,7 +70,7 @@ export default function SociosCorrespondentes() {
   if(error) return (
     <div className="min-h-screen bg-altm-page">
       <PageHeader 
-        title="Sócios Correspondentes"
+        title="Erro ao carregar"
         subtitle="Erro ao carregar os dados dos sócios correspondentes"
         icon={<FaHandshake size={50} />}
         breadcrumb={[
@@ -100,16 +101,26 @@ export default function SociosCorrespondentes() {
 
   return (
     <div className="min-h-screen bg-altm-page">
-      <PageHeader 
-        title="Sócios Correspondentes"
-        subtitle="Conheça os sócios correspondentes da Academia de Letras do Triângulo Mineiro"
-        icon={<FaHandshake size={50} />}
-        breadcrumb={[
-          { label: "Home", href: "/" },
-          { label: "Acadêmicos", href: "/academicos" },
-          { label: "Sócios Correspondentes" }
-        ]}
-      />
+      {conteudo.map((
+        { 
+          description,
+          foto_topo,
+          id,
+          title,
+         }) => (
+          <PageHeader 
+            title={title}
+            key={id}
+            subtitle={description}
+            imagem_topo={foto_topo}
+            icon={<FaHandshake size={50} />}
+            breadcrumb={[
+              { label: "Home", href: "/" },
+              { label: "Acadêmicos", href: "/academicos" },
+              { label: "Sócios Correspondentes" }
+            ]}
+          />
+      ))}
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 

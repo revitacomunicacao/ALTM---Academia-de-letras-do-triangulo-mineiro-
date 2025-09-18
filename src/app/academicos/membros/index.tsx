@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card"
 import { FaGraduationCap, FaSearch, FaFilter, FaTimes, FaUser, FaCalendarAlt, FaMapMarkerAlt } from "react-icons/fa"
 import { Skeleton } from "@/components/ui/skeleton"
 import banner from "@/assets/background.jpg"
-import { IMembroConteudo } from "./types/IMembroConteudo"
+import { IAcademicoConteudo } from "@/types/IAcademicoConteudo"
 
 // Componente de skeleton para card de membro
 const MemberCardSkeleton = () => (
@@ -49,7 +49,7 @@ const FiltersSkeleton = () => (
 
 export default function Membros() {
   const { data: membros, loading, error, refetch } = useContent<IMembros>("/membros")
-  const { data: conteudo, loading: isLoading, error: isError } = useContent<IMembroConteudo>('membros-conteudo')
+  const { data: conteudo, loading: isLoading, error: isError } = useContent<IAcademicoConteudo>('membros-conteudo')
 
   console.log(conteudo)
   

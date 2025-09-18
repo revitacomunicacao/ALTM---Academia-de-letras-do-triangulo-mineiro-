@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/PageHeader"
 import { Card } from "@/components/ui/card"
 import { FaCrown, FaTimes, FaArrowLeft } from "react-icons/fa"
 import { Skeleton } from "@/components/ui/skeleton"
+import { IAcademicoConteudo } from "@/types/IAcademicoConteudo"
 
 // Componente de skeleton para lista
 const ListSkeleton = () => (
@@ -27,11 +28,14 @@ const ListSkeleton = () => (
 
 export default function Presidentes() {
   const { data: presidentes, loading, error, refetch } = useContent<IPresidente>("/presidentes")
+  const { data: conteudo, loading: isLoading, error: isError, refetch: isRefetch } = useContent<IAcademicoConteudo>("/presidentes-conteudo")
+  
+  console.log(conteudo)
 
   if(loading) return (
     <div className="min-h-screen bg-altm-page">
       <PageHeader 
-        title="Presidentes da ALTM"
+        title="Carregando"
         subtitle="Carregando informações dos presidentes"
         icon={<FaCrown size={50} />}
         breadcrumb={[
@@ -81,16 +85,20 @@ export default function Presidentes() {
 
   return (
     <div className="min-h-screen bg-altm-page">
-      <PageHeader 
-        title="Presidentes da ALTM"
-        subtitle="Conheça a história dos presidentes da Academia de Letras do Triângulo Mineiro"
-        icon={<FaCrown size={50} />}
-        breadcrumb={[
-          { label: "Home", href: "/" },
-          { label: "Acadêmicos", href: "/academicos" },
-          { label: "Presidentes" }
-        ]}
-      />
+      {conteudo.map(({ description,foto_topo,id,title, }) => (
+        <PageHeader 
+          title={title}
+          key={id}
+          subtitle={description}
+          imagem_topo={foto_topo}
+          icon={<FaCrown size={50} />}
+          breadcrumb={[
+            { label: "Home", href: "/" },
+            { label: "Acadêmicos", href: "/academicos" },
+            { label: "Presidentes" }
+          ]}
+        />
+      ))}
       
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
