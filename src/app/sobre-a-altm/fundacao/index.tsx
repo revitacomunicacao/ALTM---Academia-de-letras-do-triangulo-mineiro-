@@ -1,12 +1,11 @@
 import { useContent } from "@/hooks/useContent"
-import { IQuemSomos } from "./types/IQuemSomos"
+import { IFundacao } from "./types/IFundacao"
 import { PageHeader } from "@/components/PageHeader"
 import { Card } from "@/components/ui/card"
-import { FaInfoCircle, FaTimes, FaArrowLeft, FaImages, FaHistory } from "react-icons/fa"
+import { FaBuilding, FaTimes, FaArrowLeft, FaImages } from "react-icons/fa"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
-import { useState } from "react"
 
 // Componente de skeleton para a página
 const ContentSkeleton = () => (
@@ -39,19 +38,19 @@ const ContentSkeleton = () => (
   </div>
 )
 
-export default function QuemSomos() {
-  const { data: quem_somos, loading, error, refetch } = useContent<IQuemSomos>("quem-somos")
+export default function Fundacao() {
+  const { data: fundacao, loading, error, refetch } = useContent<IFundacao>("fundacao")
 
   if(loading) return (
     <div className="min-h-screen bg-altm-page">
       <PageHeader 
-        title="Quem Somos"
-        subtitle="Carregando informações sobre a ALTM"
-        icon={<FaInfoCircle size={50} />}
+        title="Fundação"
+        subtitle="Carregando informações sobre a fundação da ALTM"
+        icon={<FaBuilding size={50} />}
         breadcrumb={[
           { label: "Home", href: "/" },
           { label: "Sobre a ALTM", href: "/sobre-a-altm" },
-          { label: "Quem Somos" }
+          { label: "Fundação" }
         ]}
       />
       
@@ -64,13 +63,13 @@ export default function QuemSomos() {
   if(error) return (
     <div className="min-h-screen bg-altm-page">
       <PageHeader 
-        title="Quem Somos"
+        title="Fundação"
         subtitle="Erro ao carregar as informações"
-        icon={<FaInfoCircle size={50} />}
+        icon={<FaBuilding size={50} />}
         breadcrumb={[
           { label: "Home", href: "/" },
           { label: "Sobre a ALTM", href: "/sobre-a-altm" },
-          { label: "Quem Somos" }
+          { label: "Fundação" }
         ]}
       />
       
@@ -80,7 +79,7 @@ export default function QuemSomos() {
             <FaTimes className="text-red-500 text-3xl" />
           </div>
           <h3 className="text-xl font-semibold text-gray-900 mb-3">Erro ao carregar dados</h3>
-          <p className="text-gray-600 mb-6">Não foi possível carregar as informações sobre a ALTM.</p>
+          <p className="text-gray-600 mb-6">Não foi possível carregar as informações sobre a fundação da ALTM.</p>
           <button 
             onClick={() => refetch()}
             className="inline-flex items-center space-x-2 px-6 py-3 bg-altm-gold-600 text-white font-medium rounded-lg hover:bg-altm-gold-700 transition-colors"
@@ -95,7 +94,7 @@ export default function QuemSomos() {
 
   return (
     <div className="min-h-screen bg-altm-page">
-      {quem_somos && quem_somos.map(({
+      {fundacao && fundacao.map(({
         description,
         galeria_de_fotos,
         id,
@@ -107,12 +106,12 @@ export default function QuemSomos() {
           <PageHeader
             title={title} 
             subtitle={subtitulo}
-            icon={<FaInfoCircle size={50} />}
+            icon={<FaBuilding size={50} />}
             imagem_topo={imagem_topo}
             breadcrumb={[
               { label: "Home", href: "/" },
               { label: "Sobre a ALTM", href: "/sobre-a-altm" },
-              { label: "Quem Somos" }
+              { label: "Fundação" }
             ]}
           />
           
@@ -122,13 +121,13 @@ export default function QuemSomos() {
               <Card>
                 <div className="space-y-6">
                   <div className="flex items-center space-x-3 mb-6 justify-center">
-                    <h2 className="text-2xl text-center font-bold text-gray-800">Nossa História</h2>
+                    <h2 className="text-2xl text-center font-bold text-gray-800">Fundação da ALTM</h2>
                   </div>
                   
                   <div className="prose max-w-none">
                     <div 
                       dangerouslySetInnerHTML={{ __html: description }}
-                      className="text-gray-700 leading-relaxed"
+                      className="text-gray-700 leading-relaxed break-words"
                     />
                   </div>
                 </div>
@@ -139,7 +138,7 @@ export default function QuemSomos() {
                 <Card>
                   <div className="space-y-6">
                     <div className="flex items-center space-x-3 mb-6 justify-center">
-                      <h2 className="text-2xl font-bold text-gray-800">Galeria de Fotos</h2>
+                      <h2 className="text-2xl font-bold text-gray-800">Galeria</h2>
                     </div>
                     
                     <div className="relative">
@@ -158,7 +157,7 @@ export default function QuemSomos() {
                                   <div className="aspect-square overflow-hidden rounded-lg group cursor-pointer">
                                     <img 
                                       src={foto} 
-                                      alt={`Foto ${index + 1}`}
+                                      alt={`Foto da fundação ${index + 1}`}
                                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                     />
                                   </div>
@@ -167,7 +166,7 @@ export default function QuemSomos() {
                                   <div className="relative">
                                     <img 
                                       src={foto} 
-                                      alt={`Foto ${index + 1}`}
+                                      alt={`Foto da fundação ${index + 1}`}
                                       className="w-full h-auto max-h-[80vh] object-contain rounded-lg"
                                     />
                                   </div>
