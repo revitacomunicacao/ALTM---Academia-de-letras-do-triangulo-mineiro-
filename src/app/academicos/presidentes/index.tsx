@@ -104,10 +104,12 @@ export default function Presidentes() {
 
         {/* Lista de Presidentes */}
         <Card className="overflow-hidden">
-          <div className="px-6 py-4 bg-altm-gold-50 border-b border-altm-gold-200">
+          <div className="px-6 py-4 bg-altm-gold-50 border-b border-altm-gold-200 flex flex-row justify-between mr-3">
             <h2 className="text-lg font-semibold text-altm-gold-800">Lista de Presidentes</h2>
+            <h2>Ano</h2>
           </div>
-          
+          <div>
+          </div>
           <ul className="divide-y divide-gray-200">
             {presidentes && presidentes.length > 0 ? (
               presidentes.map((presidente, idx) => (
@@ -139,13 +141,6 @@ export default function Presidentes() {
             )}
           </ul>
         </Card>
-
-        {/* Contador */}
-        {presidentes && presidentes.length > 0 && (
-          <div className="mt-4 text-center text-sm text-gray-600">
-            {presidentes.length} presidente{presidentes.length !== 1 ? 's' : ''} encontrado{presidentes.length !== 1 ? 's' : ''}
-          </div>
-        )}
       </div>
     </div>
   )

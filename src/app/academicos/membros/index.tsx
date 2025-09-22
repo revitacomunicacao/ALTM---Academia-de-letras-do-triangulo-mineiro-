@@ -265,7 +265,7 @@ export default function Membros() {
             )}
           </Card>
 
-          {/* Resultados */}
+          {/* Resultados
           <div className="mb-6">
             <div className="flex items-center justify-between">
               <p className="text-gray-600 text-lg">
@@ -277,7 +277,7 @@ export default function Membros() {
                 </div>
               )}
             </div>
-          </div>
+          </div> */}
 
           {/* Grid de Membros */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

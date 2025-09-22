@@ -64,9 +64,9 @@ export const Banner = () => {
           ))}
         </CarouselContent>
         
-        {/* Setas de navegação */}
-        <CarouselPrevious className="left-4 bg-white/80 hover:bg-white text-gray-800 border-gray-200 hover:border-gray-300" />
-        <CarouselNext className="right-4 bg-white/80 hover:bg-white text-gray-800 border-gray-200 hover:border-gray-300" />
+        {/* Setas de navegação - melhoradas para responsivo */}
+        <CarouselPrevious className="left-2 sm:left-4 bg-white/90 hover:bg-white text-gray-800 border-gray-200 hover:border-gray-300 shadow-lg hover:shadow-xl transition-all duration-200 w-10 h-10 sm:w-12 sm:h-12 hover:scale-105" />
+        <CarouselNext className="right-2 sm:right-4 bg-white/90 hover:bg-white text-gray-800 border-gray-200 hover:border-gray-300 shadow-lg hover:shadow-xl transition-all duration-200 w-10 h-10 sm:w-12 sm:h-12 hover:scale-105" />
       </Carousel>
     </section>
   )

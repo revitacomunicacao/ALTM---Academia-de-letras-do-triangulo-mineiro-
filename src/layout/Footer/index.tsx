@@ -37,12 +37,12 @@ export const Footer = () => {
               />
               <div>
                 <h3 className="text-lg font-bold text-white">ALTM</h3>
-                <p className="text-sm text-gray-300">Academia de Letras e Artes de Taubaté e Microrregião</p>
+                <p className="text-sm text-gray-300">Academia de Letras do Triângulo Mineiro </p>
               </div>
             </div>
             
             <p className="text-gray-300 text-sm leading-relaxed mb-6">
-              Promovendo a cultura, literatura e artes na região de Taubaté desde nossa fundação.
+              Promovendo a cultura, literatura e artes na região do Triângulo Mineiro.
             </p>
 
             {/* Redes sociais */}
@@ -123,15 +123,16 @@ export const Footer = () => {
                 <FaMapMarkerAlt className="h-4 w-4 text-altm-gold-400 mt-1 flex-shrink-0" />
                 <div>
                   <p className="text-gray-300 text-sm">
-                    Taubaté - SP<br />
-                    Região do Vale do Paraíba
+                    Rua Lauro Borges 347 <br />
+                    Bairro Estados Unidos <br />
+                    Uberaba - MG
                   </p>
                 </div>
               </div>
 
               <div className="flex items-center space-x-3">
                 <FaPhone className="h-4 w-4 text-altm-gold-400 flex-shrink-0" />
-                <p className="text-gray-300 text-sm">(12) 99999-9999</p>
+                <p className="text-gray-300 text-sm">(34) 33333-3333</p>
               </div>
 
               <div className="flex items-center space-x-3">
@@ -161,7 +162,7 @@ export const Footer = () => {
           <div className="flex flex-col md:flex-row justify-between items-center">
             
             <div className="text-gray-400 text-sm mb-4 md:mb-0">
-              © {currentYear} Academia de Letras e Artes de Taubaté e Microrregião. Todos os direitos reservados.
+              © {currentYear} Academia de Letras do Triângulo Mineiro. Todos os direitos reservados.
             </div>
 
             <div className="flex space-x-6 text-sm">

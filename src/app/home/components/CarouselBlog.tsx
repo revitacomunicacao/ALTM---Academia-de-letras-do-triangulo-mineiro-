@@ -47,8 +47,8 @@ export const CarouselBlog = () => {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious className="bg-white/90 hover:bg-white border-altm-gold-600 text-altm-gold-600 hover:text-altm-gold-700 shadow-lg" />
-            <CarouselNext className="bg-white/90 hover:bg-white border-altm-gold-600 text-altm-gold-600 hover:text-altm-gold-700 shadow-lg" />
+            <CarouselPrevious className="bg-white/90 hover:bg-white border-altm-gold-600 text-altm-gold-600 hover:text-altm-gold-700 shadow-lg hover:shadow-xl transition-all duration-200 w-10 h-10 sm:w-12 sm:h-12 -left-2 sm:-left-6 hover:scale-105" />
+            <CarouselNext className="bg-white/90 hover:bg-white border-altm-gold-600 text-altm-gold-600 hover:text-altm-gold-700 shadow-lg hover:shadow-xl transition-all duration-200 w-10 h-10 sm:w-12 sm:h-12 -right-2 sm:-right-6 hover:scale-105" />
           </Carousel>
         </div>
       </section>
@@ -76,7 +76,7 @@ export const CarouselBlog = () => {
   }
 
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-16 bg-[#F2ECD7]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header da seção */}
         <div className="text-center mb-12">
@@ -144,10 +144,11 @@ export const CarouselBlog = () => {
             ))}
           </CarouselContent>
           
-          {/* Setas de navegação */}
-          <CarouselPrevious className="bg-white/90 hover:bg-white border-altm-gold-600 text-altm-gold-600 hover:text-altm-gold-700 shadow-lg" />
-          <CarouselNext className="bg-white/90 hover:bg-white border-altm-gold-600 text-altm-gold-600 hover:text-altm-gold-700 shadow-lg" />
+          {/* Setas de navegação - responsivas */}
+          <CarouselPrevious className="bg-white/90 hover:bg-white border-altm-gold-600 text-altm-gold-600 hover:text-altm-gold-700 shadow-lg hover:shadow-xl transition-all duration-200 w-10 h-10 sm:w-12 sm:h-12 -left-2 sm:-left-6 hover:scale-105" />
+          <CarouselNext className="bg-white/90 hover:bg-white border-altm-gold-600 text-altm-gold-600 hover:text-altm-gold-700 shadow-lg hover:shadow-xl transition-all duration-200 w-10 h-10 sm:w-12 sm:h-12 -right-2 sm:-right-6 hover:scale-105" />
         </Carousel>
+
 
         {/* Link para ver todas as notícias */}
         <div className="text-center mt-12">

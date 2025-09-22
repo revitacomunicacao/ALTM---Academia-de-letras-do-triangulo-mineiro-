@@ -193,13 +193,6 @@ export default function Diretoria() {
             </table>
           </div>
         </Card>
-
-        {/* Contador */}
-        {diretoriaOrdenada && diretoriaOrdenada.length > 0 && (
-          <div className="mt-4 text-center text-sm text-gray-600">
-            {diretoriaOrdenada.length} cargo{diretoriaOrdenada.length !== 1 ? 's' : ''} na diretoria
-          </div>
-        )}
       </div>
     </div>
   )
