@@ -29,7 +29,7 @@ export const PageHeader = ({
       {/* Overlay para melhorar a legibilidade */}
       <div className="absolute inset-0 bg-[#30270c]/90"></div>
       
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 pt-18">
         {/* Breadcrumb */}
         {breadcrumb && breadcrumb.length > 0 && (
           <nav className="flex justify-center mb-6">
@@ -56,7 +56,7 @@ export const PageHeader = ({
         {/* Header Content - Centralizado */}
         <div className="text-center">
           {/* Icon */}
-          <div className="flex justify-center mb-4">
+          <div className="flex justify-center mb-4 mt-5">
             <div className="p-5 bg-[#f1d4755b] rounded-xl flex items-center justify-center text-white shadow-lg">
               {icon || <FaBookOpen />}
             </div>

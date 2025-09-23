@@ -175,8 +175,8 @@ export default function Fundacao() {
                             </CarouselItem>
                           ))}
                         </CarouselContent>
-                        <CarouselPrevious className="bg-white/90 hover:bg-white border-altm-gold-600 text-altm-gold-600 hover:text-altm-gold-700" />
-                        <CarouselNext className="bg-white/90 hover:bg-white border-altm-gold-600 text-altm-gold-600 hover:text-altm-gold-700" />
+                        <CarouselPrevious className="bg-white/90 hover:bg-white border-altm-gold-600 text-altm-gold-600 hover:text-altm-gold-700 shadow-lg hover:shadow-xl transition-all duration-200 w-10 h-10 sm:w-12 sm:h-12 left-2 sm:left-4 hover:scale-105" />
+                        <CarouselNext className="bg-white/90 hover:bg-white border-altm-gold-600 text-altm-gold-600 hover:text-altm-gold-700 shadow-lg hover:shadow-xl transition-all duration-200 w-10 h-10 sm:w-12 sm:h-12 right-2 sm:right-4 hover:scale-105" />
                       </Carousel>
                     </div>
                   </div>

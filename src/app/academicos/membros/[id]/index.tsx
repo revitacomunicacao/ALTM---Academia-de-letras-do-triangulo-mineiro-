@@ -164,14 +164,14 @@ export default function MembroDetails() {
       case 'perfil':
         return (
           <div className="space-y-4">
-            <div className="flex items-center justify-center space-x-3 mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-3 mb-4 sm:mb-6 p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200">
               <div className="p-2 bg-altm-gold-600 rounded-lg">
-                <FaUser className="w-5 h-5 text-white" />
+                <FaUser className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-800">Perfil do Acadêmico</h2>
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-800 text-center">Perfil do Acadêmico</h2>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
               {membro.cadeira && (
                 <div className="bg-white border border-gray-200 p-4 rounded-lg hover:shadow-md transition-all duration-200">
                   <div className="flex items-center space-x-2 mb-2">
@@ -278,16 +278,16 @@ export default function MembroDetails() {
       case 'biografia':
         return (
           <div className="space-y-4">
-            <div className="flex items-center justify-center space-x-3 mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-3 mb-4 sm:mb-6 p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200">
               <div className="p-2 bg-altm-gold-600 rounded-lg ">
-                <FaBookOpen className="w-5 h-5 text-white" />
+                <FaBookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-800">Biografia</h2>
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-800 text-center">Biografia</h2>
             </div>
             
             {membro.biografia ? (
-              <div className="bg-white border border-gray-200 rounded-lg p-6">
-                <div className="prose max-w-none">
+              <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6">
+                <div className="prose prose-sm sm:prose max-w-none">
                   <div dangerouslySetInnerHTML={{ __html: membro.biografia }} />
                 </div>
               </div>
@@ -306,16 +306,16 @@ export default function MembroDetails() {
       case 'bibliografia':
         return (
           <div className="space-y-4">
-            <div className="flex items-center justify-center space-x-3 mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-3 mb-4 sm:mb-6 p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200">
               <div className="p-2 bg-altm-gold-600 rounded-lg">
-                <FaFileAlt className="w-5 h-5 text-white" />
+                <FaFileAlt className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-800">Bibliografia</h2>
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-800 text-center">Bibliografia</h2>
             </div>
             
             {membro.bibliografia ? (
-              <div className="bg-white border border-gray-200 rounded-lg p-6">
-                <div className="prose max-w-none">
+              <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6">
+                <div className="prose prose-sm sm:prose max-w-none">
                   <div dangerouslySetInnerHTML={{ __html: membro.bibliografia }} />
                 </div>
               </div>
@@ -334,16 +334,16 @@ export default function MembroDetails() {
       case 'textos':
         return (
           <div className="space-y-4">
-            <div className="flex items-center justify-center space-x-3 mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-3 mb-4 sm:mb-6 p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200">
               <div className="p-2 bg-altm-gold-600 rounded-lg">
-                <FaFileAlt className="w-5 h-5 text-white" />
+                <FaFileAlt className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-800">Textos Escolhidos</h2>
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-800 text-center">Textos Escolhidos</h2>
             </div>
             
             {membro.textos_escolhidos ? (
-              <div className="bg-white border border-gray-200 rounded-lg p-6">
-                <div className="prose max-w-none">
+              <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6">
+                <div className="prose prose-sm sm:prose max-w-none">
                   <div dangerouslySetInnerHTML={{ __html: membro.textos_escolhidos }} />
                 </div>
               </div>
@@ -378,11 +378,11 @@ export default function MembroDetails() {
         ]}
       />
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
           {/* Coluna Esquerda - Foto e Menu */}
           <div className="lg:col-span-1">
-            <Card sticky minHeight="500px">
+            <Card sticky minHeight="500px" className="p-4 sm:p-6">
               {/* Foto */}
               {membro.foto ? (
                 <div className="mb-6 flex flex-col justify-center items-center">
@@ -481,7 +481,7 @@ export default function MembroDetails() {
           
           {/* Coluna Direita - Conteúdo */}
           <div className="lg:col-span-2">
-            <Card minHeight="500px">
+            <Card minHeight="500px" className="p-4 sm:p-6 lg:p-8 pt-2 sm:pt-4 lg:pt-6">
               {renderContent()}
             </Card>
           </div>

@@ -115,7 +115,7 @@ export const Footer = () => {
           </div>
 
           {/* Contato */}
-          <div>
+          <div id="contato">
             <h4 className="text-lg font-semibold mb-6 text-altm-gold-400">Contato</h4>
             <div className="space-y-4">
               

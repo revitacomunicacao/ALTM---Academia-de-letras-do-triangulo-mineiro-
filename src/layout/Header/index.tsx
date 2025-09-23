@@ -25,6 +25,18 @@ import { Menu, ChevronDown, ChevronRight } from "lucide-react"
 export const Header = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [openSubmenu, setOpenSubmenu] = useState<number | null>(null)
+
+  const handleContactClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault()
+    const contactSection = document.getElementById('contato')
+    if (contactSection) {
+      contactSection.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      })
+    }
+    setIsOpen(false) // Fechar menu mobile se estiver aberto
+  }
   
   const menu = [
     {
@@ -81,7 +93,7 @@ export const Header = () => {
     },
     {
       name: "Fale Conosco",
-      href: "/fale-conosco"
+      href: "/#contato"
     }
   ] 
 
@@ -138,9 +150,19 @@ export const Header = () => {
                         </NavigationMenuTrigger>
                       ) : (
                         <NavigationMenuLink asChild>
-                          <Link to={item.href} className="bg-transparent hover:shadow-lg active:shadow-lg px-6 py-3 rounded-lg transition-all duration-300 font-semibold !text-sm text-gray-800 border-1 border-transparent hover:border-[#be9f3c] active:border-[#be9f3c] inline-flex items-center justify-center hover:bg-gradient-to-br hover:from-[#be9f3c]/10 hover:to-[#be9f3c]/20 active:bg-gradient-to-br active:from-[#be9f3c]/15 active:to-[#be9f3c]/25 hover:text-[#be9f3c] active:text-[#be9f3c]">
-                            {item.name}
-                          </Link>
+                          {item.name === "Fale Conosco" ? (
+                            <a 
+                              href="/#contato" 
+                              onClick={handleContactClick}
+                              className="bg-transparent hover:shadow-lg active:shadow-lg px-6 py-3 rounded-lg transition-all duration-300 font-semibold !text-sm text-gray-800 border-1 border-transparent hover:border-[#be9f3c] active:border-[#be9f3c] inline-flex items-center justify-center hover:bg-gradient-to-br hover:from-[#be9f3c]/10 hover:to-[#be9f3c]/20 active:bg-gradient-to-br active:from-[#be9f3c]/15 active:to-[#be9f3c]/25 hover:text-[#be9f3c] active:text-[#be9f3c]"
+                            >
+                              {item.name}
+                            </a>
+                          ) : (
+                            <Link to={item.href} className="bg-transparent hover:shadow-lg active:shadow-lg px-6 py-3 rounded-lg transition-all duration-300 font-semibold !text-sm text-gray-800 border-1 border-transparent hover:border-[#be9f3c] active:border-[#be9f3c] inline-flex items-center justify-center hover:bg-gradient-to-br hover:from-[#be9f3c]/10 hover:to-[#be9f3c]/20 active:bg-gradient-to-br active:from-[#be9f3c]/15 active:to-[#be9f3c]/25 hover:text-[#be9f3c] active:text-[#be9f3c]">
+                              {item.name}
+                            </Link>
+                          )}
                         </NavigationMenuLink>
                       )}
                       
@@ -198,7 +220,7 @@ export const Header = () => {
                 <img 
                   src={logo} 
                   alt="Logo Academia de letras do triangulo mineiro"
-                  className="h-12 w-auto"
+                  className="h-30 w-auto -mb-[65px]"
                 />
               </Link>
             </div>
@@ -251,13 +273,23 @@ export const Header = () => {
                               )}
                             </div>
                           ) : (
-                            <Link
-                              to={item.href}
-                              onClick={() => setIsOpen(false)}
-                              className="block py-3 px-4 text-gray-800 hover:text-[#be9f3c] hover:bg-gray-50 rounded-lg transition-colors font-medium"
-                            >
-                              {item.name}
-                            </Link>
+                            item.name === "Fale Conosco" ? (
+                              <a
+                                href="/#contato"
+                                onClick={handleContactClick}
+                                className="block py-3 px-4 text-gray-800 hover:text-[#be9f3c] hover:bg-gray-50 rounded-lg transition-colors font-medium"
+                              >
+                                {item.name}
+                              </a>
+                            ) : (
+                              <Link
+                                to={item.href}
+                                onClick={() => setIsOpen(false)}
+                                className="block py-3 px-4 text-gray-800 hover:text-[#be9f3c] hover:bg-gray-50 rounded-lg transition-colors font-medium"
+                              >
+                                {item.name}
+                              </Link>
+                            )
                           )}
                         </div>
                       ))}
