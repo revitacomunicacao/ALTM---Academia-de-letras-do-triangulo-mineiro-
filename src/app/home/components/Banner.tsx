@@ -1,5 +1,5 @@
-import banner1 from "@/assets/fullbanner-Saboardi1.jpg"
-import banner2 from "@/assets/fullbanner-Saboardi1.jpg"
+import banner1 from "@/assets/banner1.png"
+import banner2 from "@/assets/banner2.png"
 import {
   Carousel,
   CarouselContent,
