@@ -5,7 +5,7 @@ import path from 'path'
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
-  base: '/desenvolvimento/altm/',
+  base: '/projetos/altm/',
   plugins: [
     react(),
     tailwindcss(),

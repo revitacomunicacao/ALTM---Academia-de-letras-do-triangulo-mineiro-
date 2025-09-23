@@ -10,7 +10,7 @@ function App() {
 }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <BrowserRouter basename="/desenvolvimento/altm">
+  <BrowserRouter basename="/projetos/altm">
     <Header />
     <App />
     <Footer />
