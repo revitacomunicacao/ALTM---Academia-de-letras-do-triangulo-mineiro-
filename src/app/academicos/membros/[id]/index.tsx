@@ -1,6 +1,6 @@
 import { useContentId } from "@/hooks/useContentId"
-import { useParams } from "react-router-dom"
-import { useState } from "react"
+import { useParams, useLocation } from "react-router-dom"
+import { useState, useEffect } from "react"
 import type { IMembros } from "../types/IMembros"
 import { PageHeader } from "@/components/PageHeader"
 import { Card } from "@/components/ui/card"
@@ -8,7 +8,7 @@ import { FaGraduationCap, FaUser, FaBookOpen, FaFileAlt, FaCalendarAlt, FaTimes,
 import { Skeleton } from "@/components/ui/skeleton"
 import banner from "@/assets/background.jpg"
 
-type TabType = 'perfil' | 'biografia' | 'bibliografia' | 'textos'
+type TabType = 'perfil' | 'biografia' | 'bibliografia' | 'textos' | "Discurso de posse"
 
 // Componente de skeleton para a sidebar
 const SidebarSkeleton = () => (
@@ -59,9 +59,49 @@ const TextContentSkeleton = () => (
 
 export default function MembroDetails() {
   const { id } = useParams()
+  const location = useLocation()
   const [activeTab, setActiveTab] = useState<TabType>('perfil')
 
   const { data: membro, loading, error } = useContentId<IMembros>("/membros", Number(id))
+
+  // Detecta hash na URL para abrir aba específica
+  useEffect(() => {
+    if (location.hash && membro) {
+      const hash = location.hash.substring(1); // Remove o #
+      let targetTab: TabType = 'perfil';
+      
+      switch (hash) {
+        case 'discurso-de-posse':
+          targetTab = 'Discurso de posse';
+          break;
+        case 'biografia':
+          targetTab = 'biografia';
+          break;
+        case 'bibliografia':
+          targetTab = 'bibliografia';
+          break;
+        case 'textos-escolhidos':
+          targetTab = 'textos';
+          break;
+        default:
+          targetTab = 'perfil';
+      }
+      
+      setActiveTab(targetTab);
+      
+      // Scroll suave para o topo da página depois de um pequeno delay
+      // para garantir que o conteúdo foi renderizado
+      setTimeout(() => {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      }, 100);
+    } else if (!location.hash) {
+      // Se não há hash, volta para perfil
+      setActiveTab('perfil');
+    }
+  }, [location.hash, location.pathname, membro]);
 
   if(loading) return (
     <div className="min-h-screen bg-altm-page">
@@ -359,6 +399,34 @@ export default function MembroDetails() {
           </div>
         )
       
+      case 'Discurso de posse':
+        return (
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-3 mb-4 sm:mb-6 p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <div className="p-2 bg-altm-gold-600 rounded-lg">
+                <FaGraduationCap className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+              </div>
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-800 text-center">Discurso de Posse</h2>
+            </div>
+            
+            {membro.discurso_de_posse ? (
+              <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6">
+                <div className="prose prose-sm sm:prose max-w-none">
+                  <div dangerouslySetInnerHTML={{ __html: membro.discurso_de_posse }} />
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <FaGraduationCap className="text-gray-400 text-2xl" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Discurso de posse não disponível</h3>
+                <p className="text-gray-600 text-sm">O discurso de posse ainda não foi adicionado para este membro.</p>
+              </div>
+            )}
+          </div>
+        )
+      
       default:
         return null
     }
@@ -473,6 +541,20 @@ export default function MembroDetails() {
                   >
                     <FaFileAlt className={`w-4 h-4 ${activeTab === 'textos' ? 'text-altm-gold-600' : 'text-gray-600'}`} />
                     <span className="font-medium text-sm">Textos Escolhidos</span>
+                  </button>
+                )}
+                
+                {membro.discurso_de_posse && (
+                  <button
+                    onClick={() => setActiveTab('Discurso de posse')}
+                    className={`w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 ${
+                      activeTab === 'Discurso de posse'
+                        ? 'bg-altm-gold-100 text-altm-gold-800 shadow-md border-2 border-altm-gold-600'
+                        : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200'
+                    }`}
+                  >
+                    <FaGraduationCap className={`w-4 h-4 ${activeTab === 'Discurso de posse' ? 'text-altm-gold-600' : 'text-gray-600'}`} />
+                    <span className="font-medium text-sm">Discurso de Posse</span>
                   </button>
                 )}
               </nav>

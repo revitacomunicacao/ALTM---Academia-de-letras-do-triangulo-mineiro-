@@ -1,5 +1,6 @@
 import useSeo from "@/hooks/useSeo"
 import { Banner } from "./home/components/Banner"
+import { SearchSection } from "./home/components/SearchSection"
 import { ConhecaAltm } from "./home/components/ConhecaAltm"
 import { CarouselBlog } from "./home/components/CarouselBlog"
 import { CarrosselArtigos } from "./home/components/Artigos"
@@ -12,6 +13,7 @@ export default function HomePage() {
   return (
     <main>
       <Banner />
+      <SearchSection />
       <ConhecaAltm />
       <CarouselBlog />
       <CarrosselArtigos />
