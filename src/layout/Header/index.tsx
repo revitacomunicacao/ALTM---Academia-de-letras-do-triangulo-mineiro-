@@ -56,8 +56,8 @@ export const Header = () => {
           href: "/sobre-a-altm/fundacao"
         },
         {
-          name: "Histórico",
-          href: "/sobre-a-altm/historico"
+          name: "História da ALTM",
+          href: "/sobre-a-altm/historia"
         },
         {
           name: "Quem Somos",
@@ -66,6 +66,10 @@ export const Header = () => {
         {
           name: "Regimento",
           href: "/sobre-a-altm/regimento"
+        },
+        {
+          name: "Histórico do site",
+          href: "/sobre-a-altm/historico-do-site"
         },
       ]
     },

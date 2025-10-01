@@ -44,13 +44,13 @@ export default function Historico() {
   if(loading) return (
     <div className="min-h-screen bg-altm-page">
       <PageHeader 
-        title="Histórico"
+        title="História da ALTM"
         subtitle="Carregando informações sobre a história da ALTM"
         icon={<FaHistory size={50} />}
         breadcrumb={[
           { label: "Home", href: "/" },
           { label: "Sobre a ALTM", href: "/sobre-a-altm" },
-          { label: "Histórico" }
+          { label: "História da ALTM" }
         ]}
       />
       
@@ -63,13 +63,13 @@ export default function Historico() {
   if(error) return (
     <div className="min-h-screen bg-altm-page">
       <PageHeader 
-        title="Histórico"
+        title="História da ALTM"
         subtitle="Erro ao carregar as informações"
         icon={<FaHistory size={50} />}
         breadcrumb={[
           { label: "Home", href: "/" },
           { label: "Sobre a ALTM", href: "/sobre-a-altm" },
-          { label: "Histórico" }
+          { label: "História da ALTM" }
         ]}
       />
       
@@ -111,7 +111,7 @@ export default function Historico() {
             breadcrumb={[
               { label: "Home", href: "/" },
               { label: "Sobre a ALTM", href: "/sobre-a-altm" },
-              { label: "Histórico" }
+              { label: "História da ALTM" }
             ]}
           />
           
