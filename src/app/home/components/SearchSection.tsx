@@ -23,7 +23,7 @@ export function SearchSection() {
             Pesquise em nosso acervo
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Encontre informações sobre membros, artigos, textos e todo o conteúdo da Academia de Letras do Triângulo Mineiro
+            Encontre informações sobre acadêmicos, artigos, textos e todo o conteúdo da Academia de Letras do Triângulo Mineiro
           </p>
         </div>
 

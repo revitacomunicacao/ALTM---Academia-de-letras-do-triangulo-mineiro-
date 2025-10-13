@@ -20,6 +20,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { Menu, ChevronDown, ChevronRight } from "lucide-react"
+import { HeaderSearchBar } from "@/components/search/HeaderSearchBar"
 
 
 export const Header = () => {
@@ -40,7 +41,7 @@ export const Header = () => {
   
   const menu = [
     {
-      name: "Sobre a ALTM",
+      name: "A ALTM",
       href: "#",
       subMenu:[
         {
@@ -74,26 +75,20 @@ export const Header = () => {
       ]
     },
     {
+      name: "Diretoria",
+      href: "/diretoria"
+    },
+    {
       name: "Acadêmicos",
-      href: "#",
-      subMenu: [
-        {
-          name: "Diretoria",
-          href: "/academicos/diretoria"
-        },
-        {
-          name: "Membros",
-          href: "/academicos/membros"
-        },
-        {
-          name: "Presidentes",
-          href: "/academicos/presidentes"
-        },
-        {
-          name: "Sócios Correspondentes",
-          href: "/academicos/socios-correspondentes"
-        },
-      ]
+      href: "/academicos"
+    },
+    {
+      name: "Presidentes",
+      href: "/presidentes"
+    },
+    {
+      name: "Associados Correspondentes",
+      href: "/socios-correspondentes"
     },
     {
       name: "Fale Conosco",
@@ -107,8 +102,14 @@ export const Header = () => {
       <header className="hidden lg:block bg-white shadow-md border-b border-gray-200 relative z-50">
         {/* Barra superior com redes sociais */}
         <div className="bg-[#c3a855] py-2 h-14">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
+          <div className="max-w-[7xl] mx-auto px-4 sm:px-6 lg:px-8 h-full">
             <div className="flex justify-end items-center h-full">
+              <div className="flex-shrink-0 z-40 mx-10">
+                <HeaderSearchBar 
+                  placeholder="Buscar acadêmicos, artigos..." 
+                  className="w-80"
+                />
+              </div>
               <div className="flex items-center space-x-4">
                 <a 
                   href="#" 
@@ -130,10 +131,10 @@ export const Header = () => {
         </div>
 
         {/* Header principal com logo e navegação */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-25 relative">
+        <div className="max-w-[1310px] mx-auto px-4 sm:px-6 lg:px-8 h-25 relative">
           <div className="flex items-center justify-between h-full py-2">
-            {/* Logo - Posicionado para "vazar" */}
-            <div className="flex-shrink-0 -mb-5 relative z-50">
+            {/* Logo */}
+            <div className="flex-shrink-0 -mb-5 z-50">
               <Link to="/" className="block">
                 <img 
                   src={logo} 
@@ -142,14 +143,14 @@ export const Header = () => {
               </Link>
             </div>
 
-            {/* Navigation Menu - Centralizado */}
-            <nav className="absolute left-1/2 transform -translate-x-1/2 z-40">
+            {/* Navigation Menu - Centro */}
+            <nav className="flex-1 flex justify-center z-40">
               <NavigationMenu>
-                <NavigationMenuList className="space-x-8">
+                <NavigationMenuList className="space-x-4">
                   {menu.map((item, index) => (
                     <NavigationMenuItem key={index}>
                       {item.subMenu ? (
-                        <NavigationMenuTrigger className="!bg-transparent hover:shadow-lg data-[state=open]:shadow-lg !px-6 !py-3 !h-auto rounded-lg transition-all duration-300 !font-semibold !text-sm text-gray-800 border-1 border-transparent hover:border-[#be9f3c] data-[state=open]:border-[#d1d1d1] hover:bg-gradient-to-br hover:from-[#be9f3c]/10 hover:to-[#be9f3c]/20 data-[state=open]:bg-gradient-to-br data-[state=open]:from-[#be9f3c]/15 data-[state=open]:to-[#be9f3c]/25 hover:text-[#be9f3c] data-[state=open]:text-[#be9f3c]">
+                        <NavigationMenuTrigger className="!bg-transparent hover:shadow-lg data-[state=open]:shadow-lg !px-4 !py-3 !h-auto rounded-lg transition-all duration-300 !font-semibold !text-sm text-gray-800 border-1 border-transparent hover:border-[#be9f3c] data-[state=open]:border-[#d1d1d1] hover:bg-gradient-to-br hover:from-[#be9f3c]/10 hover:to-[#be9f3c]/20 data-[state=open]:bg-gradient-to-br data-[state=open]:from-[#be9f3c]/15 data-[state=open]:to-[#be9f3c]/25 hover:text-[#be9f3c] data-[state=open]:text-[#be9f3c]">
                           {item.name}
                         </NavigationMenuTrigger>
                       ) : (
@@ -158,12 +159,12 @@ export const Header = () => {
                             <a 
                               href="/#contato" 
                               onClick={handleContactClick}
-                              className="bg-transparent hover:shadow-lg active:shadow-lg px-6 py-3 rounded-lg transition-all duration-300 font-semibold !text-sm text-gray-800 border-1 border-transparent hover:border-[#be9f3c] active:border-[#be9f3c] inline-flex items-center justify-center hover:bg-gradient-to-br hover:from-[#be9f3c]/10 hover:to-[#be9f3c]/20 active:bg-gradient-to-br active:from-[#be9f3c]/15 active:to-[#be9f3c]/25 hover:text-[#be9f3c] active:text-[#be9f3c]"
+                              className="bg-transparent hover:shadow-lg active:shadow-lg px-4 py-3 rounded-lg transition-all duration-300 font-semibold !text-sm text-gray-800 border-1 border-transparent hover:border-[#be9f3c] active:border-[#be9f3c] inline-flex items-center justify-center hover:bg-gradient-to-br hover:from-[#be9f3c]/10 hover:to-[#be9f3c]/20 active:bg-gradient-to-br active:from-[#be9f3c]/15 active:to-[#be9f3c]/25 hover:text-[#be9f3c] active:text-[#be9f3c]"
                             >
                               {item.name}
                             </a>
                           ) : (
-                            <Link to={item.href} className="bg-transparent hover:shadow-lg active:shadow-lg px-6 py-3 rounded-lg transition-all duration-300 font-semibold !text-sm text-gray-800 border-1 border-transparent hover:border-[#be9f3c] active:border-[#be9f3c] inline-flex items-center justify-center hover:bg-gradient-to-br hover:from-[#be9f3c]/10 hover:to-[#be9f3c]/20 active:bg-gradient-to-br active:from-[#be9f3c]/15 active:to-[#be9f3c]/25 hover:text-[#be9f3c] active:text-[#be9f3c]">
+                            <Link to={item.href} className="bg-transparent hover:shadow-lg active:shadow-lg px-4 py-3 rounded-lg transition-all duration-300 font-semibold !text-sm text-gray-800 border-1 border-transparent hover:border-[#be9f3c] active:border-[#be9f3c] inline-flex items-center justify-center hover:bg-gradient-to-br hover:from-[#be9f3c]/10 hover:to-[#be9f3c]/20 active:bg-gradient-to-br active:from-[#be9f3c]/15 active:to-[#be9f3c]/25 hover:text-[#be9f3c] active:text-[#be9f3c]">
                               {item.name}
                             </Link>
                           )}
@@ -198,6 +199,8 @@ export const Header = () => {
                 </NavigationMenuList>
               </NavigationMenu>
             </nav>
+
+            {/* SearchBar - Direita */}
           </div>
         </div>
       </header>
@@ -229,8 +232,14 @@ export const Header = () => {
               </Link>
             </div>
 
-            {/* Menu mobile */}
-            <div>
+            {/* SearchBar mobile e Menu mobile */}
+            <div className="flex items-center space-x-3">
+              <div className="flex-1 max-w-xs">
+                <HeaderSearchBar 
+                  placeholder="Buscar..." 
+                  className="w-full"
+                />
+              </div>
               <Sheet open={isOpen} onOpenChange={setIsOpen}>
                 <SheetTrigger asChild>
                   <button className="flex items-center gap-2 px-3 py-2 rounded-md text-gray-600 hover:text-[#be9f3c] hover:bg-gray-100 transition-all duration-200 border border-transparent hover:border-[#be9f3c]/30">

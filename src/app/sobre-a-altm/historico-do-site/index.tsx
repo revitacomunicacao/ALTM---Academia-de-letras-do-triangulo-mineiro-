@@ -35,7 +35,7 @@ const ContentSkeleton = () => (
 )
 export default function HistoricoDoSite() {
   const { data: conteudo, loading, error, refetch } = useContent<IHistoricoSite>("historico-do-site")
-  console.log(conteudo)
+  
   if(loading) return (
     <div className="min-h-screen bg-altm-page">
       <PageHeader 
@@ -44,7 +44,7 @@ export default function HistoricoDoSite() {
         icon={<FaBuilding size={50} />}
         breadcrumb={[
           { label: "Home", href: "/" },
-          { label: "Histórico do site", href: "/historico-do-site" },
+          { label: "Sobre a ALTM", href: "/sobre-a-altm" },
           { label: "Histórico do site" }
         ]}
       />

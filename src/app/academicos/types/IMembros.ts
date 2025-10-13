@@ -15,6 +15,7 @@ export interface IMembros {
   sucedido_por: string;
   data_de_posse: string;
   academico_que_o_recebeu: string;
+  e_membro_da_academia: "Sim" | "Não";
   biografia: string;
   textos_escolhidos: string;
   bibliografia: string;

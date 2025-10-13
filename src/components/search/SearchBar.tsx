@@ -15,7 +15,7 @@ interface SearchBarProps {
 }
 
 export function SearchBar({ 
-  placeholder = "Buscar membros, artigos, blog...", 
+  placeholder = "Buscar acadêmicos, artigos, blog...", 
   className = ""
 }: SearchBarProps) {
   const [query, setQuery] = useState("");
@@ -111,7 +111,7 @@ export function SearchBar({
               <Input
                 ref={modalInputRef}
                 type="text"
-                placeholder="Digite para buscar membros, artigos, blog..."
+                placeholder="Digite para buscar acadêmicos, artigos, blog..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 className="pl-12 pr-12 py-4 text-lg border-2 border-gray-200 rounded-xl focus:border-altm-gold-500 focus:ring-2 focus:ring-altm-gold-200 transition-all duration-200"

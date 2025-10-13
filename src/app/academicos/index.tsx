@@ -4,12 +4,12 @@ import { useMemo, useState } from "react"
 import { Link } from "react-router-dom"
 import { PageHeader } from "@/components/PageHeader"
 import { Card } from "@/components/ui/card"
-import { FaGraduationCap, FaSearch, FaFilter, FaTimes, FaUser, FaCalendarAlt, FaMapMarkerAlt } from "react-icons/fa"
+import { FaGraduationCap, FaSearch, FaFilter, FaTimes, FaUser, FaCalendarAlt } from "react-icons/fa"
 import { Skeleton } from "@/components/ui/skeleton"
 import banner from "@/assets/background.jpg"
 import { IAcademicoConteudo } from "@/types/IAcademicoConteudo"
 
-// Componente de skeleton para card de membro
+// Componente de skeleton para card de acadêmico
 const MemberCardSkeleton = () => (
   <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
     <Skeleton className="aspect-square w-full" />
@@ -47,7 +47,7 @@ const FiltersSkeleton = () => (
   </div>
 )
 
-export default function Membros() {
+export default function Academicos() {
   const { data: membros, loading, error, refetch } = useContent<IMembros>("/membros")
   const { data: conteudo, loading: isLoading, error: isError } = useContent<IAcademicoConteudo>('membros-conteudo')
 
@@ -58,7 +58,6 @@ export default function Membros() {
   // filtros
   const [q, setQ] = useState("");
   const [cadeira, setCadeira] = useState<string>("")
-  const [posicao, setPosicao] = useState<string>("")
 
   const normalize = (s: string) => 
     s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
@@ -66,17 +65,38 @@ export default function Membros() {
   const cadeiras = useMemo(() => {
     if (!membros) return [];
     
-    return Array.from(
+    const cadeirasUnicas = Array.from(
       new Set(membros.map((m: IMembros) => m.cadeira).filter(Boolean))
-    ).sort((a, b) => Number(a) - Number(b));
-  }, [membros]);
-
-  const posicoes = useMemo(() => {
-    if (!membros) return [];
+    );
     
-    return Array.from(
-      new Set(membros.map((m: IMembros) => m.posicao).filter(Boolean))
-    ).sort();
+    // Ordenação especial: patrono, fundador, depois números em ordem crescente, atual por último
+    return cadeirasUnicas.sort((a, b) => {
+      const aLower = a.toLowerCase();
+      const bLower = b.toLowerCase();
+      
+      // Patrono sempre primeiro
+      if (aLower === 'patrono') return -1;
+      if (bLower === 'patrono') return 1;
+      
+      // Fundador sempre segundo
+      if (aLower === 'fundador') return -1;
+      if (bLower === 'fundador') return 1;
+      
+      // Atual sempre último
+      if (aLower === 'atual') return 1;
+      if (bLower === 'atual') return -1;
+      
+      // Números em ordem crescente
+      const aNum = Number(a);
+      const bNum = Number(b);
+      
+      if (!isNaN(aNum) && !isNaN(bNum)) {
+        return aNum - bNum;
+      }
+      
+      // Fallback para ordem alfabética
+      return a.localeCompare(b);
+    });
   }, [membros]);
 
   const membrosFiltrados = useMemo(() => {
@@ -85,11 +105,35 @@ export default function Membros() {
     return membros.filter((membro) => {
       const matchNome = !q || normalize(membro.title).includes(normalize(q));
       const matchCadeira = !cadeira || membro.cadeira === cadeira;
-      const matchPosicao = !posicao || membro.posicao === posicao;
 
-      return matchNome && matchCadeira && matchPosicao;
+      return matchNome && matchCadeira;
     });
-  }, [membros, q, cadeira, posicao]);
+  }, [membros, q, cadeira]);
+
+  // Agrupar membros por cadeira
+  const membrosAgrupados = useMemo(() => {
+    if (!membrosFiltrados) return [];
+
+    const grupos = membrosFiltrados.reduce((acc, membro) => {
+      const cadeiraKey = membro.cadeira || 'Sem Cadeira';
+      if (!acc[cadeiraKey]) {
+        acc[cadeiraKey] = [];
+      }
+      acc[cadeiraKey].push(membro);
+      return acc;
+    }, {} as Record<string, IMembros[]>);
+
+    // Ordenar cada grupo por nome
+    Object.keys(grupos).forEach(cadeira => {
+      grupos[cadeira].sort((a, b) => a.title.localeCompare(b.title));
+    });
+
+    // Retornar cadeiras na ordem correta
+    return cadeiras.map(cadeira => ({
+      cadeira,
+      membros: grupos[cadeira] || []
+    })).filter(grupo => grupo.membros.length > 0);
+  }, [membrosFiltrados, cadeiras]);
 
   if(loading) return (
     <div className="min-h-screen bg-altm-page">
@@ -108,7 +152,7 @@ export default function Membros() {
               breadcrumb={[
                 { label: "Home", href: "/" },
                 { label: "Acadêmicos", href: "/academicos" },
-                { label: "Membros" }
+                { label: "Acadêmicos" }
               ]}
             />
           </span>
@@ -128,8 +172,8 @@ export default function Membros() {
   if(error) return (
     <div className="min-h-screen bg-altm-page">
       <PageHeader 
-        title="Membros da Academia"
-        subtitle="Erro ao carregar os dados dos membros"
+        title="Acadêmicos da ALTM"
+        subtitle="Erro ao carregar os dados dos acadêmicos"
         imagem_topo={banner}
         icon={<FaGraduationCap />}
         breadcrumb={[
@@ -175,7 +219,7 @@ export default function Membros() {
               breadcrumb={[
                 { label: "Home", href: "/" },
                 { label: "Acadêmicos", href: "/academicos" },
-                { label: "Membros" }
+                { label: "Acadêmicos" }
               ]}
             />
           </span>
@@ -191,7 +235,7 @@ export default function Membros() {
               <h2 className="text-xl font-semibold text-gray-800">Filtros de Busca</h2>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Busca por Nome */}
               <div className="space-y-2">
                 <label htmlFor="nome" className="block text-sm font-medium text-gray-700">
@@ -227,34 +271,15 @@ export default function Membros() {
                 </select>
               </div>
 
-              {/* Filtro por Posição */}
-              <div className="space-y-2">
-                <label htmlFor="posicao" className="block text-sm font-medium text-gray-700">
-                  <FaMapMarkerAlt className="inline w-4 h-4 mr-2" />
-                  Posição
-                </label>
-                <select
-                  id="posicao"
-                  value={posicao}
-                  onChange={(e) => setPosicao(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-altm-gold-500 focus:border-altm-gold-500 transition-colors"
-                >
-                  <option value="">Todas as posições</option>
-                  {posicoes.map((p) => (
-                    <option key={p} value={p}>{p}</option>
-                  ))}
-                </select>
-              </div>
             </div>
 
             {/* Botão Limpar Filtros */}
-            {(q || cadeira || posicao) && (
+            {(q || cadeira) && (
               <div className="mt-6 flex justify-end">
                 <button
                   onClick={() => {
                     setQ("");
                     setCadeira("");
-                    setPosicao("");
                   }}
                   className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
                 >
@@ -279,74 +304,85 @@ export default function Membros() {
             </div>
           </div> */}
 
-          {/* Grid de Membros */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {membrosFiltrados.map((membro) => (
-              <Link
-                key={membro.id}
-                to={`/academicos/membros/${membro.id}`}
-                className="group overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-              >
-                <Card className="p-0 overflow-hidden">
-                {/* Foto */}
-                <div className="aspect-square overflow-hidden relative">
-                  {membro.foto ? (
-                    <img
-                      src={membro.foto}
-                      alt={membro.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                      <FaGraduationCap className="text-gray-400 text-4xl" />
-                    </div>
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          {/* Lista de Acadêmicos por Cadeira */}
+          <div className="space-y-8">
+            {membrosAgrupados.map((grupo) => (
+              <div key={grupo.cadeira} className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+                {/* Título da Cadeira */}
+                <div className="bg-gradient-to-r from-altm-gold-600 to-altm-gold-700 px-6 py-4">
+                  <h2 className="text-xl font-bold text-primary flex items-center">
+                    <FaGraduationCap className="mr-3" />
+                    Cadeira {grupo.cadeira}
+                  </h2>
                 </div>
 
-                {/* Informações */}
-                <div className="p-5">
-                  <h3 className="font-semibold text-gray-800 text-lg mb-3 line-clamp-2 group-hover:text-altm-gold-600 transition-colors">
-                    {membro.title}
-                  </h3>
-                  
-                  <div className="space-y-2">
-                    {membro.cadeira && (
-                      <div className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-altm-gold-400 rounded-full"></div>
-                        <p className="text-sm text-gray-600">
-                          <span className="font-medium">Cadeira:</span> {membro.cadeira}
-                        </p>
-                      </div>
-                    )}
+                {/* Tabela de Membros */}
+                <div className="divide-y divide-gray-100">
+                  {grupo.membros.map((membro) => {
+                    const isMembro = membro.e_membro_da_academia === 'Sim';
                     
-                    {membro.posicao && (
-                      <div className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-altm-gold-400 rounded-full"></div>
-                        <p className="text-sm text-gray-600">
-                          <span className="font-medium">Posição:</span> {membro.posicao}
-                        </p>
-                      </div>
-                    )}
-                  </div>
+                    const RowContent = (
+                      <div className="flex items-center p-4 hover:bg-gray-50 transition-colors">
+                        {/* Foto */}
+                        <div className="flex-shrink-0 mr-4">
+                          <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-200">
+                            {membro.foto ? (
+                              <img
+                                src={membro.foto}
+                                alt={membro.title}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                                <FaGraduationCap className="text-gray-400 text-lg" />
+                              </div>
+                            )}
+                          </div>
+                        </div>
 
-                  {/* Botão de ação */}
-                  <div className="mt-4 pt-3 border-t border-gray-100">
-                    <div className="flex items-center text-altm-gold-600 text-sm font-medium group-hover:text-altm-gold-700">
-                      <span>Ver perfil</span>
-                      <svg className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
-                  </div>
+                        {/* Nome */}
+                        <div className="flex-1 min-w-0">
+                          <h3 className={`font-semibold text-lg text-gray-900 truncate ${isMembro ? 'hover:text-altm-gold-600 transition-colors' : ''}`}>
+                            {membro.title}
+                          </h3>
+                          {isMembro && (
+                            <p className="text-sm text-altm-gold-600 mt-1">
+                              Clique para ver perfil
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Posição */}
+                        <div className="flex-shrink-0 text-right">
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                            {membro.posicao || 'Não informado'}
+                          </span>
+                        </div>
+                      </div>
+                    );
+
+                    // Se for membro da academia, retorna com link, senão sem link
+                    return isMembro ? (
+                      <Link
+                        key={membro.id}
+                        to={`/academicos/${membro.id}`}
+                        className="block hover:shadow-md transition-shadow"
+                      >
+                        {RowContent}
+                      </Link>
+                    ) : (
+                      <div key={membro.id}>
+                        {RowContent}
+                      </div>
+                    );
+                  })}
                 </div>
-                </Card>
-              </Link>
+              </div>
             ))}
           </div>
 
           {/* Mensagem quando não há resultados */}
-          {membrosFiltrados.length === 0 && (
+          {membrosAgrupados.length === 0 && (
             <div className="text-center py-16">
               <div className="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
                 <FaSearch className="text-gray-400 text-3xl" />
@@ -359,7 +395,6 @@ export default function Membros() {
                 onClick={() => {
                   setQ("");
                   setCadeira("");
-                  setPosicao("");
                 }}
                 className="inline-flex items-center space-x-2 px-6 py-3 bg-altm-gold-600 text-white font-medium rounded-lg hover:bg-altm-gold-700 transition-colors"
               >
