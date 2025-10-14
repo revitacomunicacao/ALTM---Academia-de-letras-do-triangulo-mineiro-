@@ -40,12 +40,12 @@ export default function HistoricoDoSite() {
     <div className="min-h-screen bg-altm-page">
       <PageHeader 
         title="Carregando"
-        subtitle="Carregando informações sobre o histórico do site"
+        subtitle="Carregando informações sobre o história do site"
         icon={<FaBuilding size={50} />}
         breadcrumb={[
           { label: "Home", href: "/" },
           { label: "Sobre a ALTM", href: "/sobre-a-altm" },
-          { label: "Histórico do site" }
+          { label: "História do site" }
         ]}
       />
       
@@ -58,12 +58,12 @@ export default function HistoricoDoSite() {
   if(error) return (
     <div className="min-h-screen bg-altm-page">
       <PageHeader 
-        title="Fundação"
+        title="História do site"
         subtitle="Erro ao carregar as informações"
         icon={<FaBuilding size={50} />}
         breadcrumb={[
           { label: "Home", href: "/" },
-          { label: "Histórico do site", href: "/historico-do-site" },
+          { label: "História do site", href: "/historia-do-site" },
           { label: "Fundação" }
         ]}
       />
@@ -74,7 +74,7 @@ export default function HistoricoDoSite() {
             <FaTimes className="text-red-500 text-3xl" />
           </div>
           <h3 className="text-xl font-semibold text-gray-900 mb-3">Erro ao carregar dados</h3>
-          <p className="text-gray-600 mb-6">Não foi possível carregar as informações sobre a fundação da ALTM.</p>
+          <p className="text-gray-600 mb-6">Não foi possível carregar as informações sobre a Historia do site.</p>
           <button 
             onClick={() => refetch()}
             className="inline-flex items-center space-x-2 px-6 py-3 bg-altm-gold-600 text-white font-medium rounded-lg hover:bg-altm-gold-700 transition-colors"
@@ -104,7 +104,7 @@ export default function HistoricoDoSite() {
             breadcrumb={[
               { label: "Home", href: "/" },
               { label: "Sobre a ALTM", href: "/historico-do-site" },
-              { label: "Histórico do site" }
+              { label: "História do site" }
             ]}
           />
 

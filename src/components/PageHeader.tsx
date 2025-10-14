@@ -1,5 +1,5 @@
 import { ReactNode } from "react"
-import { FaBookOpen, FaGraduationCap, FaUsers, FaNewspaper, FaInfoCircle, FaCrown, FaHandshake } from "react-icons/fa"
+import { FaBookOpen, FaGraduationCap, FaNewspaper, FaInfoCircle } from "react-icons/fa"
 
 interface PageHeaderProps {
   title: string

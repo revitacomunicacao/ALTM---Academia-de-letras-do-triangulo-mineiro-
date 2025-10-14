@@ -1,5 +1,5 @@
 import { useContent } from "@/hooks/useContent"
-import type { IMembros } from "./types/IMembros"
+import type { IMembros } from "./types/IAcademicosAtuais"
 import { useMemo, useState } from "react"
 import { Link } from "react-router-dom"
 import { PageHeader } from "@/components/PageHeader"
@@ -9,16 +9,40 @@ import { Skeleton } from "@/components/ui/skeleton"
 import banner from "@/assets/background.jpg"
 import { IAcademicoConteudo } from "@/types/IAcademicoConteudo"
 
-// Componente de skeleton para card de acadêmico
-const MemberCardSkeleton = () => (
-  <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
-    <Skeleton className="aspect-square w-full" />
-    <div className="p-6 space-y-4">
-      <Skeleton className="h-6 w-3/4" />
-      <div className="space-y-2">
-        <Skeleton className="h-4 w-1/2" />
-        <Skeleton className="h-4 w-2/3" />
-      </div>
+// Componente de skeleton para linha de membro
+const MemberRowSkeleton = () => (
+  <div className="flex items-center p-4">
+    {/* Foto circular */}
+    <div className="flex-shrink-0 mr-4">
+      <Skeleton className="w-16 h-16 rounded-full" />
+    </div>
+    
+    {/* Nome e informações */}
+    <div className="flex-1 min-w-0 space-y-2">
+      <Skeleton className="h-5 w-48" />
+      <Skeleton className="h-4 w-32" />
+    </div>
+    
+    {/* Badge de posição */}
+    <div className="flex-shrink-0">
+      <Skeleton className="h-7 w-24 rounded-full" />
+    </div>
+  </div>
+)
+
+// Componente de skeleton para grupo de cadeira
+const CadeiraGroupSkeleton = () => (
+  <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+    {/* Cabeçalho da cadeira */}
+    <div className="bg-gradient-to-r from-altm-gold-600 to-altm-gold-700 px-6 py-4">
+      <Skeleton className="h-6 w-32" />
+    </div>
+    
+    {/* Lista de membros */}
+    <div className="divide-y divide-gray-100">
+      {[...Array(3)].map((_, i) => (
+        <MemberRowSkeleton key={i} />
+      ))}
     </div>
   </div>
 )
@@ -47,13 +71,9 @@ const FiltersSkeleton = () => (
   </div>
 )
 
-export default function Academicos() {
+export default function AcademicosAtuais() {
   const { data: membros, loading, error, refetch } = useContent<IMembros>("/membros")
   const { data: conteudo, loading: isLoading, error: isError } = useContent<IAcademicoConteudo>('membros-conteudo')
-
-  console.log(conteudo)
-  
-  console.log(membros)
 
   // filtros
   const [q, setQ] = useState("");
@@ -110,7 +130,7 @@ export default function Academicos() {
     });
   }, [membros, q, cadeira]);
 
-  // Agrupar membros por cadeira
+  // Agrupar membros por cadeira e pegar apenas o atual (maior posição numérica)
   const membrosAgrupados = useMemo(() => {
     if (!membrosFiltrados) return [];
 
@@ -123,9 +143,24 @@ export default function Academicos() {
       return acc;
     }, {} as Record<string, IMembros[]>);
 
-    // Ordenar cada grupo por nome
+    // Para cada cadeira, pegar apenas o membro com a maior posição numérica
     Object.keys(grupos).forEach(cadeira => {
-      grupos[cadeira].sort((a, b) => a.title.localeCompare(b.title));
+      const membrosGrupo = grupos[cadeira];
+      
+      // Encontrar a maior posição numérica
+      const posicoesNumericas = membrosGrupo
+        .map(m => Number(m.posicao))
+        .filter(p => !isNaN(p));
+      
+      if (posicoesNumericas.length > 0) {
+        const maiorPosicao = Math.max(...posicoesNumericas);
+        
+        // Filtrar apenas os membros com a maior posição
+        grupos[cadeira] = membrosGrupo.filter(m => {
+          const posNum = Number(m.posicao);
+          return !isNaN(posNum) && posNum === maiorPosicao;
+        });
+      }
     });
 
     // Retornar cadeiras na ordem correta
@@ -137,32 +172,25 @@ export default function Academicos() {
 
   if(loading) return (
     <div className="min-h-screen bg-altm-page">
-      {conteudo.map((
-        {
-          description,
-          id,
-          title 
-        }) => (
-          <span key={id}>
-            <PageHeader 
-              title={title}
-              subtitle={description}
-              imagem_topo={banner}
-              icon={<FaGraduationCap size={50} />}
-              breadcrumb={[
-                { label: "Home", href: "/" },
-                { label: "Acadêmicos", href: "/academicos" },
-                { label: "Acadêmicos" }
-              ]}
-            />
-          </span>
-      ))}
+      <span>
+        <PageHeader 
+          title={"Carregando..."}
+          subtitle={"Carregando..."}
+          imagem_topo={banner}
+          icon={<FaGraduationCap size={50} />}
+          breadcrumb={[
+            { label: "Home", href: "/" },
+            { label: "Membros", href: "/academicos" },
+            { label: "Membros" }
+          ]}
+        />
+      </span>
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <FiltersSkeleton />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {[...Array(8)].map((_, i) => (
-            <MemberCardSkeleton key={i} />
+        <div className="space-y-8">
+          {[...Array(3)].map((_, i) => (
+            <CadeiraGroupSkeleton key={i} />
           ))}
         </div>
       </div>
@@ -172,13 +200,13 @@ export default function Academicos() {
   if(error) return (
     <div className="min-h-screen bg-altm-page">
       <PageHeader 
-        title="Acadêmicos da ALTM"
-        subtitle="Erro ao carregar os dados dos acadêmicos"
+        title="Membros da ALTM"
+        subtitle="Erro ao carregar os dados dos Membros"
         imagem_topo={banner}
         icon={<FaGraduationCap />}
         breadcrumb={[
           { label: "Home", href: "/" },
-          { label: "Acadêmicos", href: "/academicos" },
+          { label: "Membros", href: "/academicos" },
           { label: "Membros" }
         ]}
       />
@@ -212,14 +240,14 @@ export default function Academicos() {
         }) => (
           <span key={id}>
             <PageHeader 
-              title={title}
+              title={"Acadêmicos Atuais"}
               subtitle={description}
               imagem_topo={banner}
               icon={<FaGraduationCap size={50} />}
               breadcrumb={[
                 { label: "Home", href: "/" },
-                { label: "Acadêmicos", href: "/academicos" },
-                { label: "Acadêmicos" }
+                { label: "Acadêmicos Atuais", href: "/academicos" },
+                { label: "Acadêmicos Atuais" }
               ]}
             />
           </span>
@@ -304,7 +332,7 @@ export default function Academicos() {
             </div>
           </div> */}
 
-          {/* Lista de Acadêmicos por Cadeira */}
+          {/* Lista de Membros por Cadeira */}
           <div className="space-y-8">
             {membrosAgrupados.map((grupo) => (
               <div key={grupo.cadeira} className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
@@ -316,7 +344,7 @@ export default function Academicos() {
                   </h2>
                 </div>
 
-                {/* Tabela de Membros */}
+                {/* Membro Atual */}
                 <div className="divide-y divide-gray-100">
                   {grupo.membros.map((membro) => {
                     const isMembro = membro.e_membro_da_academia === 'Sim';
@@ -352,10 +380,10 @@ export default function Academicos() {
                           )}
                         </div>
 
-                        {/* Posição */}
+                        {/* Badge Atual */}
                         <div className="flex-shrink-0 text-right">
-                          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
-                            {membro.posicao || 'Não informado'}
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-altm-gold-100 text-altm-gold-800">
+                            Atual
                           </span>
                         </div>
                       </div>

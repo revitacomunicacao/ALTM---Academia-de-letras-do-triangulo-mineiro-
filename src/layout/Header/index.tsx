@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/sheet"
 import { Menu, ChevronDown, ChevronRight } from "lucide-react"
 import { HeaderSearchBar } from "@/components/search/HeaderSearchBar"
+import { Button } from "@/components/ui/button";
 
 
 export const Header = () => {
@@ -41,59 +42,47 @@ export const Header = () => {
   
   const menu = [
     {
-      name: "A ALTM",
+      name: "ACADEMIA",
       href: "#",
       subMenu:[
         {
-          name: "Academias Municipais",
-          href: "/sobre-a-altm/academias-municipais"
+          name: "HISTÓRICO",
+          href: "/sobre-a-altm/historico"
         },
         {
-          name: "Estatuto",
+          name: "ESTATUTO",
           href: "/sobre-a-altm/estatuto"
         },
         {
-          name: "Fundação",
-          href: "/sobre-a-altm/fundacao"
-        },
-        {
-          name: "História da ALTM",
-          href: "/sobre-a-altm/historia"
-        },
-        {
-          name: "Quem Somos",
-          href: "/sobre-a-altm/quem-somos"
-        },
-        {
-          name: "Regimento",
+          name: "REGIMENTO",
           href: "/sobre-a-altm/regimento"
         },
         {
-          name: "Histórico do site",
-          href: "/sobre-a-altm/historico-do-site"
+          name: "HISTÓRIA DO SITE",
+          href: "/sobre-a-altm/historia-do-site"
         },
       ]
     },
     {
-      name: "Diretoria",
-      href: "/diretoria"
+      name: "ACADÊMICOS ATUAIS",
+      href: "/academicos-atuais"
     },
     {
-      name: "Acadêmicos",
+      name: "MEMBROS",
       href: "/academicos"
     },
     {
-      name: "Presidentes",
+      name: "PRESIDENTES",
       href: "/presidentes"
     },
     {
-      name: "Associados Correspondentes",
-      href: "/socios-correspondentes"
+      name: "DIRETORIA",
+      href: "/diretoria"
     },
     {
-      name: "Fale Conosco",
-      href: "/#contato"
-    }
+      name: "ASSOCIADOS CORRESPONDENTES",
+      href: "/socios-correspondentes"
+    },
   ] 
 
   return (
@@ -104,12 +93,23 @@ export const Header = () => {
         <div className="bg-[#c3a855] py-2 h-14">
           <div className="max-w-[7xl] mx-auto px-4 sm:px-6 lg:px-8 h-full">
             <div className="flex justify-end items-center h-full">
+              
               <div className="flex-shrink-0 z-40 mx-10">
                 <HeaderSearchBar 
                   placeholder="Buscar acadêmicos, artigos..." 
                   className="w-80"
                 />
               </div>
+
+              {/* BOTÃO DE FALE CONOSCO */}
+              <div className="flex mr-10">
+                <Link to={"/fale-conosco"}>
+                  <Button className="cursor-pointer bg-white text-black hover:text-white transition">
+                    FALE CONOSCO
+                  </Button>
+                </Link>
+              </div>
+
               <div className="flex items-center space-x-4">
                 <a 
                   href="#" 
@@ -308,6 +308,8 @@ export const Header = () => {
                       ))}
                     </div>
                     
+
+
                     {/* Redes sociais no menu mobile */}
                     <div className="mt-8 pt-6 border-t border-gray-200 px-2">
                       <p className="text-sm text-gray-600 mb-6 font-medium px-2">Siga-nos</p>

@@ -44,13 +44,13 @@ export default function Historico() {
   if(loading) return (
     <div className="min-h-screen bg-altm-page">
       <PageHeader 
-        title="História da ALTM"
-        subtitle="Carregando informações sobre a história da ALTM"
+        title="Histórico"
+        subtitle="Carregando informações sobre a Histórico"
         icon={<FaHistory size={50} />}
         breadcrumb={[
           { label: "Home", href: "/" },
           { label: "Sobre a ALTM", href: "/sobre-a-altm" },
-          { label: "História da ALTM" }
+          { label: "Histórico" }
         ]}
       />
       
@@ -63,13 +63,13 @@ export default function Historico() {
   if(error) return (
     <div className="min-h-screen bg-altm-page">
       <PageHeader 
-        title="História da ALTM"
+        title="Histórico"
         subtitle="Erro ao carregar as informações"
         icon={<FaHistory size={50} />}
         breadcrumb={[
           { label: "Home", href: "/" },
           { label: "Sobre a ALTM", href: "/sobre-a-altm" },
-          { label: "História da ALTM" }
+          { label: "Histórico" }
         ]}
       />
       
@@ -111,7 +111,7 @@ export default function Historico() {
             breadcrumb={[
               { label: "Home", href: "/" },
               { label: "Sobre a ALTM", href: "/sobre-a-altm" },
-              { label: "História da ALTM" }
+              { label: "Histórico" }
             ]}
           />
           
@@ -121,7 +121,7 @@ export default function Historico() {
               <Card>
                 <div className="space-y-6">
                   <div className="flex items-center space-x-3 mb-6 justify-center">
-                    <h2 className="text-2xl text-center font-bold text-gray-800">História da ALTM</h2>
+                    <h2 className="text-2xl text-center font-bold text-gray-800">Histórico</h2>
                   </div>
                   
                   <div className="prose max-w-none">

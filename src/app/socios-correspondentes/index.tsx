@@ -2,47 +2,42 @@ import { useContent } from "@/hooks/useContent"
 import { ISocios } from "./types/ISocios"
 import { PageHeader } from "@/components/PageHeader"
 import { Card } from "@/components/ui/card"
-import { FaHandshake, FaTimes, FaArrowLeft } from "react-icons/fa"
+import { FaHandshake, FaTimes, FaArrowLeft, FaBook } from "react-icons/fa"
 import { Skeleton } from "@/components/ui/skeleton"
 import { IAcademicoConteudo } from "@/types/IAcademicoConteudo"
+import { useState } from "react"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog"
 
-// Componente de skeleton para tabela
-const TableSkeleton = () => (
-  <Card>
-    <div className="px-6 py-4 bg-gray-100 border-b border-gray-200">
-      <Skeleton className="h-6 w-1/3" />
-    </div>
-    <div className="overflow-x-auto">
-      <table className="w-full">
-        <thead>
-          <tr className="border-b border-gray-200">
-            <th className="px-6 py-4"><Skeleton className="h-4 w-24" /></th>
-            <th className="px-6 py-4"><Skeleton className="h-4 w-32" /></th>
-            <th className="px-6 py-4"><Skeleton className="h-4 w-20" /></th>
-            <th className="px-6 py-4"><Skeleton className="h-4 w-20" /></th>
-            <th className="px-6 py-4"><Skeleton className="h-4 w-20" /></th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-200">
-          {[...Array(5)].map((_, i) => (
-            <tr key={i} className="hover:bg-gray-50">
-              <td className="px-6 py-5 whitespace-nowrap"><Skeleton className="h-4 w-48" /></td>
-              <td className="px-6 py-5 whitespace-nowrap"><Skeleton className="h-4 w-32" /></td>
-              <td className="px-6 py-5 whitespace-nowrap"><Skeleton className="h-4 w-20" /></td>
-              <td className="px-6 py-5 whitespace-nowrap"><Skeleton className="h-4 w-20" /></td>
-              <td className="px-6 py-5 whitespace-nowrap"><Skeleton className="h-4 w-20" /></td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  </Card>
+// Componente de skeleton para linha da tabela
+const TableRowSkeleton = () => (
+  <tr className="hover:bg-gray-50">
+    <td className="px-6 py-4 whitespace-nowrap">
+      <Skeleton className="h-4 w-48" />
+    </td>
+    <td className="px-6 py-4 whitespace-nowrap text-right">
+      <Skeleton className="h-9 w-32 inline-block" />
+    </td>
+  </tr>
 )
 
 export default function SociosCorrespondentes() {
 
   const { data: socios, loading, error, refetch } = useContent<ISocios>("/socios-correspondentes")
   const { data: conteudo, loading: isLoading, error: isError, refetch: isRefetch } = useContent<IAcademicoConteudo>("/socios-conteudo")
+  
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [selectedSocio, setSelectedSocio] = useState<ISocios | null>(null)
+
+  const handleOpenBiografia = (socio: ISocios) => {
+    setSelectedSocio(socio)
+    setDialogOpen(true)
+  }
 
   if(loading) return (
     <div className="min-h-screen bg-altm-page">
@@ -58,11 +53,30 @@ export default function SociosCorrespondentes() {
       />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="space-y-8">
-          {[...Array(3)].map((_, i) => (
-            <TableSkeleton key={i} />
-          ))}
-        </div>
+        <Card className="overflow-hidden">
+          <div className="px-6 py-4 bg-altm-gold-50 border-b border-altm-gold-200">
+            <Skeleton className="h-6 w-64" />
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr className="border-b border-gray-200">
+                  <th className="px-6 py-3 text-left">
+                    <Skeleton className="h-4 w-24" />
+                  </th>
+                  <th className="px-6 py-3 text-right">
+                    <Skeleton className="h-4 w-16" />
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {[...Array(8)].map((_, i) => (
+                  <TableRowSkeleton key={i} />
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
       </div>
     </div>
   )
@@ -117,98 +131,88 @@ export default function SociosCorrespondentes() {
             breadcrumb={[
               { label: "Home", href: "/" },
               { label: "Acadêmicos", href: "/academicos" },
-              { label: "Sócios Correspondentes" }
+              { label: "Associados Correspondentes" }
             ]}
           />
       ))}
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-        {/* Lista de Sócios */}
-        <div className="space-y-8">
-          {socios && socios.map(({ id, socios, title }) => (
-            <Card key={id} className="overflow-hidden">
-              <div className="px-6 py-4 bg-altm-gold-50 border-b border-altm-gold-200">
-                <h2 className="text-xl font-semibold text-altm-gold-800">{title}</h2>
-              </div>
+        {/* Tabela de Sócios Correspondentes */}
+        <Card className="overflow-hidden">
+          <div className="px-6 py-4 bg-altm-gold-50 border-b border-altm-gold-200">
+            <h2 className="text-xl font-semibold text-altm-gold-800">
+              Sócios Correspondentes
+            </h2>
+          </div>
+          
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr className="border-b border-gray-200">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Nome
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Ações
+                  </th>
+                </tr>
+              </thead>
               
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-gray-50">
-                    <tr className="border-b border-gray-200">
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Nome
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Posição
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Eleição
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Nascimento
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Falecimento
-                      </th>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {socios && socios.length > 0 ? (
+                  socios.map((socio) => (
+                    <tr key={socio.id} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="text-sm font-medium text-gray-900">
+                          {socio.title}
+                        </span>
+                      </td>
+                      
+                      <td className="px-6 py-4 whitespace-nowrap text-right">
+                        <button
+                          onClick={() => handleOpenBiografia(socio)}
+                          className="inline-flex items-center space-x-2 px-4 py-2 bg-altm-gold-600 text-primary text-sm font-medium hover:bg-altm-gold-700 transition-colors border-2 rounded-2xl cursor-pointer"
+                        >
+                          <FaBook className="w-4 h-4" />
+                          <span>Ver Biografia</span>
+                        </button>
+                      </td>
                     </tr>
-                  </thead>
-                  
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {socios && socios.length > 0 ? (
-                      socios.map(({ nome, eleicao, falecimento, nascimento, posicao }, idx) => (
-                        <tr key={idx} className="hover:bg-gray-50 transition-colors">
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span className="text-sm font-medium text-gray-900">
-                              {nome || '-'}
-                            </span>
-                          </td>
-                          
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            {posicao ? (
-                              <span className="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
-                                {posicao}
-                              </span>
-                            ) : (
-                              <span className="text-gray-400">-</span>
-                            )}
-                          </td>
-                          
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span className="text-sm text-gray-600">
-                              {eleicao || '-'}
-                            </span>
-                          </td>
-                          
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span className="text-sm text-gray-600">
-                              {nascimento || '-'}
-                            </span>
-                          </td>
-                          
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span className="text-sm text-gray-600">
-                              {falecimento || '-'}
-                            </span>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan={5} className="px-6 py-8 text-center">
-                          <div className="text-gray-500">
-                            <p className="text-lg">Nenhum sócio encontrado nesta categoria</p>
-                          </div>
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </Card>
-          ))}
-        </div>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={2} className="px-6 py-8 text-center">
+                      <div className="text-gray-500">
+                        <p className="text-lg">Nenhum sócio correspondente encontrado</p>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </Card>
       </div>
+
+      {/* Dialog com Biografia */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-altm-gold-800">
+              {selectedSocio?.title}
+            </DialogTitle>
+            <DialogDescription className="text-gray-600">
+              Biografia do Sócio Correspondente
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div 
+            className="prose prose-gray max-w-none mt-4"
+            dangerouslySetInnerHTML={{ __html: selectedSocio?.description || '' }}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
