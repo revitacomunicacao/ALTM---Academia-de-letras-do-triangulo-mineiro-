@@ -41,11 +41,13 @@ export const CarouselBlog = () => {
             className="w-full"
           >
             <CarouselContent>
-              {[...Array(3)].map((_, i) => (
-                <CarouselItem key={i} className="md:basis-1/2 lg:basis-1/3">
-                  <BlogCardSkeleton />
-                </CarouselItem>
-              ))}
+              <CarouselItem className="basis-full">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {[...Array(6)].map((_, i) => (
+                    <BlogCardSkeleton key={i} />
+                  ))}
+                </div>
+              </CarouselItem>
             </CarouselContent>
             <CarouselPrevious className="bg-white/90 hover:bg-white border-altm-gold-600 text-altm-gold-600 hover:text-altm-gold-700 shadow-lg hover:shadow-xl transition-all duration-200 w-10 h-10 sm:w-12 sm:h-12 -left-2 sm:-left-6 hover:scale-105" />
             <CarouselNext className="bg-white/90 hover:bg-white border-altm-gold-600 text-altm-gold-600 hover:text-altm-gold-700 shadow-lg hover:shadow-xl transition-all duration-200 w-10 h-10 sm:w-12 sm:h-12 -right-2 sm:-right-6 hover:scale-105" />
@@ -75,72 +77,75 @@ export const CarouselBlog = () => {
     )
   }
 
+  // Agrupar itens de 6 em 6
+  const groupedBlogs = blog.reduce((acc: Iblog[][], item, index) => {
+    const groupIndex = Math.floor(index / 6);
+    if (!acc[groupIndex]) {
+      acc[groupIndex] = [];
+    }
+    acc[groupIndex].push(item);
+    return acc;
+  }, []);
+
   return (
     <section className="py-16 bg-[#F2ECD7]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header da seção */}
-        <div className="text-center mb-12">
-          <div className="flex items-center justify-center space-x-3 mb-4">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-800">Últimas Notícias</h2>
-          </div>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Fique por dentro das novidades e acontecimentos da Academia de Letras do Triângulo Mineiro
-          </p>
-        </div>
-
         {/* Carrossel de notícias */}
         <Carousel 
           opts={{
             align: "start",
             loop: true,
-            dragFree: true
           }}
           className="w-full"
         >
           <CarouselContent>
-            {blog && blog.map(({ 
-              id,
-              imagem_destacada,
-              resumo,
-              summary,
-              title
-            }) => (
-              <CarouselItem key={id} className="md:basis-1/2 lg:basis-1/3">
-                <Card className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 group">
-                  {/* Imagem da notícia */}
-                  <div className="aspect-video overflow-hidden relative">
-                    <img 
-                      src={imagem_destacada} 
-                      alt={`Imagem da notícia: ${title}`}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 rounded-2xl"
-                    />
-                    <div className="absolute top-4 left-4">
-                      <div className="flex items-center space-x-1 px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full">
-                        <FaNewspaper className="w-3 h-3 text-altm-gold-600" />
-                        <span className="text-xs font-medium text-gray-700">Notícia</span>
+            {groupedBlogs.map((group, groupIndex) => (
+              <CarouselItem key={groupIndex} className="basis-full">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {group.map(({ 
+                    id,
+                    imagem_destacada,
+                    resumo,
+                    summary,
+                    title
+                  }) => (
+                    <Card key={id} className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 group">
+                      {/* Imagem da notícia */}
+                      <div className="aspect-video overflow-hidden relative">
+                        <img 
+                          src={imagem_destacada} 
+                          alt={`Imagem da notícia: ${title}`}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 rounded-2xl"
+                        />
+                        <div className="absolute top-4 left-4">
+                          <div className="flex items-center space-x-1 px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full">
+                            <FaNewspaper className="w-3 h-3 text-altm-gold-600" />
+                            <span className="text-xs font-medium text-gray-700">Notícia</span>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                  
-                  {/* Conteúdo da notícia */}
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold text-gray-800 mb-3 line-clamp-2 group-hover:text-altm-gold-600 transition-colors">
-                      {title}
-                    </h3>
-                    
-                    <p className="text-gray-600 text-sm leading-relaxed line-clamp-3 mb-6">
-                      {resumo || summary || "Confira esta notícia completa..."}
-                    </p>
-                    
-                    <Link 
-                      to={`/blog/${id}`}
-                      className="inline-flex items-center space-x-2 w-full justify-center px-4 py-3 bg-gradient-to-r from-altm-gold-500 to-altm-gold-600 text-white font-medium rounded-lg hover:from-altm-gold-600 hover:to-altm-gold-700 transition-all duration-300 group-hover:shadow-lg"
-                    >
-                      <span className="text-black">Ler Notícia</span>
-                      <FaArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    </Link>
-                  </div>
-                </Card>
+                      
+                      {/* Conteúdo da notícia */}
+                      <div className="p-6">
+                        <h3 className="text-xl font-bold text-gray-800 mb-3 line-clamp-2 group-hover:text-altm-gold-600 transition-colors">
+                          {title}
+                        </h3>
+                        
+                        <p className="text-gray-600 text-sm leading-relaxed line-clamp-3 mb-6">
+                          {resumo || summary || "Confira esta notícia completa..."}
+                        </p>
+                        
+                        <Link 
+                          to={`/blog/${id}`}
+                          className="inline-flex items-center space-x-2 w-full justify-center px-4 py-3 bg-gradient-to-r from-altm-gold-500 to-altm-gold-600 text-white font-medium rounded-lg hover:from-altm-gold-600 hover:to-altm-gold-700 transition-all duration-300 group-hover:shadow-lg"
+                        >
+                          <span className="text-black">Ler Notícia</span>
+                          <FaArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        </Link>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
               </CarouselItem>
             ))}
           </CarouselContent>
