@@ -2,39 +2,56 @@ import { useContent } from "@/hooks/useContent"
 import { IHistorico } from "./types/IHistorico"
 import { PageHeader } from "@/components/PageHeader"
 import { Card } from "@/components/ui/card"
-import { FaHistory, FaTimes, FaArrowLeft, FaImages } from "react-icons/fa"
+import { FaHistory, FaTimes, FaArrowLeft, FaImages, FaFileAlt, FaExternalLinkAlt } from "react-icons/fa"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 
 // Componente de skeleton para a página
 const ContentSkeleton = () => (
-  <div className="space-y-8">
-    <Card>
-      <div className="space-y-6">
-        <Skeleton className="h-8 w-3/4" />
-        <Skeleton className="h-4 w-full" />
-        <Skeleton className="h-4 w-11/12" />
-        <Skeleton className="h-4 w-10/12" />
-        <Skeleton className="h-4 w-full" />
-        <Skeleton className="h-4 w-9/12" />
-      </div>
-    </Card>
-    
-    <Card>
-      <div className="space-y-6">
-        <Skeleton className="h-6 w-1/3" />
-        <div className="relative">
-          <Skeleton className="h-64 w-full rounded-lg" />
-          <div className="absolute left-4 top-1/2 -translate-y-1/2">
-            <Skeleton className="h-8 w-8 rounded-full" />
-          </div>
-          <div className="absolute right-4 top-1/2 -translate-y-1/2">
-            <Skeleton className="h-8 w-8 rounded-full" />
+  <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    {/* Coluna Principal */}
+    <div className="lg:col-span-2 space-y-8">
+      <Card>
+        <div className="space-y-6">
+          <Skeleton className="h-8 w-3/4" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-11/12" />
+          <Skeleton className="h-4 w-10/12" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-9/12" />
+        </div>
+      </Card>
+      
+      <Card>
+        <div className="space-y-6">
+          <Skeleton className="h-6 w-1/3" />
+          <div className="relative">
+            <Skeleton className="h-64 w-full rounded-lg" />
+            <div className="absolute left-4 top-1/2 -translate-y-1/2">
+              <Skeleton className="h-8 w-8 rounded-full" />
+            </div>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2">
+              <Skeleton className="h-8 w-8 rounded-full" />
+            </div>
           </div>
         </div>
-      </div>
-    </Card>
+      </Card>
+    </div>
+
+    {/* Coluna Lateral */}
+    <div className="lg:col-span-1">
+      <Card>
+        <div className="space-y-6">
+          <Skeleton className="h-6 w-2/3" />
+          <div className="space-y-3">
+            {[...Array(5)].map((_, i) => (
+              <Skeleton key={i} className="h-12 w-full" />
+            ))}
+          </div>
+        </div>
+      </Card>
+    </div>
   </div>
 )
 
@@ -54,7 +71,7 @@ export default function Historico() {
         ]}
       />
       
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <ContentSkeleton />
       </div>
     </div>
@@ -73,7 +90,7 @@ export default function Historico() {
         ]}
       />
       
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="text-center py-16">
           <div className="w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <FaTimes className="text-red-500 text-3xl" />
@@ -100,7 +117,8 @@ export default function Historico() {
         id,
         imagem_topo,
         subtitulo,
-        title
+        title,
+        memoria_da_altm
       }) => (
         <div key={id}>
           <PageHeader
@@ -115,73 +133,114 @@ export default function Historico() {
             ]}
           />
           
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div className="space-y-8">
-              {/* Descrição */}
-              <Card>
-                <div className="space-y-6">
-                  <div className="flex items-center space-x-3 mb-6 justify-center">
-                    <h2 className="text-2xl text-center font-bold text-gray-800">Histórico</h2>
-                  </div>
-                  
-                  <div className="prose max-w-none">
-                    <div 
-                      dangerouslySetInnerHTML={{ __html: description }}
-                      className="text-gray-700 leading-relaxed"
-                    />
-                  </div>
-                </div>
-              </Card>
-
-              {/* Galeria de Fotos */}
-              {galeria_de_fotos && galeria_de_fotos.length > 0 && (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Coluna Principal (Esquerda) */}
+              <div className="lg:col-span-2 space-y-8">
+                {/* Descrição */}
                 <Card>
                   <div className="space-y-6">
                     <div className="flex items-center space-x-3 mb-6 justify-center">
-                      <h2 className="text-2xl font-bold text-gray-800">Galeria</h2>
+                      <h2 className="text-2xl text-center font-bold text-gray-800">Histórico</h2>
                     </div>
                     
-                    <div className="relative">
-                      <Carousel
-                        opts={{
-                          align: "start",
-                          loop: true,
-                        }}
-                        className="w-full"
-                      >
-                        <CarouselContent>
-                          {galeria_de_fotos.map((foto, index) => (
-                            <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
-                              <Dialog>
-                                <DialogTrigger asChild>
-                                  <div className="aspect-square overflow-hidden rounded-lg group cursor-pointer">
-                                    <img 
-                                      src={foto} 
-                                      alt={`Foto histórica ${index + 1}`}
-                                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                    />
-                                  </div>
-                                </DialogTrigger>
-                                <DialogContent className="max-w-4xl w-full p-0">
-                                  <div className="relative">
-                                    <img 
-                                      src={foto} 
-                                      alt={`Foto histórica ${index + 1}`}
-                                      className="w-full h-auto max-h-[80vh] object-contain rounded-lg"
-                                    />
-                                  </div>
-                                </DialogContent>
-                              </Dialog>
-                            </CarouselItem>
-                          ))}
-                        </CarouselContent>
-                        <CarouselPrevious className="bg-white/90 hover:bg-white border-altm-gold-600 text-altm-gold-600 hover:text-altm-gold-700 shadow-lg hover:shadow-xl transition-all duration-200 w-10 h-10 sm:w-12 sm:h-12 left-2 sm:left-4 hover:scale-105" />
-                        <CarouselNext className="bg-white/90 hover:bg-white border-altm-gold-600 text-altm-gold-600 hover:text-altm-gold-700 shadow-lg hover:shadow-xl transition-all duration-200 w-10 h-10 sm:w-12 sm:h-12 right-2 sm:right-4 hover:scale-105" />
-                      </Carousel>
+                    <div className="prose max-w-none">
+                      <div 
+                        dangerouslySetInnerHTML={{ __html: description }}
+                        className="text-gray-700 leading-relaxed"
+                      />
                     </div>
                   </div>
                 </Card>
-              )}
+
+                {/* Galeria de Fotos */}
+                {galeria_de_fotos && galeria_de_fotos.length > 0 && (
+                  <Card>
+                    <div className="space-y-6">
+                      <div className="flex items-center space-x-3 mb-6 justify-center">
+                        <h2 className="text-2xl font-bold text-gray-800">Galeria</h2>
+                      </div>
+                      
+                      <div className="relative">
+                        <Carousel
+                          opts={{
+                            align: "start",
+                            loop: true,
+                          }}
+                          className="w-full"
+                        >
+                          <CarouselContent>
+                            {galeria_de_fotos.map((foto, index) => (
+                              <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
+                                <Dialog>
+                                  <DialogTrigger asChild>
+                                    <div className="aspect-square overflow-hidden rounded-lg group cursor-pointer">
+                                      <img 
+                                        src={foto} 
+                                        alt={`Foto histórica ${index + 1}`}
+                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                      />
+                                    </div>
+                                  </DialogTrigger>
+                                  <DialogContent className="max-w-4xl w-full p-0">
+                                    <div className="relative">
+                                      <img 
+                                        src={foto} 
+                                        alt={`Foto histórica ${index + 1}`}
+                                        className="w-full h-auto max-h-[80vh] object-contain rounded-lg"
+                                      />
+                                    </div>
+                                  </DialogContent>
+                                </Dialog>
+                              </CarouselItem>
+                            ))}
+                          </CarouselContent>
+                          <CarouselPrevious className="bg-white/90 hover:bg-white border-altm-gold-600 text-altm-gold-600 hover:text-altm-gold-700 shadow-lg hover:shadow-xl transition-all duration-200 w-10 h-10 sm:w-12 sm:h-12 left-2 sm:left-4 hover:scale-105" />
+                          <CarouselNext className="bg-white/90 hover:bg-white border-altm-gold-600 text-altm-gold-600 hover:text-altm-gold-700 shadow-lg hover:shadow-xl transition-all duration-200 w-10 h-10 sm:w-12 sm:h-12 right-2 sm:right-4 hover:scale-105" />
+                        </Carousel>
+                      </div>
+                    </div>
+                  </Card>
+                )}
+              </div>
+
+              {/* Coluna Lateral (Direita) - Memória da ALTM */}
+              <div className="lg:col-span-1">
+                <Card className="sticky top-8">
+                  <div className="space-y-6">
+                    <div className="flex items-center space-x-3 pb-4 border-b border-gray-200">
+                      <FaFileAlt className="text-altm-gold-600 text-xl" />
+                      <h2 className="text-xl font-bold text-gray-800">Memória da ALTM</h2>
+                    </div>
+                    
+                    {memoria_da_altm && memoria_da_altm.length > 0 ? (
+                      <div className="space-y-3">
+                        {memoria_da_altm.map((item, index) => (
+                          <a
+                            key={index}
+                            href={item.arquivo.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group flex items-start space-x-3 p-3 rounded-lg hover:bg-altm-gold-50 transition-all duration-200 border border-transparent hover:border-altm-gold-200"
+                          >
+                            <FaFileAlt className="text-altm-gold-600 mt-1 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                            <div className="flex-1 min-w-0">
+                              <h3 className="text-sm font-medium text-gray-900 group-hover:text-altm-gold-700 transition-colors line-clamp-2">
+                                {item.titulo}
+                              </h3>
+                            </div>
+                            <FaExternalLinkAlt className="text-gray-400 group-hover:text-altm-gold-600 text-xs mt-1 flex-shrink-0 transition-colors" />
+                          </a>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-gray-500 text-center py-4">
+                        Nenhum documento disponível no momento.
+                      </p>
+                    )}
+                  </div>
+                </Card>
+              </div>
             </div>
           </div>
         </div>

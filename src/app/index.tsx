@@ -13,7 +13,7 @@ export default function HomePage() {
   return (
     <main>
       <Banner />
-      <SearchSection />
+      {/* <SearchSection /> */}
       <ConhecaAltm />
       <CarouselBlog />
       <CarrosselArtigos />

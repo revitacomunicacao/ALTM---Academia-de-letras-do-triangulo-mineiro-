@@ -401,7 +401,7 @@ export default function Academicos() {
                     return isMembro ? (
                       <Link
                         key={membro.id}
-                        to={`/academicos/${membro.id}`}
+                        to={`/membros/${membro.id}`}
                         className="block hover:shadow-md transition-shadow"
                       >
                         {RowContent}

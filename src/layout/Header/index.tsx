@@ -69,7 +69,7 @@ export const Header = () => {
     },
     {
       name: "MEMBROS",
-      href: "/academicos"
+      href: "/membros"
     },
     {
       name: "PRESIDENTES",
