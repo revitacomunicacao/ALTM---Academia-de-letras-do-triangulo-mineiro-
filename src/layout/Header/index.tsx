@@ -2,16 +2,7 @@ import logo from "@/assets/logo-altm.png"
 import { Link } from "react-router-dom";
 import { FaFacebook } from "react-icons/fa";
 import { FaInstagram } from "react-icons/fa";
-import { useState } from "react";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu"
+import { useState, useRef, useEffect } from "react";
 import {
   Sheet,
   SheetContent,
@@ -27,6 +18,42 @@ import { Button } from "@/components/ui/button";
 export const Header = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [openSubmenu, setOpenSubmenu] = useState<number | null>(null)
+  const [openDropdown, setOpenDropdown] = useState<number | null>(null)
+  const dropdownRefs = useRef<(HTMLDivElement | null)[]>([])
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Fechar dropdowns quando clicar fora
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      dropdownRefs.current.forEach((ref, index) => {
+        if (ref && !ref.contains(event.target as Node)) {
+          setOpenDropdown(null)
+        }
+      })
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+    }
+  }, [])
+
+  const handleMouseEnter = (index: number) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+      timeoutRef.current = null
+    }
+    setOpenDropdown(index)
+  }
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setOpenDropdown(null)
+    }, 150) // Pequeno delay para evitar fechamento muito rápido
+  }
 
   const handleContactClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault()
@@ -64,6 +91,28 @@ export const Header = () => {
       ]
     },
     {
+      name: "PROGRAMAÇÃO CULTURAL",
+      href: "#",
+      subMenu:[
+        {
+          name: "PROGRAMAÇÃO CULTURAL",
+          href: "/programacao-cultural"
+        },
+        {
+          name: "INSCRIÇÕES",
+          href: "/inscricoes"
+        },
+        {
+          name: "LANÇAMENTO DE LIVROS",
+          href: "/lancamento-de-livros"
+        },
+        {
+          name: "FEIRAS LITERÁRIAS",
+          href: "/feiras-literarias"
+        },
+      ]
+    },
+    {
       name: "ACADÊMICOS ATUAIS",
       href: "/academicos-atuais"
     },
@@ -88,7 +137,7 @@ export const Header = () => {
   return (
     <>
       {/* HEADER DESKTOP */}
-      <header className="hidden lg:block bg-white shadow-md border-b border-gray-200 relative z-50">
+      <header className="hidden lg:block bg-[#ccc6b2] shadow-md border-b border-gray-200 relative z-50">
         {/* Barra superior com redes sociais */}
         <div className="bg-[#c3a855] py-2 h-14">
           <div className="max-w-[7xl] mx-auto px-4 sm:px-6 lg:px-8 h-full">
@@ -131,7 +180,7 @@ export const Header = () => {
         </div>
 
         {/* Header principal com logo e navegação */}
-        <div className="max-w-[1310px] mx-auto px-4 sm:px-6 lg:px-8 h-25 relative">
+        <div className="max-w-[1310px] mx-auto px-4 sm:px-6 lg:px-8 h-20 relative ">
           <div className="flex items-center justify-between h-full py-2">
             {/* Logo */}
             <div className="flex-shrink-0 -mb-5 z-50">
@@ -145,59 +194,71 @@ export const Header = () => {
 
             {/* Navigation Menu - Centro */}
             <nav className="flex-1 flex justify-center z-40">
-              <NavigationMenu>
-                <NavigationMenuList className="space-x-4">
-                  {menu.map((item, index) => (
-                    <NavigationMenuItem key={index}>
-                      {item.subMenu ? (
-                        <NavigationMenuTrigger className="!bg-transparent hover:shadow-lg data-[state=open]:shadow-lg !px-4 !py-3 !h-auto rounded-lg transition-all duration-300 !font-semibold !text-sm text-gray-800 border-1 border-transparent hover:border-[#be9f3c] data-[state=open]:border-[#d1d1d1] hover:bg-gradient-to-br hover:from-[#be9f3c]/10 hover:to-[#be9f3c]/20 data-[state=open]:bg-gradient-to-br data-[state=open]:from-[#be9f3c]/15 data-[state=open]:to-[#be9f3c]/25 hover:text-[#be9f3c] data-[state=open]:text-[#be9f3c]">
+              <ul className="flex items-center space-x-4">
+                {menu.map((item, index) => (
+                  <li key={index} className="relative">
+                    {item.subMenu ? (
+                      <div 
+                        className="relative" 
+                        ref={el => { dropdownRefs.current[index] = el }}
+                        onMouseEnter={() => handleMouseEnter(index)}
+                        onMouseLeave={handleMouseLeave}
+                      >
+                        <button className="bg-transparent hover:shadow-lg px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm text-gray-800 border border-transparent hover:border-[#be9f3c] hover:bg-gradient-to-br hover:from-[#be9f3c]/10 hover:to-[#be9f3c]/20 hover:text-[#be9f3c] flex items-center gap-1">
                           {item.name}
-                        </NavigationMenuTrigger>
+                          <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${openDropdown === index ? 'rotate-180' : ''}`} />
+                        </button>
+                        
+                        <div className={`absolute top-full left-0 mt-2 w-[360px] md:w-[480px] bg-[#d1d1d1] border border-[#727272] rounded-xl shadow-2xl p-2 backdrop-blur-sm z-50 transition-all duration-300 ease-out transform origin-top ${
+                          openDropdown === index 
+                            ? 'opacity-100 scale-y-100 translate-y-0' 
+                            : 'opacity-0 scale-y-95 -translate-y-2 pointer-events-none'
+                        }`}>
+                          <ul className="grid gap-2 p-4 md:grid-cols-2">
+                            {item.subMenu.map((subItem, subIndex) => (
+                              <li key={subIndex} className={`transition-all duration-200 ease-out ${
+                                openDropdown === index 
+                                  ? 'opacity-100 translate-y-0' 
+                                  : 'opacity-0 translate-y-1'
+                              }`} style={{
+                                transitionDelay: openDropdown === index ? `${subIndex * 50}ms` : '0ms'
+                              }}>
+                                <Link 
+                                  to={subItem.href}
+                                  className="group block select-none rounded-xl p-4 leading-none no-underline outline-none transition-all duration-300 hover:bg-gradient-to-br hover:from-[#be9f3c]/15 hover:to-[#be9f3c]/25 hover:shadow-lg hover:scale-105 focus:bg-gradient-to-br focus:from-[#be9f3c]/15 focus:to-[#be9f3c]/25 focus:shadow-lg focus:scale-105 border-2 border-transparent hover:border-[#be9f3c]/40 transform origin-center relative"
+                                >
+                                  <div className="text-base font-semibold text-gray-800 group-hover:text-[#be9f3c] transition-all duration-300 mb-1">
+                                    {subItem.name}
+                                  </div>
+                                  <div className="h-0.5 bg-gradient-to-r from-[#be9f3c] to-[#be9f3c]/60 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-400 origin-left"></div>
+                                  <div className="absolute top-2 right-2 w-2 h-2 bg-[#be9f3c] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    ) : (
+                      item.name === "Fale Conosco" ? (
+                        <a 
+                          href="/#contato" 
+                          onClick={handleContactClick}
+                          className="bg-transparent hover:shadow-lg active:shadow-lg px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm text-gray-800 border border-transparent hover:border-[#be9f3c] active:border-[#be9f3c] inline-flex items-center justify-center hover:bg-gradient-to-br hover:from-[#be9f3c]/10 hover:to-[#be9f3c]/20 active:bg-gradient-to-br active:from-[#be9f3c]/15 active:to-[#be9f3c]/25 hover:text-[#be9f3c] active:text-[#be9f3c]"
+                        >
+                          {item.name}
+                        </a>
                       ) : (
-                        <NavigationMenuLink asChild>
-                          {item.name === "Fale Conosco" ? (
-                            <a 
-                              href="/#contato" 
-                              onClick={handleContactClick}
-                              className="bg-transparent hover:shadow-lg active:shadow-lg px-4 py-3 rounded-lg transition-all duration-300 font-semibold !text-sm text-gray-800 border-1 border-transparent hover:border-[#be9f3c] active:border-[#be9f3c] inline-flex items-center justify-center hover:bg-gradient-to-br hover:from-[#be9f3c]/10 hover:to-[#be9f3c]/20 active:bg-gradient-to-br active:from-[#be9f3c]/15 active:to-[#be9f3c]/25 hover:text-[#be9f3c] active:text-[#be9f3c]"
-                            >
-                              {item.name}
-                            </a>
-                          ) : (
-                            <Link to={item.href} className="bg-transparent hover:shadow-lg active:shadow-lg px-4 py-3 rounded-lg transition-all duration-300 font-semibold !text-sm text-gray-800 border-1 border-transparent hover:border-[#be9f3c] active:border-[#be9f3c] inline-flex items-center justify-center hover:bg-gradient-to-br hover:from-[#be9f3c]/10 hover:to-[#be9f3c]/20 active:bg-gradient-to-br active:from-[#be9f3c]/15 active:to-[#be9f3c]/25 hover:text-[#be9f3c] active:text-[#be9f3c]">
-                              {item.name}
-                            </Link>
-                          )}
-                        </NavigationMenuLink>
-                      )}
-                      
-                      {item.subMenu && (
-                        <NavigationMenuContent>
-                          <div className="w-[360px] md:w-[480px] bg-[#d1d1d1] border-[#727272] rounded-xl shadow-2xl p-2 backdrop-blur-sm border-1">
-                            <ul className="grid gap-2 p-4 md:grid-cols-2">
-                              {item.subMenu.map((subItem, subIndex) => (
-                                <li key={subIndex}>
-                                  <Link to={subItem.href}>
-                                    <NavigationMenuLink asChild>
-                                      <div className="group block select-none rounded-xl p-4 leading-none no-underline outline-none transition-all duration-300 hover:bg-gradient-to-br hover:from-[#be9f3c]/15 hover:to-[#be9f3c]/25 hover:shadow-lg hover:scale-105 focus:bg-gradient-to-br focus:from-[#be9f3c]/15 focus:to-[#be9f3c]/25 focus:shadow-lg focus:scale-105 border-2 border-transparent hover:border-[#be9f3c]/40 transform origin-center">
-                                        <div className="text-base font-semibold text-gray-800 group-hover:text-[#be9f3c] transition-all duration-300 mb-1">
-                                          {subItem.name}
-                                        </div>
-                                        <div className="h-0.5 bg-gradient-to-r from-[#be9f3c] to-[#be9f3c]/60 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-400 origin-left"></div>
-                                        <div className="absolute top-2 right-2 w-2 h-2 bg-[#be9f3c] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                                      </div>
-                                    </NavigationMenuLink>
-                                  </Link>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        </NavigationMenuContent>
-                      )}
-                    </NavigationMenuItem>
-                  ))}
-                </NavigationMenuList>
-              </NavigationMenu>
+                        <Link 
+                          to={item.href} 
+                          className="bg-transparent hover:shadow-lg active:shadow-lg px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm text-gray-800 border border-transparent hover:border-[#be9f3c] active:border-[#be9f3c] inline-flex items-center justify-center hover:bg-gradient-to-br hover:from-[#be9f3c]/10 hover:to-[#be9f3c]/20 active:bg-gradient-to-br active:from-[#be9f3c]/15 active:to-[#be9f3c]/25 hover:text-[#be9f3c] active:text-[#be9f3c]"
+                        >
+                          {item.name}
+                        </Link>
+                      )
+                    )}
+                  </li>
+                ))}
+              </ul>
             </nav>
 
             {/* SearchBar - Direita */}
@@ -270,20 +331,29 @@ export const Header = () => {
                                   <ChevronRight className="h-4 w-4" />
                                 )}
                               </button>
-                              {openSubmenu === index && (
-                                <div className="mt-2 ml-4 space-y-1 animate-in slide-in-from-top-2 duration-300">
+                              <div className={`overflow-hidden transition-all duration-300 ease-out ${
+                                openSubmenu === index ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                              }`}>
+                                <div className="mt-2 ml-4 space-y-1">
                                   {item.subMenu.map((subItem, subIndex) => (
                                     <Link
                                       key={subIndex}
                                       to={subItem.href}
                                       onClick={() => setIsOpen(false)}
-                                      className="block py-2 px-4 text-sm text-gray-600 hover:text-[#be9f3c] hover:bg-gray-50 rounded-lg transition-all duration-200 hover:translate-x-1"
+                                      className={`block py-2 px-4 text-sm text-gray-600 hover:text-[#be9f3c] hover:bg-gray-50 rounded-lg transition-all duration-200 hover:translate-x-1 ${
+                                        openSubmenu === index 
+                                          ? 'opacity-100 translate-x-0' 
+                                          : 'opacity-0 -translate-x-2'
+                                      }`}
+                                      style={{
+                                        transitionDelay: openSubmenu === index ? `${subIndex * 100}ms` : '0ms'
+                                      }}
                                     >
                                       {subItem.name}
                                     </Link>
                                   ))}
                                 </div>
-                              )}
+                              </div>
                             </div>
                           ) : (
                             item.name === "Fale Conosco" ? (

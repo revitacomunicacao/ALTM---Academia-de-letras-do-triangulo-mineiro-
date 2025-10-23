@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { useContent } from "@/hooks/useContent"
 import { useEffect, useState } from "react"
 import { IBanners } from "../types/IBanners"
+import { Link } from "react-router-dom"
 
 export const Banner = () => {
 
@@ -71,14 +72,24 @@ export const Banner = () => {
         }}
       >
         <CarouselContent className="-ml-0">
-          {banners.map(({ banner_url,id,title }) => (
+          {banners.map(({ banner_url, id, title, link }) => (
             <CarouselItem key={id} className="pl-0 basis-full">
               <div className="border-0 shadow-none rounded-none w-full">
-                <img
-                  src={banner_url}
-                  alt={title}
-                  className="w-full h-[400px] object-cover"
-                />
+                {link ? (
+                  <Link to={link} className="block group">
+                    <img
+                      src={banner_url}
+                      alt={title}
+                      className="w-full h-[450px] object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </Link>
+                ) : (
+                  <img
+                    src={banner_url}
+                    alt={title}
+                    className="w-full h-[450px] object-cover"
+                  />
+                )}
               </div>
             </CarouselItem>
           ))}

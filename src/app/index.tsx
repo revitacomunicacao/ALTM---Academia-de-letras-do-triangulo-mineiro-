@@ -4,6 +4,7 @@ import { SearchSection } from "./home/components/SearchSection"
 import { ConhecaAltm } from "./home/components/ConhecaAltm"
 import { CarouselBlog } from "./home/components/CarouselBlog"
 import { CarrosselArtigos } from "./home/components/Artigos"
+import { Links } from "./home/components/Links"
 
 export default function HomePage() {
   useSeo({
@@ -17,6 +18,7 @@ export default function HomePage() {
       <ConhecaAltm />
       <CarouselBlog />
       <CarrosselArtigos />
+      <Links />
     </main>
   )
 }

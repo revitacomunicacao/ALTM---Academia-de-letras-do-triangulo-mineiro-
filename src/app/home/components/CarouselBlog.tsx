@@ -88,7 +88,7 @@ export const CarouselBlog = () => {
   }, []);
 
   return (
-    <section className="py-16 bg-[#F2ECD7]">
+    <section className="py-7 bg-[#F2ECD7]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Carrossel de notícias */}
         <Carousel 
@@ -109,15 +109,15 @@ export const CarouselBlog = () => {
                     summary,
                     title
                   }) => (
-                    <Card key={id} className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 group">
+                    <div key={id} className="overflow-hidden hover:shadow-xl transition-all duration-300 group h-[500px]">
                       {/* Imagem da notícia */}
-                      <div className="aspect-video overflow-hidden relative">
+                      <div className="aspect-video overflow-hidden relative bg-white">
                         <img 
                           src={imagem_destacada} 
                           alt={`Imagem da notícia: ${title}`}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 rounded-2xl"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
-                        <div className="absolute top-4 left-4">
+                        <div className="absolute top-4 left-4 bg-white">
                           <div className="flex items-center space-x-1 px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full">
                             <FaNewspaper className="w-3 h-3 text-altm-gold-600" />
                             <span className="text-xs font-medium text-gray-700">Notícia</span>
@@ -126,24 +126,25 @@ export const CarouselBlog = () => {
                       </div>
                       
                       {/* Conteúdo da notícia */}
-                      <div className="p-6">
-                        <h3 className="text-xl font-bold text-gray-800 mb-3 line-clamp-2 group-hover:text-altm-gold-600 transition-colors">
-                          {title}
-                        </h3>
-                        
-                        <p className="text-gray-600 text-sm leading-relaxed line-clamp-3 mb-6">
-                          {resumo || summary || "Confira esta notícia completa..."}
-                        </p>
+                      <div className="flex flex-col justify-between">
+                        <div className="bg-white p-6 h-[200px]">
+                          <h3 className="text-xl font-bold text-gray-800 mb-3 line-clamp-2 group-hover:text-altm-gold-600 transition-colors">
+                            {title}
+                          </h3>
+                          
+                          <p className="text-gray-600 text-sm leading-relaxed line-clamp-3 mb-6">
+                            {resumo || summary || "Confira esta notícia completa..."}
+                          </p>
+                        </div>
                         
                         <Link 
                           to={`/blog/${id}`}
                           className="inline-flex items-center space-x-2 w-full justify-center px-4 py-3 bg-gradient-to-r from-altm-gold-500 to-altm-gold-600 text-white font-medium rounded-lg hover:from-altm-gold-600 hover:to-altm-gold-700 transition-all duration-300 group-hover:shadow-lg"
                         >
                           <span className="text-black">Ler Notícia</span>
-                          <FaArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </Link>
                       </div>
-                    </Card>
+                    </div>
                   ))}
                 </div>
               </CarouselItem>
@@ -151,8 +152,9 @@ export const CarouselBlog = () => {
           </CarouselContent>
           
           {/* Setas de navegação - responsivas */}
-          <CarouselPrevious className="bg-white/90 hover:bg-white border-altm-gold-600 text-altm-gold-600 hover:text-altm-gold-700 shadow-lg hover:shadow-xl transition-all duration-200 w-10 h-10 sm:w-12 sm:h-12 -left-2 sm:-left-6 hover:scale-105" />
-          <CarouselNext className="bg-white/90 hover:bg-white border-altm-gold-600 text-altm-gold-600 hover:text-altm-gold-700 shadow-lg hover:shadow-xl transition-all duration-200 w-10 h-10 sm:w-12 sm:h-12 -right-2 sm:-right-6 hover:scale-105" />
+          <CarouselPrevious className="bg-white/90 hover:bg-white border-altm-gold-600 text-altm-gold-600 hover:text-altm-gold-700 shadow-lg hover:shadow-xl transition-all duration-200 w-10 h-10 sm:w-12 sm:h-12 -left-2 sm:-left-15 hover:scale-105" />
+          
+          <CarouselNext className="bg-white/90 hover:bg-white border-altm-gold-600 text-altm-gold-600 hover:text-altm-gold-700 shadow-lg hover:shadow-xl transition-all duration-200 w-10 h-10 sm:w-12 sm:h-12 -right-2 sm:-right-15 hover:scale-105" />
         </Carousel>
 
 
