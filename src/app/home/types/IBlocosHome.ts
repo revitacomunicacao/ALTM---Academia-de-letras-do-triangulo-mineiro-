@@ -1,7 +1,10 @@
 export interface IBlocosHome {
   id: number;
   title: string;
-  imagem: string;
-  link: string;
+  blocos: {
+    titulo: string;
+    imagem: string;
+    link: string;
+  }[];
 }
 

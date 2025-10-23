@@ -19,40 +19,28 @@ export const Header = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [openSubmenu, setOpenSubmenu] = useState<number | null>(null)
   const [openDropdown, setOpenDropdown] = useState<number | null>(null)
-  const dropdownRefs = useRef<(HTMLDivElement | null)[]>([])
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-  // Fechar dropdowns quando clicar fora
+  // Fechar dropdown quando clicar fora
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      dropdownRefs.current.forEach((ref, index) => {
-        if (ref && !ref.contains(event.target as Node)) {
-          setOpenDropdown(null)
-        }
-      })
-    }
-
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
+      const target = event.target as Element
+      if (!target.closest('.dropdown-container')) {
+        setOpenDropdown(null)
       }
     }
-  }, [])
 
-  const handleMouseEnter = (index: number) => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current)
-      timeoutRef.current = null
+    if (openDropdown !== null) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
     }
-    setOpenDropdown(index)
+  }, [openDropdown])
+
+  const handleDropdownToggle = (index: number) => {
+    setOpenDropdown(openDropdown === index ? null : index)
   }
 
-  const handleMouseLeave = () => {
-    timeoutRef.current = setTimeout(() => {
-      setOpenDropdown(null)
-    }, 150) // Pequeno delay para evitar fechamento muito rápido
+  const handleLinkClick = () => {
+    setOpenDropdown(null)
   }
 
   const handleContactClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -198,44 +186,72 @@ export const Header = () => {
                 {menu.map((item, index) => (
                   <li key={index} className="relative">
                     {item.subMenu ? (
-                      <div 
-                        className="relative" 
-                        ref={el => { dropdownRefs.current[index] = el }}
-                        onMouseEnter={() => handleMouseEnter(index)}
-                        onMouseLeave={handleMouseLeave}
-                      >
-                        <button className="bg-transparent hover:shadow-lg px-4 py-3 rounded-lg transition-all duration-300 font-semibold text-sm text-gray-800 border border-transparent hover:border-[#be9f3c] hover:bg-gradient-to-br hover:from-[#be9f3c]/10 hover:to-[#be9f3c]/20 hover:text-[#be9f3c] flex items-center gap-1">
-                          {item.name}
-                          <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${openDropdown === index ? 'rotate-180' : ''}`} />
+                      <div className="relative group dropdown-container">
+                        <button 
+                          onClick={() => handleDropdownToggle(index)}
+                          className={`px-5 py-3 rounded-lg transition-all duration-300 font-semibold text-sm flex items-center gap-2 relative overflow-hidden group ${
+                            openDropdown === index
+                              ? 'bg-gradient-to-r from-[#be9f3c] to-[#c1a44e] text-white shadow-lg'
+                              : 'bg-transparent text-gray-800 hover:bg-gradient-to-br hover:from-[#be9f3c]/10 hover:to-[#c1a44e]/20 hover:text-[#be9f3c] hover:shadow-lg'
+                          }`}
+                        >
+                          <span className="relative z-10">{item.name}</span>
+                          <ChevronDown className={`h-4 w-4 transition-transform duration-300 relative z-10 ${
+                            openDropdown === index ? 'rotate-180' : 'group-hover:rotate-180'
+                          }`} />
+                          
+                          {/* Efeito de brilho no hover */}
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                         </button>
                         
-                        <div className={`absolute top-full left-0 mt-2 w-[360px] md:w-[480px] bg-[#d1d1d1] border border-[#727272] rounded-xl shadow-2xl p-2 backdrop-blur-sm z-50 transition-all duration-300 ease-out transform origin-top ${
+                        {/* Dropdown elegante */}
+                        <div className={`absolute top-full left-0 mt-3 w-[400px] md:w-[480px] bg-white border border-gray-200 rounded-xl shadow-2xl z-50 transition-all duration-300 transform origin-top ${
                           openDropdown === index 
-                            ? 'opacity-100 scale-y-100 translate-y-0' 
-                            : 'opacity-0 scale-y-95 -translate-y-2 pointer-events-none'
+                            ? 'opacity-100 visible scale-y-100 translate-y-0' 
+                            : 'opacity-0 invisible scale-y-95 -translate-y-2'
                         }`}>
-                          <ul className="grid gap-2 p-4 md:grid-cols-2">
-                            {item.subMenu.map((subItem, subIndex) => (
-                              <li key={subIndex} className={`transition-all duration-200 ease-out ${
-                                openDropdown === index 
-                                  ? 'opacity-100 translate-y-0' 
-                                  : 'opacity-0 translate-y-1'
-                              }`} style={{
-                                transitionDelay: openDropdown === index ? `${subIndex * 50}ms` : '0ms'
-                              }}>
-                                <Link 
+                          {/* Header do dropdown */}
+                          <div className="bg-gradient-to-r from-[#be9f3c] to-[#c1a44e] px-6 py-4 rounded-t-xl">
+                            <h3 className="text-white font-bold text-lg">{item.name}</h3>
+                          </div>
+                          
+                          {/* Conteúdo do dropdown */}
+                          <div className="p-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              {item.subMenu.map((subItem, subIndex) => (
+                                <Link
+                                  key={subIndex}
                                   to={subItem.href}
-                                  className="group block select-none rounded-xl p-4 leading-none no-underline outline-none transition-all duration-300 hover:bg-gradient-to-br hover:from-[#be9f3c]/15 hover:to-[#be9f3c]/25 hover:shadow-lg hover:scale-105 focus:bg-gradient-to-br focus:from-[#be9f3c]/15 focus:to-[#be9f3c]/25 focus:shadow-lg focus:scale-105 border-2 border-transparent hover:border-[#be9f3c]/40 transform origin-center relative"
+                                  onClick={handleLinkClick}
+                                  className={`group relative block p-4 bg-gray-50 hover:bg-gradient-to-br hover:from-[#be9f3c]/10 hover:to-[#c1a44e]/10 rounded-lg border border-transparent hover:border-[#be9f3c]/30 transition-all duration-300 hover:shadow-md hover:scale-105 ${
+                                    openDropdown === index 
+                                      ? 'animate-in slide-in-from-top-2 fade-in duration-300' 
+                                      : ''
+                                  }`}
+                                  style={{
+                                    animationDelay: `${subIndex * 50}ms`
+                                  }}
                                 >
-                                  <div className="text-base font-semibold text-gray-800 group-hover:text-[#be9f3c] transition-all duration-300 mb-1">
-                                    {subItem.name}
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex-1">
+                                      <h4 className="text-sm font-semibold text-gray-800 group-hover:text-[#be9f3c] transition-colors duration-300">
+                                        {subItem.name}
+                                      </h4>
+                                    </div>
+                                    <div className="ml-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                      <ChevronRight className="h-4 w-4 text-[#be9f3c]" />
+                                    </div>
                                   </div>
-                                  <div className="h-0.5 bg-gradient-to-r from-[#be9f3c] to-[#be9f3c]/60 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-400 origin-left"></div>
+                                  
+                                  {/* Linha decorativa */}
+                                  <div className="absolute bottom-0 left-4 right-4 h-0.5 bg-gradient-to-r from-[#be9f3c] to-[#c1a44e] rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                                  
+                                  {/* Indicador de hover */}
                                   <div className="absolute top-2 right-2 w-2 h-2 bg-[#be9f3c] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                 </Link>
-                              </li>
-                            ))}
-                          </ul>
+                              ))}
+                            </div>
+                          </div>
                         </div>
                       </div>
                     ) : (

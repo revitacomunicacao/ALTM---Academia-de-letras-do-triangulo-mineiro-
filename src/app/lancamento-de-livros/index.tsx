@@ -20,7 +20,7 @@ const ContentSkeleton = () => (
 )
 
 export default function LancamentoDeLivros() {
-  const { data: lancamentos, loading, error, refetch } = useContent<IProgramacaoCultural>("andamento-de-livros")
+  const { data: lancamentos, loading, error, refetch } = useContent<IProgramacaoCultural>("lancamento_de_livros")
 
   if(loading) return (
     <div className="min-h-screen bg-altm-page">
