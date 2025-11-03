@@ -1,7 +1,7 @@
 import { useContent } from "@/hooks/useContent"
 import type { IMembros } from "./types/IMembros"
-import { useMemo, useState } from "react"
-import { Link } from "react-router-dom"
+import { useMemo, useState, useEffect } from "react"
+import { Link, useLocation } from "react-router-dom"
 import { PageHeader } from "@/components/PageHeader"
 import { Card } from "@/components/ui/card"
 import { FaGraduationCap, FaSearch, FaFilter, FaTimes, FaUser, FaCalendarAlt } from "react-icons/fa"
@@ -72,6 +72,7 @@ const FiltersSkeleton = () => (
 )
 
 export default function Academicos() {
+  const location = useLocation()
   const { data: membros, loading, error, refetch } = useContent<IMembros>("/membros")
   const { data: conteudo, loading: isLoading, error: isError } = useContent<IAcademicoConteudo>('membros-conteudo')
 
@@ -81,6 +82,24 @@ export default function Academicos() {
 
   const normalize = (s: string) => 
     s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+
+  // Scroll para o hash quando a página carregar
+  useEffect(() => {
+    if (location.hash && !loading && membros) {
+      const hash = location.hash.substring(1); // Remove o #
+      
+      // Função para fazer scroll
+      const scrollToHash = () => {
+        const element = document.getElementById(hash);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      };
+      
+      // Pequeno delay para garantir que o conteúdo foi renderizado
+      setTimeout(scrollToHash, 300);
+    }
+  }, [location.hash, loading, membros]);
 
   const cadeiras = useMemo(() => {
     if (!membros) return [];
@@ -337,8 +356,11 @@ export default function Academicos() {
                 ? Math.max(...posicoesNumericas) 
                 : null;
               
+              // Criar ID único para a cadeira baseado no nome
+              const cadeiraId = grupo.cadeira.toLowerCase().replace(/\s+/g, '-');
+              
               return (
-                <div key={grupo.cadeira} className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+                <div key={grupo.cadeira} id={`cadeira-${cadeiraId}`} className="scroll-mt-24 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
                   {/* Título da Cadeira */}
                   <div className="bg-gradient-to-r from-altm-gold-600 to-altm-gold-700 px-6 py-4">
                     <h2 className="text-xl font-bold text-primary flex items-center">

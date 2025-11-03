@@ -6,19 +6,18 @@ export const Footer = () => {
   const currentYear = new Date().getFullYear()
 
   const menuSobreAltm = [
-    { name: "Quem Somos", href: "/sobre-a-altm/quem-somos" },
     { name: "Histórico", href: "/sobre-a-altm/historico" },
     { name: "Fundação", href: "/sobre-a-altm/fundacao" },
     { name: "Estatuto", href: "/sobre-a-altm/estatuto" },
     { name: "Regimento", href: "/sobre-a-altm/regimento" },
-    { name: "Academias Municipais", href: "/sobre-a-altm/academias-municipais" },
   ]
 
   const menuAcademicos = [
-    { name: "Diretoria", href: "/academicos/diretoria" },
-    { name: "Membros", href: "/academicos/membros" },
-    { name: "Presidentes", href: "/academicos/presidentes" },
-    { name: "Sócios Correspondentes", href: "/academicos/socios-correspondentes" },
+    { name: "Diretoria", href: "/diretoria" },
+    { name: "Membros", href: "/membros" },
+    { name: "Presidentes", href: "/presidentes" },
+    { name: "Sócios Correspondentes", href: "/socios-correspondentes" },
+    { name: "Acadêmicos Atuais", href: "/academicos-atuais" },
   ]
 
   return (
@@ -167,16 +166,10 @@ export const Footer = () => {
 
             <div className="flex space-x-6 text-sm">
               <Link 
-                to="/fale-conosco" 
+                to="/politicas-de-privacidade" 
                 className="text-gray-400 hover:text-altm-gold-400 transition-colors duration-300"
               >
-                Fale Conosco
-              </Link>
-              <Link 
-                to="/sobre-a-altm/estatuto" 
-                className="text-gray-400 hover:text-altm-gold-400 transition-colors duration-300"
-              >
-                Políticas
+                Políticas de Privacidade
               </Link>
             </div>
 

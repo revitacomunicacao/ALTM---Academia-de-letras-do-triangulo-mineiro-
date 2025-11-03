@@ -209,12 +209,7 @@ export const Header = () => {
                           openDropdown === index 
                             ? 'opacity-100 visible scale-y-100 translate-y-0' 
                             : 'opacity-0 invisible scale-y-95 -translate-y-2'
-                        }`}>
-                          {/* Header do dropdown */}
-                          <div className="bg-gradient-to-r from-[#be9f3c] to-[#c1a44e] px-6 py-4 rounded-t-xl">
-                            <h3 className="text-white font-bold text-lg">{item.name}</h3>
-                          </div>
-                          
+                        }`}>                
                           {/* Conteúdo do dropdown */}
                           <div className="p-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

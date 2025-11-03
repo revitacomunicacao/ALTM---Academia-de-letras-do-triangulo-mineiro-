@@ -40,8 +40,7 @@ export default function Presidentes() {
         icon={<FaCrown size={50} />}
         breadcrumb={[
           { label: "Home", href: "/" },
-          { label: "Acadêmicos", href: "/academicos" },
-          { label: "Presidentes" }
+          { label: "Presidentes", href: "/presidentes" },
         ]}
       />
       
@@ -59,8 +58,7 @@ export default function Presidentes() {
         icon={<FaCrown size={50} />}
         breadcrumb={[
           { label: "Home", href: "/" },
-          { label: "Acadêmicos", href: "/academicos" },
-          { label: "Presidentes" }
+          { label: "Presidentes", href: "/presidentes" },
         ]}
       />
       
@@ -117,7 +115,7 @@ export default function Presidentes() {
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <Link
-                        to={`/academicos/membros/${presidente.presidente.id}`}
+                        to={`/membros/${presidente.presidente.id}`}
                         className="text-lg font-medium text-altm-gold-600 hover:text-altm-gold-700 hover:underline transition-colors"
                       >
                         {presidente.presidente.nome}

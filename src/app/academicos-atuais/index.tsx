@@ -180,8 +180,7 @@ export default function AcademicosAtuais() {
           icon={<FaGraduationCap size={50} />}
           breadcrumb={[
             { label: "Home", href: "/" },
-            { label: "Membros", href: "/academicos" },
-            { label: "Membros" }
+            { label: "Acadêmicos atuais", href: "/academicos-atuais" }
           ]}
         />
       </span>
@@ -246,8 +245,7 @@ export default function AcademicosAtuais() {
               icon={<FaGraduationCap size={50} />}
               breadcrumb={[
                 { label: "Home", href: "/" },
-                { label: "Acadêmicos Atuais", href: "/academicos" },
-                { label: "Acadêmicos Atuais" }
+                { label: "Acadêmicos Atuais", href: "/academicos-atuais" },
               ]}
             />
           </span>
@@ -334,14 +332,20 @@ export default function AcademicosAtuais() {
 
           {/* Lista de Membros por Cadeira */}
           <div className="space-y-8">
-            {membrosAgrupados.map((grupo) => (
+            {membrosAgrupados.map((grupo) => {
+              // Criar link para a página de membros com âncora na cadeira
+              const linkParaCadeira = `/membros#cadeira-${grupo.cadeira.toLowerCase().replace(/\s+/g, '-')}`;
+
+              return (
               <div key={grupo.cadeira} className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
                 {/* Título da Cadeira */}
                 <div className="bg-gradient-to-r from-altm-gold-600 to-altm-gold-700 px-6 py-4">
-                  <h2 className="text-xl font-bold text-primary flex items-center">
-                    <FaGraduationCap className="mr-3" />
-                    Cadeira {grupo.cadeira}
-                  </h2>
+                  <Link to={linkParaCadeira} className="hover:opacity-90 transition-opacity">
+                    <h2 className="text-xl font-bold text-primary flex items-center">
+                      <FaGraduationCap className="mr-3" />
+                      Cadeira {grupo.cadeira}
+                    </h2>
+                  </Link>
                 </div>
 
                 {/* Membro Atual */}
@@ -393,7 +397,7 @@ export default function AcademicosAtuais() {
                     return isMembro ? (
                       <Link
                         key={membro.id}
-                        to={`/academicos/${membro.id}`}
+                        to={`/membros/${membro.id}`}
                         className="block hover:shadow-md transition-shadow"
                       >
                         {RowContent}
@@ -406,7 +410,8 @@ export default function AcademicosAtuais() {
                   })}
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Mensagem quando não há resultados */}
