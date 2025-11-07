@@ -163,9 +163,76 @@ export default function Academicos() {
       return acc;
     }, {} as Record<string, IMembros[]>);
 
-    // Ordenar cada grupo por nome
+    const getPosicaoPriority = (posicao?: string) => {
+      if (!posicao) return Number.MAX_SAFE_INTEGER;
+
+      const normalizedPosicao = normalize(posicao);
+
+      if (normalizedPosicao === "patrono") return -20;
+      if (normalizedPosicao === "fundador") return -10;
+      if (normalizedPosicao === "atual") return Number.MAX_SAFE_INTEGER - 1;
+
+      const numeroMatch = posicao.match(/\d+/);
+      if (numeroMatch) {
+        const numero = Number(numeroMatch[0]);
+        if (!Number.isNaN(numero)) {
+          return numero;
+        }
+      }
+
+      return Number.MAX_SAFE_INTEGER;
+    };
+
+    const compareMembrosPorPosicao = (a: IMembros, b: IMembros) => {
+      const prioridadeA = getPosicaoPriority(a.posicao);
+      const prioridadeB = getPosicaoPriority(b.posicao);
+
+      if (prioridadeA !== prioridadeB) {
+        return prioridadeA - prioridadeB;
+      }
+
+      return a.title.localeCompare(b.title);
+    };
+
+    // Ordenar cada grupo com base na posição definida
     Object.keys(grupos).forEach(cadeira => {
-      grupos[cadeira].sort((a, b) => a.title.localeCompare(b.title));
+      const membrosDaCadeira = grupos[cadeira];
+
+      const todosFalecidos = membrosDaCadeira.length > 0 && membrosDaCadeira.every((membro) =>
+        Boolean(membro.data_de_falecimento && membro.data_de_falecimento.trim())
+      );
+
+      if (todosFalecidos) {
+        const placeholderId = -(
+          [...cadeira].reduce((acc, char, index) => acc + char.charCodeAt(0) * (index + 1), 0) + 1000
+        );
+
+        membrosDaCadeira.push({
+          id: placeholderId,
+          title: "Vaga",
+          slug: "",
+          link: "",
+          expert: "",
+          foto: "",
+          cadeira,
+          posicao: "Atual",
+          data_de_nascimento: "",
+          data_de_falecimento: "",
+          local_de_falecimento: "",
+          naturalidade: "",
+          antecedido_por: "",
+          sucedido_por: "",
+          data_de_posse: "",
+          academico_que_o_recebeu: "",
+          e_membro_da_academia: "Não",
+          biografia: "",
+          textos_escolhidos: "",
+          bibliografia: "",
+          discurso_de_posse: "",
+        });
+      }
+
+      membrosDaCadeira.sort(compareMembrosPorPosicao);
     });
 
     // Retornar cadeiras na ordem correta
@@ -241,6 +308,8 @@ export default function Academicos() {
       </div>
     </div>
   )
+
+  console.log(membrosAgrupados)
 
   return (
     <>
