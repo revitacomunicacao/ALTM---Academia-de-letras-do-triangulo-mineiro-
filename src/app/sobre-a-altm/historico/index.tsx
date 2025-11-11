@@ -114,137 +114,150 @@ export default function Historico() {
       {historico && historico.map(({
         description,
         galeria_de_fotos,
+        galeria_de_foto,
         id,
         imagem_topo,
         subtitulo,
         title,
         memoria_da_altm
-      }) => (
-        <div key={id}>
-          <PageHeader
-            title={title} 
-            subtitle={subtitulo}
-            icon={<FaHistory size={50} />}
-            imagem_topo={imagem_topo}
-            breadcrumb={[
-              { label: "Home", href: "/" },
-              { label: "Sobre a ALTM", href: "/sobre-a-altm" },
-              { label: "Histórico" }
-            ]}
-          />
-          
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Coluna Principal (Esquerda) */}
-              <div className="lg:col-span-2 space-y-8">
-                {/* Descrição */}
-                <Card>
-                  <div className="space-y-6">
-                    <div className="flex items-center space-x-3 mb-6 justify-center">
-                      <h2 className="text-2xl text-center font-bold text-gray-800">Histórico</h2>
-                    </div>
-                    
-                    <div className="prose max-w-none">
-                      <div 
-                        dangerouslySetInnerHTML={{ __html: description }}
-                        className="text-gray-700 leading-relaxed"
-                      />
-                    </div>
-                  </div>
-                </Card>
+      }) => {
+        const galeriaItens = (galeria_de_foto && galeria_de_foto.length > 0
+          ? galeria_de_foto.filter(item => item?.foto)
+          : (galeria_de_fotos || []).filter(Boolean).map(foto => ({ titulo: "", foto }))
+        );
 
-                {/* Galeria de Fotos */}
-                {galeria_de_fotos && galeria_de_fotos.length > 0 && (
+        return (
+          <div key={id}>
+            <PageHeader
+              title={title} 
+              subtitle={subtitulo}
+              icon={<FaHistory size={50} />}
+              imagem_topo={imagem_topo}
+              breadcrumb={[
+                { label: "Home", href: "/" },
+                { label: "Sobre a ALTM", href: "/sobre-a-altm" },
+                { label: "Histórico" }
+              ]}
+            />
+            
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Coluna Principal (Esquerda) */}
+                <div className="lg:col-span-2 space-y-8">
+                  {/* Descrição */}
                   <Card>
                     <div className="space-y-6">
                       <div className="flex items-center space-x-3 mb-6 justify-center">
-                        <h2 className="text-2xl font-bold text-gray-800">Galeria</h2>
+                        <h2 className="text-2xl text-center font-bold text-gray-800">Histórico</h2>
                       </div>
                       
-                      <div className="relative">
-                        <Carousel
-                          opts={{
-                            align: "start",
-                            loop: true,
-                          }}
-                          className="w-full"
-                        >
-                          <CarouselContent>
-                            {galeria_de_fotos.map((foto, index) => (
-                              <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
-                                <Dialog>
-                                  <DialogTrigger asChild>
-                                    <div className="aspect-square overflow-hidden rounded-lg group cursor-pointer">
-                                      <img 
-                                        src={foto} 
-                                        alt={`Foto histórica ${index + 1}`}
-                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                      />
-                                    </div>
-                                  </DialogTrigger>
-                                  <DialogContent className="max-w-4xl w-full p-0">
-                                    <div className="relative">
-                                      <img 
-                                        src={foto} 
-                                        alt={`Foto histórica ${index + 1}`}
-                                        className="w-full h-auto max-h-[80vh] object-contain rounded-lg"
-                                      />
-                                    </div>
-                                  </DialogContent>
-                                </Dialog>
-                              </CarouselItem>
-                            ))}
-                          </CarouselContent>
-                          <CarouselPrevious className="bg-white/90 hover:bg-white border-altm-gold-600 text-altm-gold-600 hover:text-altm-gold-700 shadow-lg hover:shadow-xl transition-all duration-200 w-10 h-10 sm:w-12 sm:h-12 left-2 sm:left-4 hover:scale-105" />
-                          <CarouselNext className="bg-white/90 hover:bg-white border-altm-gold-600 text-altm-gold-600 hover:text-altm-gold-700 shadow-lg hover:shadow-xl transition-all duration-200 w-10 h-10 sm:w-12 sm:h-12 right-2 sm:right-4 hover:scale-105" />
-                        </Carousel>
+                      <div className="prose max-w-none">
+                        <div 
+                          dangerouslySetInnerHTML={{ __html: description }}
+                          className="text-gray-700 leading-relaxed"
+                        />
                       </div>
                     </div>
                   </Card>
-                )}
-              </div>
 
-              {/* Coluna Lateral (Direita) - Memória da ALTM */}
-              <div className="lg:col-span-1">
-                <Card className="sticky top-8">
-                  <div className="space-y-6">
-                    <div className="flex items-center space-x-3 pb-4 border-b border-gray-200">
-                      <FaFileAlt className="text-altm-gold-600 text-xl" />
-                      <h2 className="text-xl font-bold text-gray-800">Memória da ALTM</h2>
-                    </div>
-                    
-                    {memoria_da_altm && memoria_da_altm.length > 0 ? (
-                      <div className="space-y-3">
-                        {memoria_da_altm.map((item, index) => (
-                          <a
-                            key={index}
-                            href={item.arquivo.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="group flex items-start space-x-3 p-3 rounded-lg hover:bg-altm-gold-50 transition-all duration-200 border border-transparent hover:border-altm-gold-200"
+                  {/* Galeria de Fotos */}
+                  {galeriaItens.length > 0 && (
+                    <Card>
+                      <div className="space-y-6">
+                        <div className="flex items-center space-x-3 mb-6 justify-center">
+                          <h2 className="text-2xl font-bold text-gray-800">Galeria</h2>
+                        </div>
+                        
+                        <div className="relative">
+                          <Carousel
+                            opts={{
+                              align: "start",
+                              loop: true,
+                            }}
+                            className="w-full"
                           >
-                            <FaFileAlt className="text-altm-gold-600 mt-1 flex-shrink-0 group-hover:scale-110 transition-transform" />
-                            <div className="flex-1 min-w-0">
-                              <h3 className="text-sm font-medium text-gray-900 group-hover:text-altm-gold-700 transition-colors line-clamp-2">
-                                {item.titulo}
-                              </h3>
-                            </div>
-                            <FaExternalLinkAlt className="text-gray-400 group-hover:text-altm-gold-600 text-xs mt-1 flex-shrink-0 transition-colors" />
-                          </a>
-                        ))}
+                            <CarouselContent>
+                              {galeriaItens.map((item, index) => (
+                                <CarouselItem key={`${item.foto}-${index}`} className="md:basis-1/2 lg:basis-1/3">
+                                  <div className="flex flex-col items-center gap-3">
+                                    <Dialog>
+                                      <DialogTrigger asChild>
+                                        <div className="aspect-square w-full overflow-hidden rounded-lg group cursor-pointer">
+                                          <img
+                                            src={item.foto}
+                                            alt={item.titulo || `Foto histórica ${index + 1}`}
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                          />
+                                        </div>
+                                      </DialogTrigger>
+                                      <DialogContent className="max-w-4xl w-full p-0">
+                                        <div className="relative">
+                                          <img
+                                            src={item.foto}
+                                            alt={item.titulo || `Foto histórica ${index + 1}`}
+                                            className="w-full h-auto max-h-[80vh] object-contain rounded-lg"
+                                          />
+                                        </div>
+                                      </DialogContent>
+                                    </Dialog>
+                                    {item.titulo && item.titulo.trim() && (
+                                      <p className="text-sm text-center text-gray-700">{item.titulo}</p>
+                                    )}
+                                  </div>
+                                </CarouselItem>
+                              ))}
+                            </CarouselContent>
+                            <CarouselPrevious className="bg-white/90 hover:bg-white border-altm-gold-600 text-altm-gold-600 hover:text-altm-gold-700 shadow-lg hover:shadow-xl transition-all duration-200 w-10 h-10 sm:w-12 sm:h-12 left-2 sm:left-4 hover:scale-105" />
+                            <CarouselNext className="bg-white/90 hover:bg-white border-altm-gold-600 text-altm-gold-600 hover:text-altm-gold-700 shadow-lg hover:shadow-xl transition-all duration-200 w-10 h-10 sm:w-12 sm:h-12 right-2 sm:right-4 hover:scale-105" />
+                          </Carousel>
+                        </div>
                       </div>
-                    ) : (
-                      <p className="text-sm text-gray-500 text-center py-4">
-                        Nenhum documento disponível no momento.
-                      </p>
-                    )}
-                  </div>
-                </Card>
+                    </Card>
+                  )}
+                </div>
+
+                {/* Coluna Lateral (Direita) - Memória da ALTM */}
+                <div className="lg:col-span-1">
+                  <Card className="sticky top-8">
+                    <div className="space-y-6">
+                      <div className="flex items-center space-x-3 pb-4 border-b border-gray-200">
+                        <FaFileAlt className="text-altm-gold-600 text-xl" />
+                        <h2 className="text-xl font-bold text-gray-800">Memória da ALTM</h2>
+                      </div>
+                      
+                      {memoria_da_altm && memoria_da_altm.length > 0 ? (
+                        <div className="space-y-3">
+                          {memoria_da_altm.map((item, index) => (
+                            <a
+                              key={index}
+                              href={item.arquivo.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="group flex items-start space-x-3 p-3 rounded-lg hover:bg-altm-gold-50 transition-all duration-200 border border-transparent hover:border-altm-gold-200"
+                            >
+                              <FaFileAlt className="text-altm-gold-600 mt-1 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                              <div className="flex-1 min-w-0">
+                                <h3 className="text-sm font-medium text-gray-900 group-hover:text-altm-gold-700 transition-colors line-clamp-2">
+                                  {item.titulo}
+                                </h3>
+                              </div>
+                              <FaExternalLinkAlt className="text-gray-400 group-hover:text-altm-gold-600 text-xs mt-1 flex-shrink-0 transition-colors" />
+                            </a>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-sm text-gray-500 text-center py-4">
+                          Nenhum documento disponível no momento.
+                        </p>
+                      )}
+                    </div>
+                  </Card>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   )
 }
