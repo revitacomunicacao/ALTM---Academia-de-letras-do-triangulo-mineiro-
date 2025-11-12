@@ -163,6 +163,8 @@ export default function Academicos() {
       return acc;
     }, {} as Record<string, IMembros[]>);
 
+    const statusTodosFalecidos = new Map<string, boolean>();
+
     const getPosicaoPriority = (posicao?: string) => {
       if (!posicao) return Number.MAX_SAFE_INTEGER;
 
@@ -203,6 +205,7 @@ export default function Academicos() {
       );
 
       if (todosFalecidos) {
+        statusTodosFalecidos.set(cadeira, true);
         const placeholderId = -(
           [...cadeira].reduce((acc, char, index) => acc + char.charCodeAt(0) * (index + 1), 0) + 1000
         );
@@ -230,6 +233,8 @@ export default function Academicos() {
           bibliografia: "",
           discurso_de_posse: "",
         });
+      } else {
+        statusTodosFalecidos.set(cadeira, false);
       }
 
       membrosDaCadeira.sort(compareMembrosPorPosicao);
@@ -238,7 +243,8 @@ export default function Academicos() {
     // Retornar cadeiras na ordem correta
     return cadeiras.map(cadeira => ({
       cadeira,
-      membros: grupos[cadeira] || []
+      membros: grupos[cadeira] || [],
+      todosFalecidos: statusTodosFalecidos.get(cadeira) ?? false,
     })).filter(grupo => grupo.membros.length > 0);
   }, [membrosFiltrados, cadeiras]);
 
@@ -417,9 +423,11 @@ export default function Academicos() {
           <div className="space-y-8">
             {membrosAgrupados.map((grupo) => {
               // Identificar a maior posição numérica nesta cadeira
-              const posicoesNumericas = grupo.membros
-                .map(m => Number(m.posicao))
-                .filter(p => !isNaN(p));
+              const posicoesNumericas = grupo.todosFalecidos
+                ? []
+                : grupo.membros
+                    .map(m => Number(m.posicao))
+                    .filter(p => !isNaN(p));
               
               const maiorPosicao = posicoesNumericas.length > 0 
                 ? Math.max(...posicoesNumericas) 
@@ -445,7 +453,7 @@ export default function Academicos() {
                     
                     // Determinar se esta é a posição "Atual" (última posição numérica)
                     const posicaoNumero = Number(membro.posicao);
-                    const isPosicaoAtual = !isNaN(posicaoNumero) && posicaoNumero === maiorPosicao;
+                    const isPosicaoAtual = !grupo.todosFalecidos && !isNaN(posicaoNumero) && posicaoNumero === maiorPosicao;
                     const exibirPosicao = isPosicaoAtual ? 'Atual' : (membro.posicao || 'Não informado');
                     
                     const RowContent = (

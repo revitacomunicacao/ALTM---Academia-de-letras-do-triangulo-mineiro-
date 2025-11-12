@@ -143,24 +143,34 @@ export default function AcademicosAtuais() {
       return acc;
     }, {} as Record<string, IMembros[]>);
 
-    // Para cada cadeira, pegar apenas o membro com a maior posição numérica
+    // Determinar o membro mais recente seguindo ordem de posição
+    const getPosicaoOrderValue = (posicao?: string) => {
+      if (!posicao) return Number.MAX_SAFE_INTEGER;
+
+      const normalized = normalize(posicao);
+
+      if (normalized === "patrono") return 0;
+      if (normalized === "fundador") return 1;
+
+      const numeroMatch = posicao.match(/\d+/);
+      if (numeroMatch) {
+        const numero = Number(numeroMatch[0]);
+        if (!Number.isNaN(numero)) {
+          return 2 + numero;
+        }
+      }
+
+      return Number.MAX_SAFE_INTEGER;
+    };
+
     Object.keys(grupos).forEach(cadeira => {
       const membrosGrupo = grupos[cadeira];
-      
-      // Encontrar a maior posição numérica
-      const posicoesNumericas = membrosGrupo
-        .map(m => Number(m.posicao))
-        .filter(p => !isNaN(p));
-      
-      if (posicoesNumericas.length > 0) {
-        const maiorPosicao = Math.max(...posicoesNumericas);
-        
-        // Filtrar apenas os membros com a maior posição
-        grupos[cadeira] = membrosGrupo.filter(m => {
-          const posNum = Number(m.posicao);
-          return !isNaN(posNum) && posNum === maiorPosicao;
-        });
-      }
+
+      membrosGrupo.sort((a, b) => getPosicaoOrderValue(a.posicao) - getPosicaoOrderValue(b.posicao));
+
+      const membroAtual = membrosGrupo[membrosGrupo.length - 1];
+
+      grupos[cadeira] = membroAtual ? [membroAtual] : [];
     });
 
     // Retornar cadeiras na ordem correta
