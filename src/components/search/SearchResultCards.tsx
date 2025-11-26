@@ -118,7 +118,7 @@ export function BlogCard({ result, onClick }: SearchResultCardProps) {
           
           <div className="min-w-0 flex-1 overflow-hidden">
             <div className="flex items-center space-x-2 mb-1">
-              <span className="text-xs font-medium text-green-700 bg-green-50 px-2 py-0.5 rounded-full flex-shrink-0">Blog</span>
+              <span className="text-xs font-medium text-green-700 bg-green-50 px-2 py-0.5 rounded-full flex-shrink-0">Notícias</span>
             </div>
             
             <h3 className="font-medium text-gray-900 group-hover:text-green-700 transition-colors text-sm truncate">

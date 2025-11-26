@@ -200,11 +200,28 @@ export default function Academicos() {
     Object.keys(grupos).forEach(cadeira => {
       const membrosDaCadeira = grupos[cadeira];
 
-      const todosFalecidos = membrosDaCadeira.length > 0 && membrosDaCadeira.every((membro) =>
-        Boolean(membro.data_de_falecimento && membro.data_de_falecimento.trim())
-      );
+      // Ordenar primeiro para identificar o último membro
+      membrosDaCadeira.sort(compareMembrosPorPosicao);
 
-      if (todosFalecidos) {
+      // Identificar o último membro (maior posição numérica)
+      const posicoesNumericas = membrosDaCadeira
+        .map(m => Number(m.posicao))
+        .filter(p => !isNaN(p));
+      
+      const maiorPosicao = posicoesNumericas.length > 0 
+        ? Math.max(...posicoesNumericas) 
+        : null;
+
+      // Encontrar o último membro (com maior posição numérica)
+      const ultimoMembro = maiorPosicao !== null
+        ? membrosDaCadeira.find(m => Number(m.posicao) === maiorPosicao)
+        : membrosDaCadeira[membrosDaCadeira.length - 1];
+
+      // Verificar se o último membro está falecido
+      const ultimoMembroFalecido = ultimoMembro && 
+        Boolean(ultimoMembro.data_de_falecimento && ultimoMembro.data_de_falecimento.trim());
+
+      if (ultimoMembroFalecido) {
         statusTodosFalecidos.set(cadeira, true);
         const placeholderId = -(
           [...cadeira].reduce((acc, char, index) => acc + char.charCodeAt(0) * (index + 1), 0) + 1000
@@ -233,11 +250,12 @@ export default function Academicos() {
           bibliografia: "",
           discurso_de_posse: "",
         });
+
+        // Reordenar após adicionar a Vaga
+        membrosDaCadeira.sort(compareMembrosPorPosicao);
       } else {
         statusTodosFalecidos.set(cadeira, false);
       }
-
-      membrosDaCadeira.sort(compareMembrosPorPosicao);
     });
 
     // Retornar cadeiras na ordem correta
@@ -422,12 +440,11 @@ export default function Academicos() {
           {/* Lista de Membros por Cadeira */}
           <div className="space-y-8">
             {membrosAgrupados.map((grupo) => {
-              // Identificar a maior posição numérica nesta cadeira
-              const posicoesNumericas = grupo.todosFalecidos
-                ? []
-                : grupo.membros
-                    .map(m => Number(m.posicao))
-                    .filter(p => !isNaN(p));
+              // Identificar a maior posição numérica nesta cadeira (excluindo a "Vaga")
+              const posicoesNumericas = grupo.membros
+                .filter(m => m.title !== "Vaga")
+                .map(m => Number(m.posicao))
+                .filter(p => !isNaN(p));
               
               const maiorPosicao = posicoesNumericas.length > 0 
                 ? Math.max(...posicoesNumericas) 
@@ -450,10 +467,15 @@ export default function Academicos() {
                 <div className="divide-y divide-gray-100">
                   {grupo.membros.map((membro) => {
                     const isMembro = membro.e_membro_da_academia === 'Sim';
+                    const isVaga = membro.title === "Vaga";
                     
                     // Determinar se esta é a posição "Atual" (última posição numérica)
+                    // Se for "Vaga", sempre mostrar "Atual"
+                    // Se não for "Vaga" e o último membro está falecido, não mostrar "Atual" em nenhum membro real
                     const posicaoNumero = Number(membro.posicao);
-                    const isPosicaoAtual = !grupo.todosFalecidos && !isNaN(posicaoNumero) && posicaoNumero === maiorPosicao;
+                    const isPosicaoAtual = isVaga 
+                      ? true 
+                      : (!grupo.todosFalecidos && !isNaN(posicaoNumero) && posicaoNumero === maiorPosicao);
                     const exibirPosicao = isPosicaoAtual ? 'Atual' : (membro.posicao || 'Não informado');
                     
                     const RowContent = (

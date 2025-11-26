@@ -15,7 +15,7 @@ interface SearchBarProps {
 }
 
 export function SearchBar({ 
-  placeholder = "Buscar acadêmicos, artigos, blog...", 
+  placeholder = "Buscar acadêmicos, artigos, notícias...", 
   className = ""
 }: SearchBarProps) {
   const [query, setQuery] = useState("");
@@ -77,7 +77,7 @@ export function SearchBar({
       color: "text-blue-600"
     },
     { 
-      title: "Blog", 
+      title: "Notícias", 
       results: quickResults.filter(r => r.type === 'blog'), 
       icon: <FaBlog className="text-green-600" />, 
       color: "text-green-600"
@@ -111,7 +111,7 @@ export function SearchBar({
               <Input
                 ref={modalInputRef}
                 type="text"
-                placeholder="Digite para buscar acadêmicos, artigos, blog..."
+                placeholder="Digite para buscar acadêmicos, artigos, notícias..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 className="pl-12 pr-12 py-4 text-lg border-2 border-gray-200 rounded-xl focus:border-altm-gold-500 focus:ring-2 focus:ring-altm-gold-200 transition-all duration-200"
@@ -208,7 +208,7 @@ export function SearchBar({
                   Comece a digitar para buscar
                 </h3>
                 <p className="text-gray-600">
-                  Encontre acadêmicos, artigos e posts do blog
+                  Encontre acadêmicos, artigos e notícias
                 </p>
               </div>
             )}

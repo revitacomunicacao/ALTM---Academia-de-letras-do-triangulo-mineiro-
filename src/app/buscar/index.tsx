@@ -88,7 +88,7 @@ export default function SearchPage() {
       case 'artigo':
         return 'Artigo';
       case 'blog':
-        return 'Blog';
+        return 'Notícias';
       default:
         return 'Conteúdo';
     }

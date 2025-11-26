@@ -23,7 +23,7 @@ export default function DetailsBlog (){
   if (error) {
     return (
       <div className="min-h-screen flex justify-center items-center">
-        <div className="text-lg text-red-600">Erro ao carregar o post</div>
+        <div className="text-lg text-red-600">Erro ao carregar a notícia</div>
       </div>
     )
   }
@@ -31,7 +31,7 @@ export default function DetailsBlog (){
   if (!blog) {
     return (
       <div className="min-h-screen flex justify-center items-center">
-        <div className="text-lg text-gray-600">Post não encontrado</div>
+        <div className="text-lg text-gray-600">Notícia não encontrada</div>
       </div>
     )
   }
@@ -40,11 +40,11 @@ export default function DetailsBlog (){
     <div className="min-h-screen bg-gray-50">
       <PageHeader 
         title={blog.title}
-        subtitle={blog.resumo || blog.summary || "Post do blog da ALTM"}
+        subtitle={blog.resumo || blog.summary || "Notícia da ALTM"}
         icon={<FaNewspaper />}
         breadcrumb={[
           { label: "Home", href: "/" },
-          { label: "Blog", href: "/blog" },
+          { label: "Notícias", href: "/blog" },
           { label: blog.title }
         ]}
       />
@@ -85,7 +85,7 @@ export default function DetailsBlog (){
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
-            Voltar ao Blog
+            Voltar às Notícias
           </Link>
 
         </div>

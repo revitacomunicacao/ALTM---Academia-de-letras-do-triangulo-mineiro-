@@ -10,7 +10,7 @@ export default function Blog() {
   if (loading) {
     return (
       <div className="min-h-screen flex justify-center items-center">
-        <div className="text-lg text-gray-600">Carregando posts...</div>
+        <div className="text-lg text-gray-600">Carregando notícias...</div>
       </div>
     )
   }
@@ -18,7 +18,7 @@ export default function Blog() {
   if (error) {
     return (
       <div className="min-h-screen flex justify-center items-center">
-        <div className="text-lg text-red-600">Erro ao carregar os posts</div>
+        <div className="text-lg text-red-600">Erro ao carregar as notícias</div>
       </div>
     )
   }
@@ -26,12 +26,12 @@ export default function Blog() {
   return (
     <div className="min-h-screen bg-gray-50">
       <PageHeader 
-        title="Blog"
+        title="Notícias"
         subtitle="Fique por dentro das novidades e acontecimentos da Academia de Letras do Triângulo Mineiro"
         icon={<FaNewspaper />}
         breadcrumb={[
           { label: "Home", href: "/" },
-          { label: "Blog" }
+          { label: "Notícias" }
         ]}
       />
       
@@ -81,7 +81,7 @@ export default function Blog() {
           </div>
         ) : (
           <div className="text-center py-12">
-            <div className="text-lg text-gray-600">Nenhum post encontrado</div>
+            <div className="text-lg text-gray-600">Nenhuma notícia encontrada</div>
           </div>
         )}
       </div>

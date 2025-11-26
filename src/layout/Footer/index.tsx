@@ -107,7 +107,7 @@ export const Footer = () => {
                   to="/blog" 
                   className="text-gray-300 hover:text-altm-gold-400 text-sm transition-colors duration-300"
                 >
-                  Blog
+                  Notícias
                 </Link>
               </li>
             </ul>

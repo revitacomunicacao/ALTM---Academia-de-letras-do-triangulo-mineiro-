@@ -67,7 +67,7 @@ export const SEARCH_ICONS = {
 export const SEARCH_LABELS = {
   membro: 'Acadêmico',
   artigo: 'Artigo', 
-  blog: 'Blog',
+  blog: 'Notícias',
   presidente: 'Presidente',
   diretoria: 'Diretoria',
   'socio-correspondente': 'Sócio Correspondente'

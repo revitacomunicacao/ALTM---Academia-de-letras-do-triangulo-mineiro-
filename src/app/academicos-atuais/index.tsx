@@ -170,7 +170,42 @@ export default function AcademicosAtuais() {
 
       const membroAtual = membrosGrupo[membrosGrupo.length - 1];
 
-      grupos[cadeira] = membroAtual ? [membroAtual] : [];
+      // Verificar se o membro atual está falecido
+      const membroAtualFalecido = membroAtual && 
+        Boolean(membroAtual.data_de_falecimento && membroAtual.data_de_falecimento.trim());
+
+      if (membroAtualFalecido) {
+        // Criar placeholder "Vaga" quando o membro atual estiver falecido
+        const placeholderId = -(
+          [...cadeira].reduce((acc, char, index) => acc + char.charCodeAt(0) * (index + 1), 0) + 1000
+        );
+
+        grupos[cadeira] = [{
+          id: placeholderId,
+          title: "Vaga",
+          slug: "",
+          link: "",
+          expert: "",
+          foto: "",
+          cadeira,
+          posicao: "Atual",
+          data_de_nascimento: "",
+          data_de_falecimento: "",
+          local_de_falecimento: "",
+          naturalidade: "",
+          antecedido_por: "",
+          sucedido_por: "",
+          data_de_posse: "",
+          academico_que_o_recebeu: "",
+          e_membro_da_academia: "Não",
+          biografia: "",
+          textos_escolhidos: "",
+          bibliografia: "",
+          discurso_de_posse: "",
+        }];
+      } else {
+        grupos[cadeira] = membroAtual ? [membroAtual] : [];
+      }
     });
 
     // Retornar cadeiras na ordem correta
