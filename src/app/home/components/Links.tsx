@@ -29,8 +29,8 @@ export const Links = () => {
     {
       icon: FaImages,
       title: "FOTOS E VÍDEOS",
-      description: "Galeria de imagens",
-      link: "#"
+      description: "Galeria de multimídia",
+      link: "/fotos-e-videos"
     }
   ];
 

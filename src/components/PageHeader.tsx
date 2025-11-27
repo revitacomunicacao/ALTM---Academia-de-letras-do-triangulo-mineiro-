@@ -1,5 +1,5 @@
 import { ReactNode } from "react"
-import { FaBookOpen, FaGraduationCap, FaNewspaper, FaInfoCircle } from "react-icons/fa"
+import { FaBookOpen, FaGraduationCap, FaNewspaper, FaInfoCircle, FaImages } from "react-icons/fa"
 
 interface PageHeaderProps {
   title: string
@@ -13,6 +13,7 @@ const getIconForPage = (path: string) => {
   if (path.includes('academicos')) return <FaGraduationCap className="w-6 h-6" />
   if (path.includes('artigos')) return <FaBookOpen className="w-6 h-6" />
   if (path.includes('blog')) return <FaNewspaper className="w-6 h-6" />
+  if (path.includes('fotos-e-videos')) return <FaImages className="w-6 h-6" />
   if (path.includes('sobre-a-altm')) return <FaInfoCircle className="w-6 h-6" />
   return <FaBookOpen className="w-6 h-6" />
 }
