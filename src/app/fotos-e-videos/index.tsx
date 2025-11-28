@@ -4,10 +4,11 @@ import { useContent } from "@/hooks/useContent";
 import { IGaleria } from "./types/IGaleria";
 import { IGaleriaVideo } from "./types/IGaleriaVideo";
 import { PageHeader } from "@/components/PageHeader";
-import logoAltm from "@/assets/logo-altm.png";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FaImages, FaCameraRetro, FaRedo } from "react-icons/fa";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import logoAltm from "@/assets/logo-altm.png";
 
 const GalleryCardSkeleton = () => (
   <Card className="overflow-hidden animate-pulse">
@@ -19,6 +20,36 @@ const GalleryCardSkeleton = () => (
   </Card>
 );
 
+const normalizeVideoEmbedUrl = (url: string) => {
+  if (!url) return "";
+
+  try {
+    const parsed = new URL(url);
+
+    // YouTube padrão: https://www.youtube.com/watch?v=ID
+    if (parsed.hostname.includes("youtube.com")) {
+      const v = parsed.searchParams.get("v");
+      if (v) return `https://www.youtube.com/embed/${v}`;
+    }
+
+    // YouTube curto: https://youtu.be/ID
+    if (parsed.hostname === "youtu.be") {
+      const id = parsed.pathname.replace("/", "");
+      if (id) return `https://www.youtube.com/embed/${id}`;
+    }
+
+    // Vimeo simples
+    if (parsed.hostname.includes("vimeo.com")) {
+      const id = parsed.pathname.split("/").filter(Boolean).pop();
+      if (id) return `https://player.vimeo.com/video/${id}`;
+    }
+
+    return url;
+  } catch {
+    return url;
+  }
+};
+
 export default function FotosEVideos() {
   const {
     data: galerias,
@@ -27,6 +58,7 @@ export default function FotosEVideos() {
     refetch,
   } = useContent<IGaleria>("/galeria");
 
+  // NOVO: galeria de vídeos em endpoint separado
   const { data: galeriasVideos, loading: loadingVideos } =
     useContent<IGaleriaVideo>("/galeria-videos");
 
@@ -147,7 +179,7 @@ export default function FotosEVideos() {
             </div>
 
             {loadingVideos ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {Array.from({ length: 6 }).map((_, index) => (
                   <GalleryCardSkeleton key={`video-skeleton-${index}`} />
                 ))}
@@ -155,64 +187,157 @@ export default function FotosEVideos() {
             ) : albumsComVideos.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {albumsComVideos.map((video) => {
-                  const videoUrl =
-                    video.links_dos_videos && video.links_dos_videos.length > 0
-                      ? video.links_dos_videos[0] // usa o primeiro link da galeria
-                      : "";
+                  const links = video.links_dos_videos ?? [];
+                  const hasSingle = links.length === 1;
+                  const hasMultiple = links.length > 1;
+                  const firstLink = links[0];
 
-                  // 🔥 fallback: se não tiver imagem destacada, usa a logo da ALTM
+                  // thumbnail: imagem destacada ou logo da ALTM
                   const thumbnail = video.imagem_destacada || logoAltm;
 
-                  const Wrapper = videoUrl ? "a" : "div";
+                  const ctaLabel = hasMultiple
+                    ? `${links.length} vídeos`
+                    : firstLink
+                    ? "Assistir vídeo"
+                    : "Em breve";
 
-                  return (
-                    <Wrapper
-                      key={`video-${video.id}`}
-                      {...(videoUrl
-                        ? {
-                            href: videoUrl,
-                            target: "_blank",
-                            rel: "noopener noreferrer",
-                          }
-                        : {})}
-                      className={videoUrl ? "block" : "block cursor-default"}
-                    >
-                      <Card className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col h-full">
-                        <div className="aspect-video overflow-hidden relative">
-                          <img
-                            src={thumbnail}
-                            alt={video.title}
-                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                          />
+                  // 🔹 Caso 1: apenas 1 vídeo → abre lightbox (Dialog) com embed
+                  if (hasSingle && firstLink) {
+                    return (
+                      <Dialog key={`video-${video.id}`}>
+                        <DialogTrigger asChild>
+                          <button
+                            type="button"
+                            className="block w-full text-left"
+                          >
+                            <Card className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col h-full">
+                              <div className="aspect-video overflow-hidden relative">
+                                <img
+                                  src={thumbnail}
+                                  alt={video.title}
+                                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                                />
+                                <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                                  <div className="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center text-altm-gold-600 text-xl font-bold">
+                                    ▶
+                                  </div>
+                                </div>
+                              </div>
 
-                          <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                            <div className="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center text-altm-gold-600 text-xl font-bold">
-                              ▶
+                              <div className="p-6 flex flex-col gap-4 flex-1">
+                                <div>
+                                  <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2">
+                                    {video.title}
+                                  </h3>
+                                  {video.description && (
+                                    <p className="text-gray-600 text-sm line-clamp-3">
+                                      {video.description}
+                                    </p>
+                                  )}
+                                </div>
+
+                                <div className="flex items-center justify-between text-sm text-gray-500 mt-auto">
+                                  <span>
+                                    {video.date || "Vídeo institucional"}
+                                  </span>
+                                  <span className="text-altm-gold-600 font-semibold">
+                                    {ctaLabel}
+                                  </span>
+                                </div>
+                              </div>
+                            </Card>
+                          </button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-5xl w-full bg-black p-0">
+                          <div className="aspect-video w-full">
+                            <iframe
+                              src={normalizeVideoEmbedUrl(firstLink)}
+                              title={video.title}
+                              className="w-full h-full"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                              allowFullScreen
+                            />
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                    );
+                  }
+
+                  // 🔹 Caso 2: vários vídeos → vai para página interna /fotos-e-videos/videos/:id
+                  if (hasMultiple) {
+                    return (
+                      <Link
+                        key={`video-${video.id}`}
+                        to={`/fotos-e-videos/videos/${video.id}`}
+                        className="block"
+                      >
+                        <Card className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col h-full">
+                          <div className="aspect-video overflow-hidden relative">
+                            <img
+                              src={thumbnail}
+                              alt={video.title}
+                              className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                            />
+                            <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                              <div className="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center text-altm-gold-600 text-xl font-bold">
+                                ▶
+                              </div>
                             </div>
                           </div>
-                        </div>
 
-                        <div className="p-6 flex flex-col gap-4 flex-1">
-                          <div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2">
-                              {video.title}
-                            </h3>
-                            {video.description && (
-                              <p className="text-gray-600 text-sm line-clamp-3">
-                                {video.description}
-                              </p>
-                            )}
-                          </div>
+                          <div className="p-6 flex flex-col gap-4 flex-1">
+                            <div>
+                              <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2">
+                                {video.title}
+                              </h3>
+                              {video.description && (
+                                <p className="text-gray-600 text-sm line-clamp-3">
+                                  {video.description}
+                                </p>
+                              )}
+                            </div>
 
-                          <div className="flex items-center justify-between text-sm text-gray-500 mt-auto">
-                            <span>Vídeo institucional</span>
-                            <span className="text-altm-gold-600 font-semibold">
-                              {videoUrl ? "Assistir vídeo" : "Em breve"}
-                            </span>
+                            <div className="flex items-center justify-between text-sm text-gray-500 mt-auto">
+                              <span>{video.date || "Vídeo institucional"}</span>
+                              <span className="text-altm-gold-600 font-semibold">
+                                {ctaLabel}
+                              </span>
+                            </div>
                           </div>
+                        </Card>
+                      </Link>
+                    );
+                  }
+
+                  // 🔹 Caso 3: sem links ainda → card “Em breve”
+                  return (
+                    <Card
+                      key={`video-${video.id}`}
+                      className="bg-white rounded-2xl overflow-hidden shadow-md flex flex-col h-full opacity-75"
+                    >
+                      <div className="aspect-video overflow-hidden relative">
+                        <img
+                          src={thumbnail}
+                          alt={video.title}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                          <span className="text-white font-semibold text-sm px-3 py-1 rounded-full bg-black/60">
+                            Em breve
+                          </span>
                         </div>
-                      </Card>
-                    </Wrapper>
+                      </div>
+                      <div className="p-6 flex flex-col gap-2 flex-1">
+                        <h3 className="text-xl font-bold text-gray-900 mb-1 line-clamp-2">
+                          {video.title}
+                        </h3>
+                        {video.description && (
+                          <p className="text-gray-600 text-sm line-clamp-3">
+                            {video.description}
+                          </p>
+                        )}
+                      </div>
+                    </Card>
                   );
                 })}
               </div>
