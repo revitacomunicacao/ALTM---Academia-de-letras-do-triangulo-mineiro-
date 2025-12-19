@@ -54,7 +54,7 @@ export const Footer = () => {
                 <FaFacebook className="h-5 w-5" />
               </a>
               <a 
-                href="#" 
+                href="https://www.instagram.com/academialetrastmuberaba?igsh=MXdhcGNnazRybG1udg==" 
                 className="bg-gray-800 hover:bg-altm-gold-600 p-3 rounded-full transition-colors duration-300"
                 aria-label="Instagram"
               >

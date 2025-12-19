@@ -22,7 +22,7 @@ const BlogCardSkeleton = () => (
 export const CarouselBlog = () => {
   const { data: blog, loading, error, refetch } = useContent<Iblog>("/blog")
 
-  if(loading) {
+  if (loading) {
     return (
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -32,7 +32,7 @@ export const CarouselBlog = () => {
             </div>
             <Skeleton className="h-4 w-96 mx-auto" />
           </div>
-          
+
           <Carousel
             opts={{
               align: "start",
@@ -57,14 +57,14 @@ export const CarouselBlog = () => {
     )
   }
 
-  if(error) {
+  if (error) {
     return (
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h3 className="text-xl font-semibold text-gray-900 mb-3">Erro ao carregar notícias</h3>
             <p className="text-gray-600 mb-6">Não foi possível carregar as notícias no momento.</p>
-            <button 
+            <button
               onClick={() => refetch()}
               className="inline-flex items-center space-x-2 px-6 py-3 bg-altm-gold-600 text-white font-medium rounded-lg hover:bg-altm-gold-700 transition-colors"
             >
@@ -79,19 +79,19 @@ export const CarouselBlog = () => {
 
   // Agrupar itens de 6 em 6
   const groupedBlogs = blog.reduce((acc: Iblog[][], item, index) => {
-    const groupIndex = Math.floor(index / 6);
+    const groupIndex = Math.floor(index / 6)
     if (!acc[groupIndex]) {
-      acc[groupIndex] = [];
+      acc[groupIndex] = []
     }
-    acc[groupIndex].push(item);
-    return acc;
-  }, []);
+    acc[groupIndex].push(item)
+    return acc
+  }, [])
 
   return (
     <section className="py-7 bg-[#F2ECD7]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Carrossel de notícias */}
-        <Carousel 
+        <Carousel
           opts={{
             align: "start",
             loop: true,
@@ -102,18 +102,12 @@ export const CarouselBlog = () => {
             {groupedBlogs.map((group, groupIndex) => (
               <CarouselItem key={groupIndex} className="basis-full">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {group.map(({ 
-                    id,
-                    imagem_destacada,
-                    resumo,
-                    summary,
-                    title
-                  }) => (
+                  {group.map(({ id, imagem_destacada, resumo, summary, title }) => (
                     <div key={id} className="overflow-hidden hover:shadow-xl transition-all duration-300 group h-[500px]">
-                      {/* Imagem da notícia */}
-                      <div className="aspect-video overflow-hidden relative bg-white">
-                        <img 
-                          src={imagem_destacada} 
+                      {/* Imagem da notícia (clicável) */}
+                      <Link to={`/blog/${id}`} className="block aspect-video overflow-hidden relative bg-white">
+                        <img
+                          src={imagem_destacada}
                           alt={`Imagem da notícia: ${title}`}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
@@ -123,21 +117,26 @@ export const CarouselBlog = () => {
                             <span className="text-xs font-medium text-gray-700">Notícia</span>
                           </div>
                         </div>
-                      </div>
-                      
+                      </Link>
+
                       {/* Conteúdo da notícia */}
                       <div className="flex flex-col justify-between">
                         <div className="bg-white p-6 h-[200px]">
-                          <h3 className="text-xl font-bold text-gray-800 mb-3 line-clamp-2 group-hover:text-altm-gold-600 transition-colors">
-                            {title}
+                          <h3 className="text-xl font-bold text-gray-800 mb-3">
+                            <Link
+                              to={`/blog/${id}`}
+                              className="block line-clamp-2 group-hover:text-altm-gold-600 transition-colors"
+                            >
+                              {title}
+                            </Link>
                           </h3>
-                          
+
                           <p className="text-gray-600 text-sm leading-relaxed line-clamp-3 mb-6">
                             {resumo || summary || "Confira esta notícia completa..."}
                           </p>
                         </div>
-                        
-                        <Link 
+
+                        <Link
                           to={`/blog/${id}`}
                           className="inline-flex items-center space-x-2 w-full justify-center px-4 py-3 bg-gradient-to-r from-altm-gold-500 to-altm-gold-600 text-white font-medium rounded-lg hover:from-altm-gold-600 hover:to-altm-gold-700 transition-all duration-300 group-hover:shadow-lg"
                         >
@@ -150,17 +149,16 @@ export const CarouselBlog = () => {
               </CarouselItem>
             ))}
           </CarouselContent>
-          
+
           {/* Setas de navegação - responsivas */}
           <CarouselPrevious className="bg-white/90 hover:bg-white border-altm-gold-600 text-altm-gold-600 hover:text-altm-gold-700 shadow-lg hover:shadow-xl transition-all duration-200 w-10 h-10 sm:w-12 sm:h-12 -left-2 sm:-left-15 hover:scale-105" />
-          
+
           <CarouselNext className="bg-white/90 hover:bg-white border-altm-gold-600 text-altm-gold-600 hover:text-altm-gold-700 shadow-lg hover:shadow-xl transition-all duration-200 w-10 h-10 sm:w-12 sm:h-12 -right-2 sm:-right-15 hover:scale-105" />
         </Carousel>
 
-
         {/* Link para ver todas as notícias */}
         <div className="text-center mt-12">
-          <Link 
+          <Link
             to="/blog"
             className="inline-flex items-center space-x-2 px-8 py-4 bg-white text-altm-gold-600 font-semibold rounded-xl border-2 border-altm-gold-600 hover:bg-altm-gold-600 hover:text-white transition-all duration-300 shadow-lg hover:shadow-xl"
           >
