@@ -24,7 +24,7 @@ export const Links = () => {
       icon: FaBookOpen,
       title: "BIBLIOTECA",
       description: "Acervo literário",
-      link: "#"
+      link: "/acervo"
     },
     {
       icon: FaImages,
