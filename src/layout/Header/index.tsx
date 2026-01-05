@@ -52,7 +52,7 @@ export const Header = () => {
         block: 'start'
       })
     }
-    setIsOpen(false) // Fechar menu mobile se estiver aberto
+    setIsOpen(false) // Fechar menu mobile se estiver aberto.
   }
   
   const menu = [
