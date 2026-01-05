@@ -149,7 +149,7 @@ export const Header = () => {
 
               <div className="flex items-center space-x-4">
                 <a 
-                  href="#" 
+                  href="https://www.instagram.com/academialetrastmuberaba?igsh=MXdhcGNnazRybG1udg==" 
                   className="text-white hover:text-gray-200 transition-all duration-200 hover:scale-110"
                   aria-label="Instagram"
                 >
