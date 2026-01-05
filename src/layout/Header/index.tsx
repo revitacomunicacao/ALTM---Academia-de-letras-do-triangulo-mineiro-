@@ -391,7 +391,7 @@ export const Header = () => {
                     
 
 
-                    {/* Redes sociais no menu mobile */}
+                    {/* Redes sociais no menu mobilee */}
                     <div className="mt-8 pt-6 border-t border-gray-200 px-2">
                       <p className="text-sm text-gray-600 mb-6 font-medium px-2">Siga-nos</p>
                       <div className="flex justify-center space-x-6">
