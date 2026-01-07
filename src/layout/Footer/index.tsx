@@ -131,7 +131,7 @@ export const Footer = () => {
 
               <div className="flex items-center space-x-3">
                 <FaPhone className="h-4 w-4 text-altm-gold-400 flex-shrink-0" />
-                <p className="text-gray-300 text-sm">(34) 33333-3333</p>
+                <p className="text-gray-300 text-sm">(34) 99871-1412</p>
               </div>
 
               <div className="flex items-center space-x-3">
@@ -144,7 +144,7 @@ export const Footer = () => {
                 <div>
                   <p className="text-gray-300 text-sm">
                     Funcionamento:<br />
-                    Segunda a Sexta: 8h às 17h
+                    Segunda a Sexta: 14h às 17h
                   </p>
                 </div>
               </div>
