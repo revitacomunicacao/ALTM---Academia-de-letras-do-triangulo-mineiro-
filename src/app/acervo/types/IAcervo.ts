@@ -1,7 +1,9 @@
+// src/app/acervo/types/IAcervo.ts
 export interface IAcervoTituloItem {
   capa: string
   titulo: string
   autor: string
+  pdf?: string
 }
 
 export interface IAcervo {
