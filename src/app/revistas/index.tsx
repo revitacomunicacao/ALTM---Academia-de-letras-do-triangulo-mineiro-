@@ -1,18 +1,18 @@
-// index.tsx
-import { useState } from "react"
+// src/app/revistas/index.tsx
+import React, { useEffect, useMemo, useRef, useState } from "react"
 import { PageHeader } from "@/components/PageHeader"
 import { Card } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { FaBookOpen } from "react-icons/fa"
 import { useContent } from "@/hooks/useContent"
 import type { IRevistas, IRevistaItem } from "./types/IRevistas"
+
+import HTMLFlipBook from "react-pageflip"
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
+
+// Wrapper para evitar conflitos de tipagem do react-pageflip
+const FlipBook = HTMLFlipBook as unknown as React.ComponentType<any>
 
 const PageSkeleton = () => (
   <div className="min-h-screen bg-altm-page">
@@ -40,63 +40,126 @@ const PageSkeleton = () => (
   </div>
 )
 
-function PdfLightbox({
-  pdfUrl,
+function clamp(n: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, n))
+}
+
+function useContainerWidth(dep?: any) {
+  const ref = useRef<HTMLDivElement | null>(null)
+  const [width, setWidth] = useState(0)
+
+  useEffect(() => {
+    if (!ref.current) return
+    const el = ref.current
+
+    const update = () => setWidth(el.clientWidth || 0)
+
+    // mede depois do Dialog abrir (layout pronto)
+    const raf = requestAnimationFrame(update)
+
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    update()
+
+    return () => {
+      cancelAnimationFrame(raf)
+      ro.disconnect()
+    }
+  }, [dep])
+
+  return { ref, width }
+}
+
+function FlipbookViewer({
+  pages,
   title,
+  open,
 }: {
-  pdfUrl: string
-  title?: string
+  pages: string[]
+  title: string
+  open: boolean
 }) {
-  // Mostra o PDF nativo do browser
-  // (não faz fetch via JS, então evita CORS e worker)
+  const { ref, width } = useContainerWidth(open)
+
+  // ✅ FORÇA SEMPRE “livro aberto” (2 páginas)
+  const forceSpread = true
+
+  const usable = useMemo(() => Math.max(320, width - 24), [width])
+
+  // largura de UMA página
+  const pageW = useMemo(() => {
+    // como é spread, calcula metade do espaço útil
+    const w = Math.floor(usable / 2)
+    return clamp(w, 240, 560)
+  }, [usable])
+
+  const pageH = useMemo(() => Math.floor(pageW * 1.35), [pageW])
+
+  // largura total do livro (2 páginas)
+  const bookW = useMemo(() => pageW * 2, [pageW])
+
+  const normalizedPages = useMemo(() => {
+    const list = (pages || []).filter(Boolean)
+    if (!list.length) return []
+    // se ímpar, completa com branco para fechar par
+    if (list.length % 2 === 0) return list
+    return [...list, "__BLANK__"]
+  }, [pages])
+
+  if (!normalizedPages.length) {
+    return <div className="text-center py-10 text-gray-600">Nenhuma página disponível.</div>
+  }
+
   return (
-    <div className="h-full w-full flex flex-col gap-3">
-      <div className="flex items-center justify-between gap-3">
-        <div className="min-w-0">
-          <p className="text-sm font-semibold text-gray-900 truncate">
-            {title || "Visualização do PDF"}
-          </p>
-          <p className="text-xs text-gray-500 truncate">
-            Se não carregar aqui, use “Abrir em nova aba”.
-          </p>
+    <div ref={ref} className="w-full h-full">
+      {/* ✅ scroll horizontal se necessário, mas mantém “livro aberto” */}
+      <div className="w-full h-full overflow-auto">
+        <div className="mx-auto" style={{ width: bookW }}>
+          <FlipBook
+            // tamanho de UMA página
+            width={pageW}
+            height={pageH}
+            size="fixed"
+
+            // ✅ dupla sempre
+            showCover={true}
+            usePortrait={false}   // <<< força 2 páginas
+            autoSize={false}
+
+            // ajustes
+            minWidth={240}
+            maxWidth={1400}
+            minHeight={360}
+            maxHeight={2000}
+            maxShadowOpacity={0.25}
+            mobileScrollSupport={true}
+            className="shadow-lg"
+            startPage={0}
+            drawShadow={true}
+            flippingTime={650}
+            clickEventForward={true}
+            disableFlipByClick={false}
+            showPageCorners={true}
+          >
+            {normalizedPages.map((src, idx) => {
+              if (src === "__BLANK__") {
+                return <div key={`blank-${idx}`} className="bg-white w-full h-full" />
+              }
+
+              return (
+                <div key={`${src}-${idx}`} className="bg-white w-full h-full">
+                  <img
+                    src={src}
+                    alt={`${title} — página ${idx + 1}`}
+                    className="w-full h-full object-contain bg-white select-none"
+                    draggable={false}
+                    loading="lazy"
+                  />
+                </div>
+              )
+            })}
+          </FlipBook>
         </div>
-
-        <a
-          href={pdfUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="shrink-0 px-3 py-2 rounded-md bg-altm-gold-600 text-white text-sm font-medium hover:bg-altm-gold-700 transition-colors"
-        >
-          Abrir em nova aba
-        </a>
-      </div>
-
-      <div className="flex-1 min-h-0 rounded-lg overflow-hidden border bg-white">
-        <iframe
-          title={title || "PDF"}
-          src={pdfUrl}
-          className="w-full h-full"
-        />
-        {/* fallback para browsers que não renderizam no iframe */}
-        <noscript />
-      </div>
-
-      {/* fallback extra: object, caso seu browser/servidor não goste do iframe */}
-      <div className="hidden">
-        <object data={pdfUrl} type="application/pdf" width="100%" height="100%">
-          <p className="text-sm text-gray-700">
-            Seu navegador não conseguiu exibir o PDF embutido.{" "}
-            <a
-              className="text-altm-gold-600 underline"
-              href={pdfUrl}
-              target="_blank"
-              rel="noreferrer"
-            >
-              Clique para abrir
-            </a>
-            .
-          </p>
-        </object>
       </div>
     </div>
   )
@@ -107,13 +170,31 @@ export default function Revistas() {
   const revistaPage = Array.isArray(data) ? data[0] : data
 
   const [open, setOpen] = useState(false)
-  const [selectedPdf, setSelectedPdf] = useState<string | null>(null)
-  const [selectedTitle, setSelectedTitle] = useState<string | null>(null)
+  const [selectedPages, setSelectedPages] = useState<string[]>([])
+  const [selectedTitle, setSelectedTitle] = useState("")
 
-  const handleOpenPdf = (pdf?: string | null, titulo?: string | null) => {
-    if (!pdf) return
-    setSelectedPdf(pdf)
-    setSelectedTitle(titulo || "Revista")
+  const getPagesFromItem = (item: IRevistaItem): string[] => {
+    // ACF Galeria pode estar em item.pdf (nome legado) ou paginas/pages
+    const raw: any = (item as any).pdf ?? (item as any).paginas ?? (item as any).pages
+    if (!Array.isArray(raw)) return []
+
+    return raw
+      .map((p: any) => {
+        if (!p) return null
+        if (typeof p === "string") return p
+        if (typeof p?.url === "string") return p.url
+        if (typeof p?.sizes?.large === "string") return p.sizes.large
+        if (typeof p?.sizes?.full === "string") return p.sizes.full
+        return null
+      })
+      .filter(Boolean) as string[]
+  }
+
+  const handleOpen = (item: IRevistaItem) => {
+    const pages = getPagesFromItem(item)
+    if (!pages.length) return
+    setSelectedPages(pages)
+    setSelectedTitle(item.titulo_da_revista || "Revista")
     setOpen(true)
   }
 
@@ -164,17 +245,17 @@ export default function Revistas() {
     )
   }
 
-  const items: IRevistaItem[] = Array.isArray(revistaPage.revistas)
-    ? revistaPage.revistas
+  const items: IRevistaItem[] = Array.isArray((revistaPage as any).revistas)
+    ? ((revistaPage as any).revistas as IRevistaItem[])
     : []
 
   return (
     <div className="min-h-screen bg-altm-page">
       <PageHeader
-        title={revistaPage.title || "Revista Convergência"}
+        title={(revistaPage as any).title || "Revista Convergência"}
         subtitle="Edições disponíveis"
         icon={<FaBookOpen size={50} />}
-        imagem_topo={revistaPage.imagem_topo}
+        imagem_topo={(revistaPage as any).imagem_topo}
         breadcrumb={[
           { label: "Home", href: "/" },
           { label: "Revista Convergência", href: "/revistas" },
@@ -184,18 +265,18 @@ export default function Revistas() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Card className="p-6">
           {items.length === 0 ? (
-            <div className="text-center py-10 text-gray-600">
-              Nenhuma revista cadastrada.
-            </div>
+            <div className="text-center py-10 text-gray-600">Nenhuma revista cadastrada.</div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
               {items.map((item, idx) => {
-                const disabled = !item.pdf
+                const pages = getPagesFromItem(item)
+                const disabled = pages.length === 0
+
                 return (
                   <button
                     key={idx}
                     type="button"
-                    onClick={() => handleOpenPdf(item.pdf, item.titulo_da_revista)}
+                    onClick={() => handleOpen(item)}
                     disabled={disabled}
                     className={`text-left group ${disabled ? "opacity-60 cursor-not-allowed" : ""}`}
                     aria-label={item.titulo_da_revista || "Abrir revista"}
@@ -206,6 +287,7 @@ export default function Revistas() {
                           src={item.capa}
                           alt={item.titulo_da_revista}
                           className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform"
+                          draggable={false}
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-gray-500 text-sm">
@@ -219,7 +301,7 @@ export default function Revistas() {
                         {item.titulo_da_revista}
                       </p>
                       <p className="text-xs text-gray-500">
-                        {disabled ? "PDF não disponível" : "Abrir"}
+                        {disabled ? "Páginas não disponíveis" : "Abrir para folhear"}
                       </p>
                     </div>
                   </button>
@@ -235,22 +317,29 @@ export default function Revistas() {
         onOpenChange={(v) => {
           setOpen(v)
           if (!v) {
-            setSelectedPdf(null)
-            setSelectedTitle(null)
+            setSelectedPages([])
+            setSelectedTitle("")
           }
         }}
       >
-        <DialogContent className="max-w-6xl w-[95vw] h-[90vh] overflow-hidden p-4">
+        {/* ✅ modal realmente grande (inline style vence qualquer max-w do componente) */}
+        <DialogContent
+          className="p-3 overflow-hidden"
+          style={{
+            width: "98vw",
+            maxWidth: "98vw",
+            height: "92vh",
+            maxHeight: "92vh",
+          }}
+        >
           <VisuallyHidden>
             <DialogTitle>Visualização da Revista</DialogTitle>
-            <DialogDescription>PDF aberto no leitor nativo do navegador.</DialogDescription>
+            <DialogDescription>Leitor em formato de livro (duas páginas abertas).</DialogDescription>
           </VisuallyHidden>
 
-          {selectedPdf ? (
-            <PdfLightbox pdfUrl={selectedPdf} title={selectedTitle || undefined} />
-          ) : (
-            <div className="text-center py-10 text-gray-600">Nenhum PDF selecionado.</div>
-          )}
+          <div className="h-full w-full overflow-hidden">
+            <FlipbookViewer pages={selectedPages} title={selectedTitle} open={open} />
+          </div>
         </DialogContent>
       </Dialog>
     </div>
