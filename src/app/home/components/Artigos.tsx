@@ -130,10 +130,6 @@ export const CarrosselArtigos = () => {
                           <h3 className="text-lg font-semibold text-gray-800 truncate">
                             {academico.nome}
                           </h3>
-                          <div className="flex items-center space-x-1 text-sm text-gray-500">
-                            <FaCalendarAlt className="w-3 h-3" />
-                            <span>{new Date(date).toLocaleDateString("pt-BR")}</span>
-                          </div>
                         </div>
                       </div>
 
