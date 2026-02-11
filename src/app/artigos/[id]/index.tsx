@@ -112,7 +112,7 @@ export default function ArtigosDetails() {
                       (academico: { id: number; nome: string; foto: string }, index: number) => (
                         <Link
                           key={index}
-                          to={`/academicos/membros/${academico.id}`}
+                          to={`/membros/${academico.id}`}
                           className="block p-4 border border-gray-200 rounded-lg hover:border-[#c1a44e] hover:shadow-md transition-all duration-300"
                         >
                           <div className="flex items-center space-x-4">
