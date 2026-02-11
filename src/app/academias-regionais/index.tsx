@@ -256,6 +256,19 @@ export default function AcademiasRegionais() {
                     </div>
                   ) : null}
 
+                  {selected?.link?.trim() ? (
+                    <a
+                      href={selected.link.trim()}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex"
+                    >
+                      <button className="bg-gray-500 p-4 rounded-full my-4 text-white">
+                        Acesse o site da academia aqui
+                      </button>
+                    </a>
+                  ) : null}
+
                   {/* Informações */}
                   {selected.informacoes ? (
                     <div className="rounded-xl border bg-white p-6 md:p-8">
@@ -268,18 +281,6 @@ export default function AcademiasRegionais() {
                           __html: selected.informacoes,
                         }}
                       />
-                      {selected?.link?.trim() ? (
-                        <a
-                          href={selected.link.trim()}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex"
-                        >
-                          <button className="bg-gray-500 p-4 rounded-full my-4 text-white">
-                            Acesse o site da academia aqui
-                          </button>
-                        </a>
-                      ) : null}
                     </div>
                   ) : null}
 

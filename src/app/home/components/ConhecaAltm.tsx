@@ -31,7 +31,7 @@ export const ConhecaAltm = () => {
     );
   }
 
-  const blocosData = response[0]?.blocos || [];
+  const blocosData = response?.[0]?.blocos || [];
 
   return (
     <section className="py-7 bg-white">
@@ -46,11 +46,16 @@ export const ConhecaAltm = () => {
             const isAcademiasRegionais =
               titleNormalized === normalizeForMatch("ACADEMIAS REGIONAIS");
 
+            const isAtividadesLiterarias =
+              titleNormalized === normalizeForMatch("ATIVIDADES LITERÁRIAS");
+
             const to = isRevistaConvergencia
               ? "/revistas"
               : isAcademiasRegionais
-              ? "/academias-regionais"
-              : bloco.link || "#";
+                ? "/academias-regionais"
+                : isAtividadesLiterarias
+                  ? "/atividades-literarias"
+                  : bloco.link || "#";
 
             return (
               <Link
