@@ -38,9 +38,19 @@ export const ConhecaAltm = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
           {blocosData.map((bloco, index) => {
+            const titleNormalized = normalizeForMatch(bloco.titulo);
+
             const isRevistaConvergencia =
-              normalizeForMatch(bloco.titulo) === normalizeForMatch("REVISTA CONVERGÊNCIA");
-            const to = isRevistaConvergencia ? "/revistas" : bloco.link || "#";
+              titleNormalized === normalizeForMatch("REVISTA CONVERGÊNCIA");
+
+            const isAcademiasRegionais =
+              titleNormalized === normalizeForMatch("ACADEMIAS REGIONAIS");
+
+            const to = isRevistaConvergencia
+              ? "/revistas"
+              : isAcademiasRegionais
+              ? "/academias-regionais"
+              : bloco.link || "#";
 
             return (
               <Link
