@@ -53,11 +53,12 @@ export default function DetailsBlog() {
         <article className="bg-white rounded-lg shadow-md overflow-hidden">
           {/* Imagem Destacada */}
           {blog.imagem_destacada && (
-            <div className="w-full overflow-hidden">
+            <div className="w-full overflow-hidden bg-white">
               <img
                 src={blog.imagem_destacada}
                 alt={blog.title}
                 className="w-full h-auto object-contain rounded-2xl"
+                draggable={false}
               />
             </div>
           )}
@@ -69,10 +70,117 @@ export default function DetailsBlog() {
             </h1>
 
             {/* Conteúdo HTML */}
-            <div className="prose prose-lg max-w-none">
+            <div className="prose prose-lg max-w-none blog-content">
               <div dangerouslySetInnerHTML={{ __html: blog.content }} />
             </div>
           </div>
+
+          {/* CSS “escopado” no conteúdo do WP */}
+          <style>{`
+            /* =========================================
+               RESET/BASE
+            ========================================== */
+            .blog-content img,
+            .blog-content video,
+            .blog-content iframe,
+            .blog-content audio {
+              max-width: 100% !important;
+              height: auto !important;
+            }
+
+            /* Impede floats que o WP coloca (alignleft/alignright) */
+            .blog-content img,
+            .blog-content figure,
+            .blog-content .wp-caption,
+            .blog-content .wp-block-image {
+              float: none !important;
+              clear: both !important;
+            }
+
+            /* =========================================
+               GUTENBERG (wp-block-image)
+            ========================================== */
+            .blog-content figure.wp-block-image,
+            .blog-content .wp-block-image,
+            .blog-content figure {
+              margin-left: auto !important;
+              margin-right: auto !important;
+              text-align: center !important;
+            }
+
+            .blog-content .wp-block-image img,
+            .blog-content figure img,
+            .blog-content p > img,
+            .blog-content a > img {
+              display: block !important;
+              margin-left: auto !important;
+              margin-right: auto !important;
+            }
+
+            /* =========================================
+               CLASSES DE ALINHAMENTO (muito comuns)
+            ========================================== */
+            .blog-content .alignleft,
+            .blog-content .alignright,
+            .blog-content .aligncenter,
+            .blog-content .alignnone {
+              float: none !important;
+              display: block !important;
+              margin-left: auto !important;
+              margin-right: auto !important;
+              text-align: center !important;
+            }
+
+            .blog-content img.alignleft,
+            .blog-content img.alignright,
+            .blog-content img.aligncenter,
+            .blog-content img.alignnone {
+              display: block !important;
+              margin-left: auto !important;
+              margin-right: auto !important;
+            }
+
+            /* =========================================
+               WP “antigo”: wp-caption + caption text
+            ========================================== */
+            .blog-content .wp-caption {
+              width: auto !important;
+              max-width: 100% !important;
+              margin-left: auto !important;
+              margin-right: auto !important;
+              text-align: center !important;
+            }
+
+            .blog-content .wp-caption img {
+              display: block !important;
+              margin-left: auto !important;
+              margin-right: auto !important;
+            }
+
+            .blog-content .wp-caption-text {
+              text-align: center !important;
+              margin-left: auto !important;
+              margin-right: auto !important;
+            }
+
+            /* =========================================
+               LEGENDAS (figcaption / wp-element-caption)
+            ========================================== */
+            .blog-content figcaption,
+            .blog-content .wp-element-caption {
+              text-align: center !important;
+              margin-left: auto !important;
+              margin-right: auto !important;
+            }
+
+            /* =========================================
+               ÚLTIMO “seguro”: se algum wrapper vier com style inline,
+               pelo menos garantimos centralização visual do conteúdo
+            ========================================== */
+            .blog-content p {
+              overflow: hidden; /* limpa floats residuais de HTML legado */
+            }
+          `}</style>
         </article>
 
         {/* Navegação */}
