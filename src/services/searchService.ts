@@ -1,112 +1,104 @@
 import { axiosClient } from "@/api/axiosClient";
-import type { SearchResult, SearchResponse, SearchFilters } from "@/types/ISearch";
+import type { SearchItem } from "@/types/ISearch";
 
-import type { IMembros } from "@/app/academicos/membros/types/IMembros";
-import type { IArtigos, IArtigosId } from "@/app/artigos/types/IArtigos";
-import type { Iblog, IblogId } from "@/app/home/types/IBlog";
+export type SearchResult = SearchItem;
 
-// Observação importante:
-// Este serviço consolida a busca global do site. Conforme novos endpoints são adicionados,
-// basta incluir um "searchIn..." aqui e adicioná-lo ao Promise.all do searchAll().
+function normalizeText(text: string) {
+  return (text || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "");
+}
+
+function matchAny(query: string, values: Array<string | undefined | null>) {
+  const q = normalizeText(query);
+  if (!q) return false;
+
+  return values.some((v) => {
+    const n = normalizeText(String(v || ""));
+    return n.includes(q);
+  });
+}
 
 export class SearchService {
-  private static normalizeText(text: string): string {
-    return (text || "")
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/\p{Diacritic}/gu, "")
-      .replace(/\s+/g, " ")
-      .trim();
+  static async universalSearch(query: string): Promise<SearchResult[]> {
+    const q = normalizeText(query);
+    if (!q) return [];
+
+    // Executa em paralelo
+    const [
+      membros,
+      artigos,
+      blog,
+      atividadesLiterarias,
+      academiasRegionais,
+      sociosCorrespondentes,
+      revistas,
+      jornalEco,
+      acervo,
+      presidentes,
+      diretoria,
+    ] = await Promise.all([
+      this.searchInMembros(q),
+      this.searchInArtigos(q),
+      this.searchInBlog(q),
+      this.searchInAtividadesLiterarias(q),
+      this.searchInAcademiasRegionais(q),
+      this.searchInSociosCorrespondentes(q),
+      this.searchInRevistas(q),
+      this.searchInJornalEco(q),
+      this.searchInAcervo(q),
+      this.searchInPresidentes(q),
+      this.searchInDiretoria(q),
+    ]);
+
+    // Junta + ordena simples (prioriza título)
+    const all = [
+      ...membros,
+      ...artigos,
+      ...blog,
+      ...atividadesLiterarias,
+      ...academiasRegionais,
+      ...sociosCorrespondentes,
+      ...revistas,
+      ...jornalEco,
+      ...acervo,
+      ...presidentes,
+      ...diretoria,
+    ];
+
+    // Ordenação: primeiro match no título
+    const scored = all
+      .map((item) => {
+        const titleMatch = normalizeText(item.title).includes(q);
+        const contentMatch =
+          normalizeText(item.excerpt || "").includes(q) || normalizeText(item.content || "").includes(q);
+        const score = titleMatch ? 2 : contentMatch ? 1 : 0;
+        return { item, score };
+      })
+      .filter((x) => x.score > 0)
+      .sort((a, b) => b.score - a.score);
+
+    return scored.map((s) => s.item);
   }
 
-  // =============================
-  // Artigos (com conteúdo completo)
-  // =============================
-  private static async searchInArtigos(query: string, signal?: AbortSignal): Promise<IArtigosId[]> {
-    try {
-      const { data: artigosList } = await axiosClient.get<IArtigos[]>("/artigos", { signal });
-
-      const artigosCompletos: IArtigosId[] = [];
-      const searchText = this.normalizeText(query);
-
-      for (const artigo of artigosList) {
-        try {
-          const { data: artigoCompleto } = await axiosClient.get<IArtigosId[]>(
-            `/artigo/${artigo.id}`,
-            { signal },
-          );
-
-          if (artigoCompleto && artigoCompleto[0]) {
-            artigosCompletos.push(artigoCompleto[0]);
-          }
-        } catch (error) {
-          // Se falhar ao buscar o detalhe, ignora e segue
-          console.warn(`Erro ao buscar artigo completo ${artigo.id}:`, error);
-        }
-      }
-
-      return artigosCompletos.filter((artigo) => {
-        const textoCompleto = this.normalizeText(
-          `${artigo.title} ${artigo.resumo || ""} ${artigo.conteudo || ""}`,
-        );
-        return textoCompleto.includes(searchText);
-      });
-    } catch (error) {
-      console.error("Erro ao buscar artigos:", error);
-      return [];
-    }
-  }
-
-  // =============================
-  // Blog (com conteúdo completo)
-  // =============================
-  private static async searchInBlog(query: string, signal?: AbortSignal): Promise<IblogId[]> {
-    try {
-      const { data: blogList } = await axiosClient.get<Iblog[]>("/blog", { signal });
-
-      const blogCompletos: IblogId[] = [];
-      const searchText = this.normalizeText(query);
-
-      for (const post of blogList) {
-        try {
-          const { data: postCompleto } = await axiosClient.get<IblogId[]>(`/blog/${post.id}`, {
-            signal,
-          });
-
-          if (postCompleto && postCompleto[0]) {
-            blogCompletos.push(postCompleto[0]);
-          }
-        } catch (error) {
-          console.warn(`Erro ao buscar post completo ${post.id}:`, error);
-        }
-      }
-
-      return blogCompletos.filter((post) => {
-        const textoCompleto = this.normalizeText(`${post.title} ${post.resumo || ""} ${post.conteudo || ""}`);
-        return textoCompleto.includes(searchText);
-      });
-    } catch (error) {
-      console.error("Erro ao buscar blog:", error);
-      return [];
-    }
-  }
-
-  // =============================
-  // Membros
-  // =============================
+  // ==============================
+  // Membros / Acadêmicos
+  // ==============================
   private static async searchInMembros(normalizedQuery: string): Promise<SearchResult[]> {
     try {
       const response = await axiosClient.get("/membros");
-      const membros = response.data as IMembros[];
+      const membros = Array.isArray(response.data) ? response.data : [];
 
-      const matchingMembros = (membros || []).filter((membro) => {
-        const haystack = this.normalizeText(`${membro.nome} ${membro.biografia || ""} ${membro.cargo || ""}`);
-        return haystack.includes(normalizedQuery);
-      });
+      const matchingMembros = membros.filter((membro) =>
+        matchAny(normalizedQuery, [membro.nome, membro.cargo, membro.biografia]),
+      );
 
       return matchingMembros.map((membro) => ({
         id: membro.id,
-        title: membro.nome,
+        // Em alguns retornos o nome pode vir em outra chave.
+        title: (membro as any)?.nome || (membro as any)?.title || (membro as any)?.name || "Acadêmico",
         type: "membro" as const,
         excerpt: membro.cargo,
         content: membro.biografia,
@@ -118,132 +110,106 @@ export class SearchService {
     }
   }
 
-  // =============================
-  // Presidentes
-  // =============================
-  private static async searchInPresidentes(normalizedQuery: string): Promise<SearchResult[]> {
+  // ==============================
+  // Artigos
+  // ==============================
+  private static async searchInArtigos(normalizedQuery: string): Promise<SearchResult[]> {
     try {
-      const response = await axiosClient.get("/presidentes");
-      const presidentes = response.data;
+      const response = await axiosClient.get("/artigos");
+      const artigos = Array.isArray(response.data) ? response.data : [];
 
-      const matching = (presidentes || []).filter((p: any) => {
-        const haystack = this.normalizeText(`${p.title} ${p.description || ""}`);
-        return haystack.includes(normalizedQuery);
-      });
+      const matchingArtigos = artigos.filter((artigo) =>
+        matchAny(normalizedQuery, [artigo.title, artigo.resumo, artigo.conteudo]),
+      );
 
-      return matching.map((p: any) => ({
-        id: p.id,
-        title: p.title,
-        type: "presidente" as const,
-        excerpt: p.description,
-        content: p.description,
+      return matchingArtigos.map((artigo) => ({
+        id: artigo.id,
+        title: artigo.title,
+        type: "artigo" as const,
+        excerpt: artigo.resumo,
+        content: artigo.conteudo,
+        date: artigo.date,
+        imagem_destacada: artigo.imagem_destacada,
       }));
     } catch (error) {
-      console.error("Erro ao buscar presidentes:", error);
+      console.error("Erro ao buscar artigos:", error);
       return [];
     }
   }
 
-  // =============================
-  // Diretoria
-  // =============================
-  private static async searchInDiretoria(normalizedQuery: string): Promise<SearchResult[]> {
+  // ==============================
+  // Blog
+  // ==============================
+  private static async searchInBlog(normalizedQuery: string): Promise<SearchResult[]> {
     try {
-      const response = await axiosClient.get("/diretoria");
-      const diretoria = response.data;
+      const response = await axiosClient.get("/blog");
+      const posts = Array.isArray(response.data) ? response.data : [];
 
-      const matching = (diretoria || []).filter((d: any) => {
-        const haystack = this.normalizeText(`${d.title} ${d.description || ""}`);
-        return haystack.includes(normalizedQuery);
-      });
+      const matchingPosts = posts.filter((post) =>
+        matchAny(normalizedQuery, [post.title, post.resumo, post.content]),
+      );
 
-      return matching.map((d: any) => ({
-        id: d.id,
-        title: d.title,
-        type: "diretoria" as const,
-        excerpt: d.description,
-        content: d.description,
+      return matchingPosts.map((post) => ({
+        id: post.id,
+        title: post.title,
+        type: "blog" as const,
+        excerpt: post.resumo,
+        content: post.content,
+        date: post.date,
+        image: post.image,
       }));
     } catch (error) {
-      console.error("Erro ao buscar diretoria:", error);
+      console.error("Erro ao buscar blog:", error);
       return [];
     }
   }
 
-  // =============================
-  // Sócios Correspondentes (lista + detalhe)
-  // =============================
-  private static async searchInSociosCorrespondentes(normalizedQuery: string): Promise<SearchResult[]> {
+  // ==============================
+  // Atividades Literárias
+  // ==============================
+  private static async searchInAtividadesLiterarias(normalizedQuery: string): Promise<SearchResult[]> {
     try {
-      const response = await axiosClient.get("/socios-correspondentes");
-      const socios = response.data;
+      const response = await axiosClient.get("/atividades-literarias");
+      const posts = Array.isArray(response.data) ? response.data : [];
 
-      // 1) filtra para reduzir chamadas
-      const matchingSocios = (socios || []).filter((socio: any) => {
-        const haystack = this.normalizeText(`${socio.title} ${socio.resumo || socio.description || ""}`);
-        return haystack.includes(normalizedQuery);
-      });
+      const matching = posts.filter((post) =>
+        matchAny(normalizedQuery, [post.title, post.conteudo, post.midia]),
+      );
 
-      // 2) busca detalhe para conteúdo completo
-      const socioDetailsPromises = matchingSocios.map(async (socio: any) => {
-        try {
-          const detailResponse = await axiosClient.get(`/socio-correspondente/${socio.id}`);
-          const detail = Array.isArray(detailResponse.data) ? detailResponse.data[0] : detailResponse.data;
-
-          return {
-            ...socio,
-            description: detail?.description || socio.description,
-            resumo: detail?.resumo || socio.resumo,
-            foto: detail?.foto || socio.foto,
-          };
-        } catch {
-          return socio;
-        }
-      });
-
-      const detailedSocios = await Promise.all(socioDetailsPromises);
-
-      // 3) re-filtra incluindo conteúdo completo
-      const final = detailedSocios.filter((socio: any) => {
-        const haystack = this.normalizeText(`${socio.title} ${socio.resumo || ""} ${socio.description || ""}`);
-        return haystack.includes(normalizedQuery);
-      });
-
-      return final.map((socio: any) => ({
-        id: socio.id,
-        title: socio.title,
-        type: "socio-correspondente" as const,
-        excerpt: socio.resumo || socio.description,
-        content: socio.description,
-        foto: socio.foto,
+      return matching.map((post) => ({
+        id: post.id,
+        title: post.title,
+        type: "atividade-literaria" as const,
+        excerpt: "",
+        content: post.conteudo,
+        date: post.date,
+        image: post.capa,
       }));
     } catch (error) {
-      console.error("Erro ao buscar sócios correspondentes:", error);
+      console.error("Erro ao buscar atividades literárias:", error);
       return [];
     }
   }
 
-  // =============================
+  // ==============================
   // Academias Regionais
-  // =============================
+  // ==============================
   private static async searchInAcademiasRegionais(normalizedQuery: string): Promise<SearchResult[]> {
     try {
       const response = await axiosClient.get("/academias-regionais");
       const page = Array.isArray(response.data) ? response.data[0] : response.data;
-      const academias = page?.academias ?? [];
+      const academias = Array.isArray(page?.academias) ? page.academias : [];
 
-      const matching = academias.filter((a: any) => {
-        const haystack = this.normalizeText(`${a?.nome || ""} ${a?.informacoes || ""}`);
-        return haystack.includes(normalizedQuery);
-      });
+      const matching = academias.filter((a: any) => matchAny(normalizedQuery, [a?.nome, a?.informacoes]));
 
       return matching.map((a: any, idx: number) => ({
         // academias não possuem id; usamos índice (estável dentro da resposta)
         id: typeof a?.id === "number" ? a.id : idx,
         title: a?.nome || "Academia Regional",
         type: "academia-regional" as const,
-        excerpt: a?.informacoes,
-        content: a?.informacoes,
+        // Resultados devem exibir apenas o nome (sem HTML/conteúdo).
+        excerpt: "",
+        content: "",
         foto: a?.foto,
         url: "/academias-regionais",
       }));
@@ -253,72 +219,48 @@ export class SearchService {
     }
   }
 
-  // =============================
-  // Atividades Literárias (lista + detalhe)
-  // =============================
-  private static async searchInAtividadesLiterarias(normalizedQuery: string): Promise<SearchResult[]> {
+  // ==============================
+  // Sócios Correspondentes
+  // ==============================
+  private static async searchInSociosCorrespondentes(normalizedQuery: string): Promise<SearchResult[]> {
     try {
-      const response = await axiosClient.get("/atividades-literarias");
-      const list = response.data;
+      const response = await axiosClient.get("/socios-correspondentes");
+      const socios = Array.isArray(response.data) ? response.data : [];
 
-      const matching = (list || []).filter((p: any) => {
-        const haystack = this.normalizeText(`${p?.title || ""} ${p?.resumo || ""}`);
-        return haystack.includes(normalizedQuery);
-      });
+      const matching = socios.filter((s) => matchAny(normalizedQuery, [s.title, s.resumo, s.content]));
 
-      const detailPromises = matching.map(async (p: any) => {
-        try {
-          const detailResp = await axiosClient.get(`/atividades-literarias/${p.id}`);
-          const detail = Array.isArray(detailResp.data) ? detailResp.data[0] : detailResp.data;
-          return { ...p, ...detail };
-        } catch {
-          return p;
-        }
-      });
-
-      const detailed = await Promise.all(detailPromises);
-
-      const final = detailed.filter((p: any) => {
-        const haystack = this.normalizeText(`${p?.title || ""} ${p?.resumo || ""} ${p?.conteudo || ""} ${p?.midia || ""}`);
-        return haystack.includes(normalizedQuery);
-      });
-
-      return final.map((p: any) => ({
-        id: p.id,
-        title: p.title,
-        type: "atividade-literaria" as const,
-        excerpt: p.resumo,
-        content: p.conteudo,
-        date: p.date,
-        foto: p.capa,
-        url: `/atividades-literarias/${p.id}`,
+      return matching.map((s) => ({
+        id: s.id,
+        title: s.title,
+        type: "socio-correspondente" as const,
+        excerpt: s.resumo,
+        content: s.content,
+        image: s.imagem_destacada,
+        url: "/socios-correspondentes",
       }));
     } catch (error) {
-      console.error("Erro ao buscar atividades literárias:", error);
+      console.error("Erro ao buscar sócios correspondentes:", error);
       return [];
     }
   }
 
-  // =============================
-  // Revistas (Revista Convergência)
-  // =============================
+  // ==============================
+  // Revistas
+  // ==============================
   private static async searchInRevistas(normalizedQuery: string): Promise<SearchResult[]> {
     try {
       const response = await axiosClient.get("/revistas");
-      const page = Array.isArray(response.data) ? response.data[0] : response.data;
-      const revistas = page?.revista ?? [];
+      const revistas = Array.isArray(response.data) ? response.data : [];
 
-      const matching = revistas.filter((r: any) => {
-        const haystack = this.normalizeText(`${r?.titulo_da_revista || ""} ${r?.descricao || ""} ${r?.edicao || ""}`);
-        return haystack.includes(normalizedQuery);
-      });
+      const matching = revistas.filter((r) => matchAny(normalizedQuery, [r.title, r.edicao, r.descricao]));
 
-      return matching.map((r: any, idx: number) => ({
-        id: typeof r?.id === "number" ? r.id : idx,
-        title: r?.titulo_da_revista || "Revista",
+      return matching.map((r) => ({
+        id: r.id,
+        title: r.title,
         type: "revista" as const,
-        excerpt: r?.descricao,
-        foto: r?.capa,
+        excerpt: r.descricao,
+        content: r.descricao,
+        image: r.capa,
         url: "/revistas",
       }));
     } catch (error) {
@@ -327,26 +269,23 @@ export class SearchService {
     }
   }
 
-  // =============================
+  // ==============================
   // Jornal Eco
-  // =============================
+  // ==============================
   private static async searchInJornalEco(normalizedQuery: string): Promise<SearchResult[]> {
     try {
       const response = await axiosClient.get("/jornal-eco");
-      const page = Array.isArray(response.data) ? response.data[0] : response.data;
-      const itens = page?.jornal_eco ?? [];
+      const items = Array.isArray(response.data) ? response.data : [];
 
-      const matching = itens.filter((j: any) => {
-        const haystack = this.normalizeText(`${j?.titulo_do_jornal || ""} ${j?.descricao || ""}`);
-        return haystack.includes(normalizedQuery);
-      });
+      const matching = items.filter((j) => matchAny(normalizedQuery, [j.title, j.descricao]));
 
-      return matching.map((j: any, idx: number) => ({
-        id: typeof j?.id === "number" ? j.id : idx,
-        title: j?.titulo_do_jornal || "Jornal Eco",
+      return matching.map((j) => ({
+        id: j.id,
+        title: j.title,
         type: "jornal-eco" as const,
-        excerpt: j?.descricao,
-        foto: j?.capa,
+        excerpt: j.descricao,
+        content: j.descricao,
+        image: j.capa,
         url: "/jornal-eco",
       }));
     } catch (error) {
@@ -355,28 +294,26 @@ export class SearchService {
     }
   }
 
-  // =============================
-  // Acervo Bibliográfico
-  // =============================
+  // ==============================
+  // Acervo
+  // ==============================
   private static async searchInAcervo(normalizedQuery: string): Promise<SearchResult[]> {
     try {
       const response = await axiosClient.get("/acervo");
-      const data = response.data;
-      const titulos = data?.titulos ?? [];
+      const page = Array.isArray(response.data) ? response.data[0] : response.data;
+      const titulos = Array.isArray(page?.titulos) ? page.titulos : [];
 
-      const matching = titulos.filter((t: any) => {
-        const haystack = this.normalizeText(`${t?.autor || ""} ${t?.titulo || ""}`);
-        return haystack.includes(normalizedQuery);
-      });
+      const matching = titulos.filter((t: any) => matchAny(normalizedQuery, [t?.autor, t?.titulo]));
 
       return matching.map((t: any, idx: number) => ({
         id: idx,
-        title: t?.titulo || "Título",
+        title: `${t?.autor || "Autor"} — ${t?.titulo || "Título"}`,
         type: "acervo" as const,
-        excerpt: t?.autor ? `Autor: ${t.autor}` : undefined,
-        autor: t?.autor,
-        foto: t?.capa,
+        excerpt: "",
+        content: "",
+        image: t?.capa,
         url: "/acervo",
+        foundIn: t?.autor ? "Autor" : "Título",
       }));
     } catch (error) {
       console.error("Erro ao buscar acervo:", error);
@@ -384,179 +321,63 @@ export class SearchService {
     }
   }
 
-  // =============================
-  // API pública
-  // =============================
-  static async searchAll(query: string, filters: SearchFilters = {}): Promise<SearchResponse> {
-    try {
-      const normalizedQuery = this.normalizeText(query);
+  // ==============================
+  // Presidentes
+  // ==============================
+private static async searchInPresidentes(normalizedQuery: string): Promise<SearchResult[]> {
+  try {
+    const response = await axiosClient.get("/presidentes");
+    const list = Array.isArray(response.data) ? response.data : [];
 
-      const [
-        membros,
-        artigosCompletos,
-        blogCompletos,
-        presidentes,
-        diretoria,
-        sociosCorrespondentes,
-        academiasRegionais,
-        atividadesLiterarias,
-        revistas,
-        jornalEco,
-        acervo,
-      ] = await Promise.all([
-        this.searchInMembros(normalizedQuery),
-        this.searchInArtigos(normalizedQuery),
-        this.searchInBlog(normalizedQuery),
-        this.searchInPresidentes(normalizedQuery),
-        this.searchInDiretoria(normalizedQuery),
-        this.searchInSociosCorrespondentes(normalizedQuery),
-        this.searchInAcademiasRegionais(normalizedQuery),
-        this.searchInAtividadesLiterarias(normalizedQuery),
-        this.searchInRevistas(normalizedQuery),
-        this.searchInJornalEco(normalizedQuery),
-        this.searchInAcervo(normalizedQuery),
-      ]);
+    const matching = list.filter((p: any) =>
+      matchAny(normalizedQuery, [
+        p?.nome,
+        p?.title,
+        p?.name,
+        p?.periodo,
+        p?.biografia,
+        p?.content,
+      ]),
+    );
 
-      // Converter artigos e blog para SearchResult
-      const artigos: SearchResult[] = (artigosCompletos || []).map((artigo) => ({
-        id: artigo.id,
-        title: artigo.title,
-        type: "artigo" as const,
-        excerpt: artigo.resumo,
-        content: artigo.conteudo,
-        date: artigo.date,
-        autor: artigo.academico?.[0]?.nome,
-        foto: artigo.imagem_topo,
-      }));
-
-      const blog: SearchResult[] = (blogCompletos || []).map((post) => ({
-        id: post.id,
-        title: post.title,
-        type: "blog" as const,
-        excerpt: post.resumo,
-        content: post.conteudo,
-        date: post.date,
-        foto: post.imagem_topo,
-      }));
-
-      let results: SearchResponse = {
-        membros,
-        artigos,
-        blog,
-        presidentes,
-        diretoria,
-        sociosCorrespondentes,
-        academiasRegionais,
-        atividadesLiterarias,
-        revistas,
-        jornalEco,
-        acervo,
-      };
-
-      // Aplicar filtro por tipo
-      if (filters.type && filters.type !== "all") {
-        const filteredResults: SearchResponse = {
-          membros: [],
-          artigos: [],
-          blog: [],
-          presidentes: [],
-          diretoria: [],
-          sociosCorrespondentes: [],
-          academiasRegionais: [],
-          atividadesLiterarias: [],
-          revistas: [],
-          jornalEco: [],
-          acervo: [],
-        };
-
-        if (filters.type === "membro") filteredResults.membros = results.membros;
-        if (filters.type === "artigo") filteredResults.artigos = results.artigos;
-        if (filters.type === "blog") filteredResults.blog = results.blog;
-        if (filters.type === "presidente") filteredResults.presidentes = results.presidentes;
-        if (filters.type === "diretoria") filteredResults.diretoria = results.diretoria;
-        if (filters.type === "socio-correspondente") filteredResults.sociosCorrespondentes = results.sociosCorrespondentes;
-        if (filters.type === "academia-regional") filteredResults.academiasRegionais = results.academiasRegionais;
-        if (filters.type === "atividade-literaria") filteredResults.atividadesLiterarias = results.atividadesLiterarias;
-        if (filters.type === "revista") filteredResults.revistas = results.revistas;
-        if (filters.type === "jornal-eco") filteredResults.jornalEco = results.jornalEco;
-        if (filters.type === "acervo") filteredResults.acervo = results.acervo;
-
-        results = filteredResults;
-      }
-
-      // Aplicar limite
-      if (filters.limit) {
-        (Object.keys(results) as Array<keyof SearchResponse>).forEach((key) => {
-          results[key] = results[key].slice(0, filters.limit);
-        });
-      }
-
-      return results;
-    } catch (error) {
-      console.error("Erro na busca global:", error);
-      return {
-        membros: [],
-        artigos: [],
-        blog: [],
-        presidentes: [],
-        diretoria: [],
-        sociosCorrespondentes: [],
-        academiasRegionais: [],
-        atividadesLiterarias: [],
-        revistas: [],
-        jornalEco: [],
-        acervo: [],
-      };
-    }
+    return matching.map((p: any) => ({
+      id: p.id,
+      title: p?.nome || p?.title || p?.name || "Presidente",
+      type: "presidente" as const,
+      excerpt: p?.periodo || "",
+      content: p?.biografia || p?.content || "",
+      image: p?.foto || p?.imagem || p?.image || "",
+      url: "/presidentes",
+    }));
+  } catch (error) {
+    console.error("Erro ao buscar presidentes:", error);
+    return [];
   }
+}
 
-  static async universalSearch(query: string): Promise<SearchResult[]> {
+
+  // ==============================
+  // Diretoria
+  // ==============================
+  private static async searchInDiretoria(normalizedQuery: string): Promise<SearchResult[]> {
     try {
-      const searchResponse = await this.searchAll(query);
+      const response = await axiosClient.get("/diretoria");
+      const list = Array.isArray(response.data) ? response.data : [];
 
-      const allResults = [
-        ...searchResponse.membros,
-        ...searchResponse.artigos,
-        ...searchResponse.blog,
-        ...searchResponse.presidentes,
-        ...searchResponse.diretoria,
-        ...searchResponse.sociosCorrespondentes,
-        ...searchResponse.academiasRegionais,
-        ...searchResponse.atividadesLiterarias,
-        ...searchResponse.revistas,
-        ...searchResponse.jornalEco,
-        ...searchResponse.acervo,
-      ];
+      const matching = list.filter((d) => matchAny(normalizedQuery, [d.nome, d.cargo, d.biografia]));
 
-      // Ordenar por relevância simples (titulo > excerpt > content)
-      const searchText = this.normalizeText(query);
-
-      return allResults.sort((a, b) => {
-        const aTitle = this.normalizeText(a.title);
-        const bTitle = this.normalizeText(b.title);
-
-        const aHasInTitle = aTitle.includes(searchText) ? 1 : 0;
-        const bHasInTitle = bTitle.includes(searchText) ? 1 : 0;
-
-        if (aHasInTitle !== bHasInTitle) return bHasInTitle - aHasInTitle;
-
-        const aExcerpt = this.normalizeText(a.excerpt || a.resumo || "");
-        const bExcerpt = this.normalizeText(b.excerpt || b.resumo || "");
-
-        const aHasInExcerpt = aExcerpt.includes(searchText) ? 1 : 0;
-        const bHasInExcerpt = bExcerpt.includes(searchText) ? 1 : 0;
-
-        if (aHasInExcerpt !== bHasInExcerpt) return bHasInExcerpt - aHasInExcerpt;
-
-        return 0;
-      });
+      return matching.map((d) => ({
+        id: d.id,
+        title: d.nome,
+        type: "diretoria" as const,
+        excerpt: d.cargo,
+        content: d.biografia,
+        image: d.foto,
+        url: "/diretoria",
+      }));
     } catch (error) {
-      console.error("Erro na busca universal:", error);
+      console.error("Erro ao buscar diretoria:", error);
       return [];
     }
-  }
-
-  static async quickSearch(query: string, limit: number = 5): Promise<SearchResult[]> {
-    return this.universalSearch(query).then((results) => results.slice(0, limit));
   }
 }

@@ -224,13 +224,9 @@ export default function Buscar() {
                         {result.date && <span className="text-xs text-gray-500">{result.date}</span>}
                       </div>
 
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2 truncate">{result.title}</h3>
-
-                      {(result.excerpt || result.resumo || result.summary) && (
-                        <p className="text-gray-600 text-sm leading-relaxed line-clamp-2">
-                          {result.excerpt || result.resumo || result.summary}
-                        </p>
-                      )}
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2 truncate">
+                        {result.title}
+                      </h3>
 
                       {result.foundIn && (
                         <p className="text-xs text-gray-500 mt-2">
