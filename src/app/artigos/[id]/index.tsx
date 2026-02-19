@@ -1,23 +1,26 @@
-import { IArtigosId } from "../types/IArtigos"
-import { useParams } from "react-router-dom"
-import { useContentId } from "@/hooks/useContentId"
-import { Link } from "react-router-dom"
-import { PageHeader } from "@/components/PageHeader"
-import { FaBookOpen } from "react-icons/fa"
+import { IArtigosId } from "../types/IArtigos";
+import { useParams } from "react-router-dom";
+import { useContentId } from "@/hooks/useContentId";
+import { Link } from "react-router-dom";
+import { PageHeader } from "@/components/PageHeader";
+import { FaBookOpen } from "react-icons/fa";
 
 export default function ArtigosDetails() {
-  const { id } = useParams()
-  const { data: artigoData, loading, error } = useContentId<IArtigosId>("/artigo", String(id))
+  const { id } = useParams();
+  const { data: artigoData, loading, error } = useContentId<IArtigosId>(
+    "/artigo",
+    String(id),
+  );
 
   // Como useContentId retorna um array, pegamos o primeiro item
-  const artigo = Array.isArray(artigoData) ? artigoData[0] : artigoData
+  const artigo = Array.isArray(artigoData) ? artigoData[0] : artigoData;
 
   if (loading) {
     return (
       <div className="min-h-screen flex justify-center items-center">
         <div className="text-lg text-gray-600">Carregando artigo...</div>
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -25,7 +28,7 @@ export default function ArtigosDetails() {
       <div className="min-h-screen flex justify-center items-center">
         <div className="text-lg text-red-600">Erro ao carregar o artigo</div>
       </div>
-    )
+    );
   }
 
   if (!artigo) {
@@ -33,7 +36,7 @@ export default function ArtigosDetails() {
       <div className="min-h-screen flex justify-center items-center">
         <div className="text-lg text-gray-600">Artigo não encontrado</div>
       </div>
-    )
+    );
   }
 
   return (
@@ -72,15 +75,57 @@ export default function ArtigosDetails() {
                 {/* Resumo */}
                 {artigo.resumo && (
                   <div className="mb-8 p-6 bg-gray-50 rounded-lg border-l-4 border-[#c1a44e]">
-                    <h2 className="text-lg font-semibold text-gray-900 mb-3">Resumo</h2>
-                    <p className="text-gray-700 leading-relaxed">{artigo.resumo}</p>
+                    <h2 className="text-lg font-semibold text-gray-900 mb-3">
+                      Resumo
+                    </h2>
+                    <p className="text-gray-700 leading-relaxed">
+                      {artigo.resumo}
+                    </p>
                   </div>
                 )}
 
                 {/* Conteúdo */}
-                <div className="prose prose-lg max-w-none">
+                <div className="article-content prose prose-lg max-w-none">
                   <div dangerouslySetInnerHTML={{ __html: artigo.conteudo }} />
                 </div>
+
+                <style>{`
+  /* Centraliza figuras do WP (imagem + legenda) */
+  .article-content figure,
+  .article-content .wp-caption {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Faz a imagem ficar centralizada */
+  .article-content img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Estrutura padrão do Gutenberg */
+  .article-content figure {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Centraliza a legenda */
+  .article-content figcaption,
+  .article-content .wp-caption-text,
+  .article-content .wp-element-caption {
+    text-align: center;
+    margin-top: 0.5rem;
+    color: #6b7280; /* gray-500 */
+    font-size: 0.95rem;
+    line-height: 1.4;
+  }
+`}</style>
+
+
               </div>
             </article>
 
@@ -90,8 +135,18 @@ export default function ArtigosDetails() {
                 to="/"
                 className="inline-flex items-center px-4 py-2 text-gray-600 hover:text-[#c1a44e] transition-colors"
               >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                <svg
+                  className="w-4 h-4 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
                 </svg>
                 Voltar à página inicial
               </Link>
@@ -109,7 +164,10 @@ export default function ArtigosDetails() {
                 {artigo.academico && artigo.academico.length > 0 ? (
                   <div className="space-y-4">
                     {artigo.academico.map(
-                      (academico: { id: number; nome: string; foto: string }, index: number) => (
+                      (
+                        academico: { id: number; nome: string; foto: string },
+                        index: number,
+                      ) => (
                         <Link
                           key={index}
                           to={`/membros/${academico.id}`}
@@ -136,12 +194,14 @@ export default function ArtigosDetails() {
                             </div>
                           </div>
                         </Link>
-                      )
+                      ),
                     )}
                   </div>
                 ) : (
                   <div className="text-center py-8">
-                    <p className="text-gray-500 text-sm">Nenhum acadêmico citado neste artigo</p>
+                    <p className="text-gray-500 text-sm">
+                      Nenhum acadêmico citado neste artigo
+                    </p>
                   </div>
                 )}
               </div>
@@ -150,5 +210,5 @@ export default function ArtigosDetails() {
         </div>
       </div>
     </div>
-  )
+  );
 }

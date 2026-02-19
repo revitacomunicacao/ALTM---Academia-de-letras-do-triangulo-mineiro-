@@ -215,7 +215,7 @@ export default function SociosCorrespondentes() {
         </Card>
       </div>
 
-      {/* Dialog com Biografia */}
+      {/* Dialog com Biografia + Foto + Resumo */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
@@ -227,8 +227,33 @@ export default function SociosCorrespondentes() {
             </DialogDescription>
           </DialogHeader>
 
+          {/* Foto destacada */}
+          {selectedSocio?.foto ? (
+            <div className="mt-4 rounded-xl border bg-white overflow-hidden">
+              <div className="w-full h-[260px] md:h-[360px] flex items-center justify-center bg-gray-50">
+                <img
+                  src={selectedSocio.foto}
+                  alt={selectedSocio.title}
+                  className="max-w-full max-h-full object-contain"
+                  draggable={false}
+                />
+              </div>
+            </div>
+          ) : null}
+
+          {/* Resumo */}
+          {selectedSocio?.resumo ? (
+            <div className="mt-6 rounded-xl border bg-altm-gold-50 p-5">
+              <h4 className="text-sm font-semibold text-altm-gold-800 mb-2">
+                Biografia
+              </h4>
+              <p className="text-gray-800 leading-relaxed">{selectedSocio.resumo}</p>
+            </div>
+          ) : null}
+
+          {/* Biografia (conteúdo) */}
           <div
-            className="prose prose-gray max-w-none mt-4"
+            className="prose prose-gray max-w-none mt-6"
             dangerouslySetInnerHTML={{
               __html: selectedSocio?.description || "",
             }}
