@@ -1,25 +1,30 @@
 export interface SearchResult {
   id: number;
   title: string;
-  type: 'membro' | 'artigo' | 'blog' | 'presidente' | 'diretoria' | 'socio-correspondente';
+  type:
+    | 'membro'
+    | 'artigo'
+    | 'blog'
+    | 'presidente'
+    | 'diretoria'
+    | 'socio-correspondente'
+    | 'academia-regional'
+    | 'atividade-literaria'
+    | 'revista'
+    | 'jornal-eco'
+    | 'acervo';
   excerpt?: string;
   resumo?: string;
   summary?: string;
   slug?: string;
   link?: string;
+  date?: string;
   image?: string;
   foto?: string;
   imagem_destacada?: string;
-  date?: string;
-  academico?: {
-    id: number;
-    nome: string;
-    foto: string;
-  };
-  cadeira?: string;
-  posicao?: string;
-  foundIn?: string; // Onde foi encontrado (biografia, discurso_de_posse, etc.)
-  context?: string; // Contexto ao redor do termo encontrado
+  foundIn?: string;
+  autor?: string;
+  url?: string;
 }
 
 export interface SearchResponse {
@@ -29,9 +34,26 @@ export interface SearchResponse {
   presidentes: SearchResult[];
   diretoria: SearchResult[];
   sociosCorrespondentes: SearchResult[];
+  academiasRegionais: SearchResult[];
+  atividadesLiterarias: SearchResult[];
+  revistas: SearchResult[];
+  jornalEco: SearchResult[];
+  acervo: SearchResult[];
 }
 
 export interface SearchFilters {
-  type?: 'all' | 'membro' | 'artigo' | 'blog' | 'presidente' | 'diretoria' | 'socio-correspondente';
+  type?:
+    | 'all'
+    | 'membro'
+    | 'artigo'
+    | 'blog'
+    | 'presidente'
+    | 'diretoria'
+    | 'socio-correspondente'
+    | 'academia-regional'
+    | 'atividade-literaria'
+    | 'revista'
+    | 'jornal-eco'
+    | 'acervo';
   limit?: number;
 }
