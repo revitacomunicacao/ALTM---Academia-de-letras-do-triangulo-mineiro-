@@ -241,25 +241,79 @@ export default function SociosCorrespondentes() {
             </div>
           ) : null}
 
-          {/* Resumo */}
-          {selectedSocio?.resumo ? (
-            <div className="mt-6 rounded-xl border bg-altm-gold-50 p-5">
-              <h4 className="text-sm font-semibold text-altm-gold-800 mb-2">
-                Biografia
-              </h4>
-              <p className="text-gray-800 leading-relaxed">{selectedSocio.resumo}</p>
-            </div>
-          ) : null}
-
           {/* Biografia (conteúdo) */}
           <div
-            className="prose prose-gray max-w-none mt-6"
+            className="prose prose-gray max-w-none mt-6 socios-lightbox-content"
             dangerouslySetInnerHTML={{
               __html: selectedSocio?.description || "",
             }}
           />
         </DialogContent>
       </Dialog>
+
+      <style>{`
+            /* Base */
+            .socios-lightbox-content img,
+            .socios-lightbox-content video,
+            .socios-lightbox-content iframe,
+            .socios-lightbox-content audio {
+              max-width: 100% !important;
+              height: auto !important;
+            }
+
+            /* Remove floats/align do WP para não “grudar” à esquerda */
+            .socios-lightbox-content img,
+            .socios-lightbox-content figure,
+            .socios-lightbox-content .wp-caption,
+            .socios-lightbox-content .wp-block-image,
+            .socios-lightbox-content .alignleft,
+            .socios-lightbox-content .alignright,
+            .socios-lightbox-content .aligncenter,
+            .socios-lightbox-content .alignnone {
+              float: none !important;
+              clear: both !important;
+            }
+
+            /* Centraliza wrappers de imagem */
+            .socios-lightbox-content figure.wp-block-image,
+            .socios-lightbox-content .wp-block-image,
+            .socios-lightbox-content figure,
+            .socios-lightbox-content .wp-caption {
+              margin-left: auto !important;
+              margin-right: auto !important;
+              text-align: center !important;
+              width: auto !important;
+              max-width: 100% !important;
+            }
+
+            /* Centraliza imagens (inclusive dentro de link) */
+            .socios-lightbox-content figure img,
+            .socios-lightbox-content .wp-block-image img,
+            .socios-lightbox-content p > img,
+            .socios-lightbox-content a > img,
+            .socios-lightbox-content img.alignleft,
+            .socios-lightbox-content img.alignright,
+            .socios-lightbox-content img.aligncenter,
+            .socios-lightbox-content img.alignnone {
+              display: block !important;
+              margin-left: auto !important;
+              margin-right: auto !important;
+            }
+
+            /* Centraliza legendas */
+            .socios-lightbox-content figcaption,
+            .socios-lightbox-content .wp-element-caption,
+            .socios-lightbox-content .wp-caption-text {
+              text-align: center !important;
+              margin-left: auto !important;
+              margin-right: auto !important;
+            }
+
+            /* Limpa floats residuais de HTML legado */
+            .socios-lightbox-content p {
+              overflow: hidden;
+            }
+          `}</style>
     </div>
   )
 }
