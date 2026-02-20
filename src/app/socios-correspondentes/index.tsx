@@ -215,9 +215,9 @@ export default function SociosCorrespondentes() {
         </Card>
       </div>
 
-      {/* Dialog com Biografia + Foto + Resumo */}
+      {/* Dialog com Biografia + Foto + Resumo (header fixo + conteúdo com scroll) */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-3xl">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold text-altm-gold-800">
               {selectedSocio?.title}
@@ -227,27 +227,30 @@ export default function SociosCorrespondentes() {
             </DialogDescription>
           </DialogHeader>
 
-          {/* Foto destacada */}
-          {selectedSocio?.foto ? (
-            <div className="mt-4 rounded-xl border bg-white overflow-hidden">
-              <div className="w-full h-[260px] md:h-[360px] flex items-center justify-center bg-gray-50">
-                <img
-                  src={selectedSocio.foto}
-                  alt={selectedSocio.title}
-                  className="max-w-full max-h-full object-contain"
-                  draggable={false}
-                />
+          {/* Scroll somente do conteúdo */}
+          <div className="no-scrollbar -mx-6 max-h-[70vh] overflow-y-auto px-6">
+            {/* Foto destacada */}
+            {selectedSocio?.foto ? (
+              <div className="mt-4 rounded-xl border bg-white overflow-hidden">
+                <div className="w-full h-[260px] md:h-[360px] flex items-center justify-center bg-gray-50">
+                  <img
+                    src={selectedSocio.foto}
+                    alt={selectedSocio.title}
+                    className="max-w-full max-h-full object-contain"
+                    draggable={false}
+                  />
+                </div>
               </div>
-            </div>
-          ) : null}
+            ) : null}
 
-          {/* Biografia (conteúdo) */}
-          <div
-            className="prose prose-gray max-w-none mt-6 socios-lightbox-content"
-            dangerouslySetInnerHTML={{
-              __html: selectedSocio?.description || "",
-            }}
-          />
+            {/* Biografia (conteúdo) */}
+            <div
+              className="prose prose-gray max-w-none mt-6 socios-lightbox-content"
+              dangerouslySetInnerHTML={{
+                __html: selectedSocio?.description || "",
+              }}
+            />
+          </div>
         </DialogContent>
       </Dialog>
 
