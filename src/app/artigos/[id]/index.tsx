@@ -43,7 +43,7 @@ export default function ArtigosDetails() {
     <div className="min-h-screen bg-gray-50">
       <PageHeader
         title={artigo.title}
-        subtitle={`Por ${artigo.academico[0]?.nome || "Autor"} • ${artigo.date || "Data não informada"}`}
+        subtitle={`Por ${artigo.academico[0]?.nome || "Autor"}`}
         icon={<FaBookOpen />}
         breadcrumb={[
           { label: "Home", href: "/" },
@@ -63,14 +63,6 @@ export default function ArtigosDetails() {
                   {artigo.title}
                 </h1>
 
-                {/* Data */}
-                {artigo.date && (
-                  <div className="mb-6">
-                    <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-                      {artigo.date}
-                    </span>
-                  </div>
-                )}
 
                 {/* Resumo */}
                 {artigo.resumo && (
