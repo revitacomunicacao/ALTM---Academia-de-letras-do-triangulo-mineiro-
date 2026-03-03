@@ -245,10 +245,8 @@ export default function SociosCorrespondentes() {
 
             {/* Biografia (conteúdo) */}
             <div
-              className="prose prose-gray max-w-none mt-6 socios-lightbox-content"
-              dangerouslySetInnerHTML={{
-                __html: selectedSocio?.description || "",
-              }}
+              className="prose prose-gray max-w-none mt-6 socios-lightbox-content whitespace-pre-line"
+              dangerouslySetInnerHTML={{ __html: selectedSocio?.description || "" }}
             />
           </div>
         </DialogContent>
@@ -315,6 +313,10 @@ export default function SociosCorrespondentes() {
             /* Limpa floats residuais de HTML legado */
             .socios-lightbox-content p {
               overflow: hidden;
+            }
+
+            .socios-lightbox-content {
+            white-space: pre-line;
             }
           `}</style>
     </div>
