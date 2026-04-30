@@ -3,9 +3,10 @@ import { IArtigos } from "../types/IArtigos"
 import { PageHeader } from "@/components/PageHeader"
 import { Card } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
-import { FaBookOpen, FaUser, FaCalendarAlt, FaArrowRight, FaTimes } from "react-icons/fa"
+import { FaBookOpen, FaUser, FaArrowRight, FaTimes } from "react-icons/fa"
 import { Link } from "react-router-dom"
 import banner from "@/assets/background.jpg"
+import { useMemo, useState } from "react"
 
 // Componente de skeleton para o card de artigo
 const ArticleCardSkeleton = () => (
@@ -28,6 +29,22 @@ const ArticleCardSkeleton = () => (
 
 export const ListArtigos = () => {
   const { data: artigos, loading, error, refetch } = useContent<IArtigos>("/artigos")
+  const [autorId, setAutorId] = useState<number | "">("")
+
+  const autores = useMemo(() => {
+    const unique = new Map<number, { id: number; nome: string }>()
+    for (const a of artigos) {
+      if (a?.academico?.id && a?.academico?.nome && !unique.has(a.academico.id)) {
+        unique.set(a.academico.id, { id: a.academico.id, nome: a.academico.nome })
+      }
+    }
+    return Array.from(unique.values()).sort((a, b) => a.nome.localeCompare(b.nome))
+  }, [artigos])
+
+  const artigosFiltrados = useMemo(() => {
+    if (autorId === "") return artigos
+    return artigos.filter((a) => a?.academico?.id === autorId)
+  }, [artigos, autorId])
 
   if (loading) {
     return (
@@ -110,9 +127,44 @@ export const ListArtigos = () => {
           </p>
         </div>
 
+        {/* Filtro por autor */}
+        <Card className="mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-end gap-4">
+            <div className="flex-1">
+              <label htmlFor="autor" className="block text-sm font-medium text-gray-700 mb-2">
+                Filtrar por autor
+              </label>
+              <select
+                id="autor"
+                value={autorId}
+                onChange={(e) => setAutorId(e.target.value ? Number(e.target.value) : "")}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-altm-gold-500 focus:border-altm-gold-500 transition-colors"
+              >
+                <option value="">Todos os autores</option>
+                {autores.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.nome}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {autorId !== "" && (
+              <button
+                type="button"
+                onClick={() => setAutorId("")}
+                className="inline-flex items-center justify-center px-4 py-3 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+              >
+                <FaTimes className="w-4 h-4 mr-2" />
+                Limpar
+              </button>
+            )}
+          </div>
+        </Card>
+
         {/* Grid de artigos */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {artigos.map(({ 
+          {artigosFiltrados.map(({ 
             academico,
             date,
             id,
@@ -135,12 +187,13 @@ export const ListArtigos = () => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="text-lg font-semibold text-gray-800 truncate">
-                      {academico.nome}
+                      <Link
+                        to={`/membros/${academico.id}`}
+                        className="hover:text-altm-gold-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-altm-gold-500 rounded-sm transition-colors"
+                      >
+                        {academico.nome}
+                      </Link>
                     </h3>
-                    <div className="flex items-center space-x-1 text-sm text-gray-500">
-                      <FaCalendarAlt className="w-3 h-3" />
-                      <span>{new Date(date).toLocaleDateString('pt-BR')}</span>
-                    </div>
                   </div>
                 </div>
 
@@ -173,7 +226,7 @@ export const ListArtigos = () => {
         </div>
 
         {/* Mensagem quando não há artigos */}
-        {artigos && artigos.length === 0 && (
+        {artigosFiltrados && artigosFiltrados.length === 0 && (
           <div className="text-center py-16">
             <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <FaBookOpen className="text-gray-400 text-3xl" />

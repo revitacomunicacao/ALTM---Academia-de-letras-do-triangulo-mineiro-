@@ -1,14 +1,16 @@
 import { useContentId } from "@/hooks/useContentId"
-import { useParams, useLocation } from "react-router-dom"
-import { useState, useEffect } from "react"
+import { useParams, useLocation, Link } from "react-router-dom"
+import { useEffect, useMemo, useState } from "react"
 import type { IMembros } from "../types/IMembros"
 import { PageHeader } from "@/components/PageHeader"
 import { Card } from "@/components/ui/card"
 import { FaGraduationCap, FaUser, FaBookOpen, FaFileAlt, FaCalendarAlt, FaTimes, FaMapMarkerAlt, FaBirthdayCake, FaHeart, FaCrown, FaArrowLeft } from "react-icons/fa"
 import { Skeleton } from "@/components/ui/skeleton"
 import banner from "@/assets/background.jpg"
+import { useContent } from "@/hooks/useContent"
+import type { IArtigos } from "@/app/artigos/types/IArtigos"
 
-type TabType = 'perfil' | 'biografia' | 'bibliografia' | 'textos' | "Discurso de posse"
+type TabType = 'perfil' | 'biografia' | 'bibliografia' | 'textos' | 'artigos' | "Discurso de posse"
 
 // Componente de skeleton para a sidebar
 const SidebarSkeleton = () => (
@@ -63,6 +65,12 @@ export default function MembroDetails() {
   const [activeTab, setActiveTab] = useState<TabType>('perfil')
 
   const { data: membro, loading, error } = useContentId<IMembros>("/membros", Number(id))
+  const { data: artigos, loading: artigosLoading, error: artigosError, refetch: refetchArtigos } = useContent<IArtigos>("/artigos")
+
+  const artigosDoMembro = useMemo(() => {
+    if (!membro) return []
+    return artigos.filter((a) => a?.academico?.id === membro.id)
+  }, [artigos, membro])
 
   // Detecta hash na URL para abrir aba específica
   useEffect(() => {
@@ -82,6 +90,9 @@ export default function MembroDetails() {
           break;
         case 'textos-escolhidos':
           targetTab = 'textos';
+          break;
+        case 'artigos':
+          targetTab = 'artigos';
           break;
         default:
           targetTab = 'perfil';
@@ -398,6 +409,68 @@ export default function MembroDetails() {
             )}
           </div>
         )
+
+      case 'artigos':
+        return (
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-3 mb-4 sm:mb-6 p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <div className="p-2 bg-altm-gold-600 rounded-lg">
+                <FaBookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+              </div>
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-800 text-center">
+                Artigos publicados
+              </h2>
+            </div>
+
+            {artigosLoading ? (
+              <TextContentSkeleton />
+            ) : artigosError ? (
+              <div className="text-center py-12">
+                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <FaTimes className="text-red-500 text-2xl" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Erro ao carregar artigos</h3>
+                <p className="text-gray-600 text-sm mb-6">Não foi possível carregar os artigos deste acadêmico.</p>
+                <button
+                  type="button"
+                  onClick={() => refetchArtigos()}
+                  className="inline-flex items-center space-x-2 px-6 py-3 bg-altm-gold-600 text-white font-medium rounded-lg hover:bg-altm-gold-700 transition-colors"
+                >
+                  <FaBookOpen className="w-4 h-4" />
+                  <span>Tentar novamente</span>
+                </button>
+              </div>
+            ) : artigosDoMembro.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <FaBookOpen className="text-gray-400 text-2xl" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Nenhum artigo publicado</h3>
+                <p className="text-gray-600 text-sm">Este acadêmico ainda não possui artigos publicados no site.</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {artigosDoMembro.map((a) => (
+                  <Link
+                    key={a.id}
+                    to={`/artigos/${a.id}`}
+                    className="block p-4 bg-white border border-gray-200 rounded-lg hover:border-altm-gold-500 hover:shadow-md transition-all duration-200"
+                  >
+                    <h3 className="font-semibold text-gray-900 leading-snug hover:text-altm-gold-600 transition-colors">
+                      {a.title}
+                    </h3>
+                    {a.resumo && (
+                      <div
+                        className="mt-2 text-sm text-gray-600 line-clamp-2 prose prose-sm max-w-none"
+                        dangerouslySetInnerHTML={{ __html: a.resumo }}
+                      />
+                    )}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+        )
       
       case 'Discurso de posse':
         return (
@@ -541,6 +614,23 @@ export default function MembroDetails() {
                   >
                     <FaFileAlt className={`w-4 h-4 ${activeTab === 'textos' ? 'text-altm-gold-600' : 'text-gray-600'}`} />
                     <span className="font-medium text-sm">Textos Escolhidos</span>
+                  </button>
+                )}
+
+                {artigosDoMembro.length > 0 && (
+                  <button
+                    onClick={() => setActiveTab('artigos')}
+                    className={`w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center space-x-3 ${
+                      activeTab === 'artigos'
+                        ? 'bg-altm-gold-100 text-altm-gold-800 shadow-md border-2 border-altm-gold-600'
+                        : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200'
+                    }`}
+                  >
+                    <FaBookOpen className={`w-4 h-4 ${activeTab === 'artigos' ? 'text-altm-gold-600' : 'text-gray-600'}`} />
+                    <span className="font-medium text-sm">Artigos</span>
+                    <span className="ml-auto text-xs font-semibold text-gray-500">
+                      {artigosDoMembro.length}
+                    </span>
                   </button>
                 )}
                 

@@ -43,7 +43,6 @@ export default function ArtigosDetails() {
     <div className="min-h-screen bg-gray-50">
       <PageHeader
         title={artigo.title}
-        subtitle={`Por ${artigo.academico[0]?.nome || "Autor"}`}
         icon={<FaBookOpen />}
         breadcrumb={[
           { label: "Home", href: "/" },
@@ -53,15 +52,32 @@ export default function ArtigosDetails() {
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Coluna Esquerda - Conteúdo Principal */}
-          <div className="lg:col-span-2">
+        <div className="grid grid-cols-1 gap-8">
+          {/* Conteúdo Principal */}
+          <div>
             <article className="bg-white rounded-lg shadow-md overflow-hidden">
               <div className="p-8">
                 {/* Título */}
                 <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 leading-tight">
                   {artigo.title}
                 </h1>
+
+                {/* Autor (linkável) */}
+                <div className="-mt-4 mb-8 text-gray-600">
+                  Por{" "}
+                  {artigo.academico?.[0]?.id ? (
+                    <Link
+                      to={`/membros/${artigo.academico[0].id}`}
+                      className="font-semibold text-gray-800 hover:text-[#c1a44e] transition-colors"
+                    >
+                      {artigo.academico[0]?.nome || "Autor"}
+                    </Link>
+                  ) : (
+                    <span className="font-semibold text-gray-800">
+                      {artigo.academico?.[0]?.nome || "Autor"}
+                    </span>
+                  )}
+                </div>
 
 
                 {/* Resumo */}
@@ -142,61 +158,6 @@ export default function ArtigosDetails() {
                 </svg>
                 Voltar à página inicial
               </Link>
-            </div>
-          </div>
-
-          {/* Coluna Direita - Perfis dos Acadêmicos */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-md overflow-hidden sticky top-8">
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-6 text-center">
-                  Perfis dos acadêmicos citados
-                </h3>
-
-                {artigo.academico && artigo.academico.length > 0 ? (
-                  <div className="space-y-4">
-                    {artigo.academico.map(
-                      (
-                        academico: { id: number; nome: string; foto: string },
-                        index: number,
-                      ) => (
-                        <Link
-                          key={index}
-                          to={`/membros/${academico.id}`}
-                          className="block p-4 border border-gray-200 rounded-lg hover:border-[#c1a44e] hover:shadow-md transition-all duration-300"
-                        >
-                          <div className="flex items-center space-x-4">
-                            {/* Foto do Acadêmico */}
-                            {academico.foto && (
-                              <div className="flex-shrink-0">
-                                <img
-                                  src={academico.foto}
-                                  alt={academico.nome}
-                                  className="w-12 h-12 rounded-full object-cover"
-                                />
-                              </div>
-                            )}
-
-                            {/* Nome */}
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-gray-900 truncate group-hover:text-[#c1a44e] transition-colors">
-                                {academico.nome}
-                              </p>
-                              <p className="text-xs text-gray-500">Acadêmico</p>
-                            </div>
-                          </div>
-                        </Link>
-                      ),
-                    )}
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <p className="text-gray-500 text-sm">
-                      Nenhum acadêmico citado neste artigo
-                    </p>
-                  </div>
-                )}
-              </div>
             </div>
           </div>
         </div>

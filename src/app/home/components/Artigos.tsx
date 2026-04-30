@@ -9,7 +9,7 @@ import {
 import { useContent } from "@/hooks/useContent"
 import { Card } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
-import { FaBookOpen, FaCalendarAlt, FaUser, FaArrowRight } from "react-icons/fa"
+import { FaBookOpen, FaUser, FaArrowRight } from "react-icons/fa"
 import { Link } from "react-router-dom"
 
 // Componente de skeleton para o carrossel
@@ -93,7 +93,14 @@ export const CarrosselArtigos = () => {
         {/* Header da seção */}
         <div className="text-center mb-12">
           <div className="flex items-center justify-center space-x-3 mb-4">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-800">Artigos</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-800">
+              <Link
+                to="/artigos"
+                className="inline-block hover:text-altm-gold-600 transition-colors"
+              >
+                Artigos
+              </Link>
+            </h2>
           </div>
         </div>
 
@@ -128,7 +135,12 @@ export const CarrosselArtigos = () => {
                         </div>
                         <div className="flex-1 min-w-0">
                           <h3 className="text-lg font-semibold text-gray-800 truncate">
-                            {academico.nome}
+                            <Link
+                              to={`/membros/${academico.id}`}
+                              className="hover:text-altm-gold-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-altm-gold-500 rounded-sm transition-colors"
+                            >
+                              {academico.nome}
+                            </Link>
                           </h3>
                         </div>
                       </div>
