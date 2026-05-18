@@ -1,14 +1,8 @@
-export type GalleryItem = string | { url?: string } | { sizes?: { full?: string } }
-
 export interface IRevistaItem {
   titulo_da_revista: string
   capa: string
-
-  // novo padrão:
-  paginas?: string[] | GalleryItem[]
-
-  // fallback (se o nome do campo no ACF ainda for "pdf"):
-  pdf?: string[] | GalleryItem[]
+  /** HTML com iframe/embed da plataforma de leitura */
+  codigo: string
 }
 
 export interface IRevistas {

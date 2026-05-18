@@ -1,5 +1,4 @@
-// src/app/revistas/index.tsx
-import React, { useEffect, useMemo, useRef, useState } from "react"
+﻿import { useState } from "react"
 import { PageHeader } from "@/components/PageHeader"
 import { Card } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -8,11 +7,9 @@ import { FaBookOpen } from "react-icons/fa"
 import { useContent } from "@/hooks/useContent"
 import type { IRevistas, IRevistaItem } from "./types/IRevistas"
 
-import HTMLFlipBook from "react-pageflip"
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
-
-// Wrapper para evitar conflitos de tipagem do react-pageflip
-const FlipBook = HTMLFlipBook as unknown as React.ComponentType<any>
+function hasCodigo(item: IRevistaItem): boolean {
+  return Boolean(item.codigo?.trim())
+}
 
 const PageSkeleton = () => (
   <div className="min-h-screen bg-altm-page">
@@ -40,160 +37,17 @@ const PageSkeleton = () => (
   </div>
 )
 
-function clamp(n: number, min: number, max: number) {
-  return Math.max(min, Math.min(max, n))
-}
-
-function useContainerWidth(dep?: any) {
-  const ref = useRef<HTMLDivElement | null>(null)
-  const [width, setWidth] = useState(0)
-
-  useEffect(() => {
-    if (!ref.current) return
-    const el = ref.current
-
-    const update = () => setWidth(el.clientWidth || 0)
-
-    // mede depois do Dialog abrir (layout pronto)
-    const raf = requestAnimationFrame(update)
-
-    const ro = new ResizeObserver(update)
-    ro.observe(el)
-    update()
-
-    return () => {
-      cancelAnimationFrame(raf)
-      ro.disconnect()
-    }
-  }, [dep])
-
-  return { ref, width }
-}
-
-function FlipbookViewer({
-  pages,
-  title,
-  open,
-}: {
-  pages: string[]
-  title: string
-  open: boolean
-}) {
-  const { ref, width } = useContainerWidth(open)
-
-  // ✅ FORÇA SEMPRE “livro aberto” (2 páginas)
-  const forceSpread = true
-
-  const usable = useMemo(() => Math.max(320, width - 24), [width])
-
-  // largura de UMA página
-  const pageW = useMemo(() => {
-    // como é spread, calcula metade do espaço útil
-    const w = Math.floor(usable / 2)
-    return clamp(w, 240, 560)
-  }, [usable])
-
-  const pageH = useMemo(() => Math.floor(pageW * 1.35), [pageW])
-
-  // largura total do livro (2 páginas)
-  const bookW = useMemo(() => pageW * 2, [pageW])
-
-  const normalizedPages = useMemo(() => {
-    const list = (pages || []).filter(Boolean)
-    if (!list.length) return []
-    // se ímpar, completa com branco para fechar par
-    if (list.length % 2 === 0) return list
-    return [...list, "__BLANK__"]
-  }, [pages])
-
-  if (!normalizedPages.length) {
-    return <div className="text-center py-10 text-gray-600">Nenhuma página disponível.</div>
-  }
-
-  return (
-    <div ref={ref} className="w-full h-full">
-      {/* ✅ scroll horizontal se necessário, mas mantém “livro aberto” */}
-      <div className="w-full h-full overflow-auto">
-        <div className="mx-auto" style={{ width: bookW }}>
-          <FlipBook
-            // tamanho de UMA página
-            width={pageW}
-            height={pageH}
-            size="fixed"
-
-            // ✅ dupla sempre
-            showCover={true}
-            usePortrait={false}   // <<< força 2 páginas
-            autoSize={false}
-
-            // ajustes
-            minWidth={240}
-            maxWidth={1400}
-            minHeight={360}
-            maxHeight={2000}
-            maxShadowOpacity={0.25}
-            mobileScrollSupport={true}
-            className="shadow-lg"
-            startPage={0}
-            drawShadow={true}
-            flippingTime={650}
-            clickEventForward={true}
-            disableFlipByClick={false}
-            showPageCorners={true}
-          >
-            {normalizedPages.map((src, idx) => {
-              if (src === "__BLANK__") {
-                return <div key={`blank-${idx}`} className="bg-white w-full h-full" />
-              }
-
-              return (
-                <div key={`${src}-${idx}`} className="bg-white w-full h-full">
-                  <img
-                    src={src}
-                    alt={`${title} — página ${idx + 1}`}
-                    className="w-full h-full object-contain bg-white select-none"
-                    draggable={false}
-                    loading="lazy"
-                  />
-                </div>
-              )
-            })}
-          </FlipBook>
-        </div>
-      </div>
-    </div>
-  )
-}
-
 export default function Revistas() {
   const { data, loading, error, refetch } = useContent<IRevistas>("/revistas")
   const revistaPage = Array.isArray(data) ? data[0] : data
 
   const [open, setOpen] = useState(false)
-  const [selectedPages, setSelectedPages] = useState<string[]>([])
+  const [selectedCodigo, setSelectedCodigo] = useState("")
   const [selectedTitle, setSelectedTitle] = useState("")
 
-  const getPagesFromItem = (item: IRevistaItem): string[] => {
-    // ACF Galeria pode estar em item.pdf (nome legado) ou paginas/pages
-    const raw: any = (item as any).pdf ?? (item as any).paginas ?? (item as any).pages
-    if (!Array.isArray(raw)) return []
-
-    return raw
-      .map((p: any) => {
-        if (!p) return null
-        if (typeof p === "string") return p
-        if (typeof p?.url === "string") return p.url
-        if (typeof p?.sizes?.large === "string") return p.sizes.large
-        if (typeof p?.sizes?.full === "string") return p.sizes.full
-        return null
-      })
-      .filter(Boolean) as string[]
-  }
-
   const handleOpen = (item: IRevistaItem) => {
-    const pages = getPagesFromItem(item)
-    if (!pages.length) return
-    setSelectedPages(pages)
+    if (!hasCodigo(item)) return
+    setSelectedCodigo(item.codigo)
     setSelectedTitle(item.titulo_da_revista || "Revista")
     setOpen(true)
   }
@@ -215,7 +69,7 @@ export default function Revistas() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <Card className="p-8">
             <div className="text-center space-y-4">
-              <p className="text-gray-700">Não foi possível carregar as revistas.</p>
+              <p className="text-gray-700">NÃ£o foi possÃ­vel carregar as revistas.</p>
               <button
                 onClick={() => refetch()}
                 className="px-6 py-3 bg-altm-gold-600 text-white font-medium rounded-lg hover:bg-altm-gold-700 transition-colors"
@@ -234,7 +88,7 @@ export default function Revistas() {
       <div className="min-h-screen bg-altm-page">
         <PageHeader
           title="Revista Convergência"
-          subtitle="Nenhum conteúdo encontrado"
+          subtitle="Nenhum conteÃºdo encontrado"
           icon={<FaBookOpen size={50} />}
           breadcrumb={[
             { label: "Home", href: "/" },
@@ -269,8 +123,7 @@ export default function Revistas() {
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
               {items.map((item, idx) => {
-                const pages = getPagesFromItem(item)
-                const disabled = pages.length === 0
+                const disabled = !hasCodigo(item)
 
                 return (
                   <button
@@ -301,7 +154,7 @@ export default function Revistas() {
                         {item.titulo_da_revista}
                       </p>
                       <p className="text-xs text-gray-500">
-                        {disabled ? "Páginas não disponíveis" : "Abrir para folhear"}
+                        {disabled ? "ConteÃºdo nÃ£o disponÃ­vel" : "Clique para ler"}
                       </p>
                     </div>
                   </button>
@@ -317,29 +170,53 @@ export default function Revistas() {
         onOpenChange={(v) => {
           setOpen(v)
           if (!v) {
-            setSelectedPages([])
+            setSelectedCodigo("")
             setSelectedTitle("")
           }
         }}
       >
-        {/* ✅ modal realmente grande (inline style vence qualquer max-w do componente) */}
         <DialogContent
-          className="p-3 overflow-hidden"
+          className="p-0 gap-0 overflow-hidden flex flex-col"
           style={{
-            width: "98vw",
-            maxWidth: "98vw",
-            height: "92vh",
+            width: "min(96vw, 1100px)",
+            maxWidth: "96vw",
+            height: "min(92vh, 900px)",
             maxHeight: "92vh",
           }}
         >
-          <VisuallyHidden>
-            <DialogTitle>Visualização da Revista</DialogTitle>
-            <DialogDescription>Leitor em formato de livro (duas páginas abertas).</DialogDescription>
-          </VisuallyHidden>
-
-          <div className="h-full w-full overflow-hidden">
-            <FlipbookViewer pages={selectedPages} title={selectedTitle} open={open} />
+          <div className="px-6 pt-6 pb-2 border-b border-gray-100 shrink-0">
+            <DialogTitle className="text-xl font-bold text-gray-900 pr-8">
+              {selectedTitle}
+            </DialogTitle>
+            <DialogDescription className="text-sm text-gray-500 mt-1">
+              Visualização da edição
+            </DialogDescription>
           </div>
+
+          <div className="flex-1 min-h-0 overflow-auto p-4 sm:p-6 bg-gray-50">
+            <div
+              className="revista-embed mx-auto bg-white rounded-lg shadow-sm"
+              dangerouslySetInnerHTML={{ __html: selectedCodigo }}
+            />
+          </div>
+
+          <style>{`
+            .revista-embed iframe {
+              display: block;
+              margin-left: auto;
+              margin-right: auto;
+              max-width: 100%;
+              min-height: 70vh;
+              border: 0;
+            }
+            .revista-embed embed,
+            .revista-embed object {
+              display: block;
+              margin-left: auto;
+              margin-right: auto;
+              max-width: 100%;
+            }
+          `}</style>
         </DialogContent>
       </Dialog>
     </div>
