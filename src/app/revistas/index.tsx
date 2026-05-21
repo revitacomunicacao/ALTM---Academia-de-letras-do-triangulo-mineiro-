@@ -2,13 +2,26 @@
 import { PageHeader } from "@/components/PageHeader"
 import { Card } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+import { Dialog, DialogClose, DialogContent, DialogTitle } from "@/components/ui/dialog"
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
+import { X } from "lucide-react"
 import { FaBookOpen } from "react-icons/fa"
 import { useContent } from "@/hooks/useContent"
 import type { IRevistas, IRevistaItem } from "./types/IRevistas"
 
 function hasCodigo(item: IRevistaItem): boolean {
   return Boolean(item.codigo?.trim())
+}
+
+/** Remove dimensões fixas do embed (ex.: 700×400) para preencher o lightbox. */
+function normalizeRevistaEmbed(html: string): string {
+  return html.replace(/<iframe\b([^>]*)>/gi, (_, attrs: string) => {
+    const clean = attrs
+      .replace(/\sstyle\s*=\s*("[^"]*"|'[^']*')/gi, "")
+      .replace(/\swidth\s*=\s*("[^"]*"|'[^']*'|\S+)/gi, "")
+      .replace(/\sheight\s*=\s*("[^"]*"|'[^']*'|\S+)/gi, "")
+    return `<iframe${clean} style="width:100%;height:100%;border:0;display:block">`
+  })
 }
 
 const PageSkeleton = () => (
@@ -47,7 +60,7 @@ export default function Revistas() {
 
   const handleOpen = (item: IRevistaItem) => {
     if (!hasCodigo(item)) return
-    setSelectedCodigo(item.codigo)
+    setSelectedCodigo(normalizeRevistaEmbed(item.codigo))
     setSelectedTitle(item.titulo_da_revista || "Revista")
     setOpen(true)
   }
@@ -69,7 +82,7 @@ export default function Revistas() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <Card className="p-8">
             <div className="text-center space-y-4">
-              <p className="text-gray-700">NÃ£o foi possÃ­vel carregar as revistas.</p>
+              <p className="text-gray-700">Não foi possível carregar as revistas.</p>
               <button
                 onClick={() => refetch()}
                 className="px-6 py-3 bg-altm-gold-600 text-white font-medium rounded-lg hover:bg-altm-gold-700 transition-colors"
@@ -88,7 +101,7 @@ export default function Revistas() {
       <div className="min-h-screen bg-altm-page">
         <PageHeader
           title="Revista Convergência"
-          subtitle="Nenhum conteÃºdo encontrado"
+          subtitle="Nenhum conteúdo encontrado"
           icon={<FaBookOpen size={50} />}
           breadcrumb={[
             { label: "Home", href: "/" },
@@ -104,6 +117,7 @@ export default function Revistas() {
     : []
 
   return (
+    <>
     <div className="min-h-screen bg-altm-page">
       <PageHeader
         title={(revistaPage as any).title || "Revista Convergência"}
@@ -154,7 +168,7 @@ export default function Revistas() {
                         {item.titulo_da_revista}
                       </p>
                       <p className="text-xs text-gray-500">
-                        {disabled ? "ConteÃºdo nÃ£o disponÃ­vel" : "Clique para ler"}
+                        {disabled ? "Conteúdo não disponível" : "Clique para ler"}
                       </p>
                     </div>
                   </button>
@@ -164,6 +178,7 @@ export default function Revistas() {
           )}
         </Card>
       </div>
+    </div>
 
       <Dialog
         open={open}
@@ -176,49 +191,26 @@ export default function Revistas() {
         }}
       >
         <DialogContent
-          className="p-0 gap-0 overflow-hidden flex flex-col"
-          style={{
-            width: "min(96vw, 1100px)",
-            maxWidth: "96vw",
-            height: "min(92vh, 900px)",
-            maxHeight: "92vh",
-          }}
+          showCloseButton={false}
+          className="revista-lightbox !fixed !inset-0 !top-0 !left-0 !m-auto z-[60] flex h-[96vh] w-[96vw] max-w-[96vw] !translate-x-0 !translate-y-0 flex-col p-0 gap-0 overflow-hidden border-0 shadow-2xl data-[state=open]:animate-none data-[state=closed]:animate-none sm:max-w-[96vw]"
         >
-          <div className="px-6 pt-6 pb-2 border-b border-gray-100 shrink-0">
-            <DialogTitle className="text-xl font-bold text-gray-900 pr-8">
-              {selectedTitle}
-            </DialogTitle>
-            <DialogDescription className="text-sm text-gray-500 mt-1">
-              Visualização da edição
-            </DialogDescription>
-          </div>
+          <VisuallyHidden>
+            <DialogTitle>{selectedTitle}</DialogTitle>
+          </VisuallyHidden>
 
-          <div className="flex-1 min-h-0 overflow-auto p-4 sm:p-6 bg-gray-50">
-            <div
-              className="revista-embed mx-auto bg-white rounded-lg shadow-sm"
-              dangerouslySetInnerHTML={{ __html: selectedCodigo }}
-            />
-          </div>
+          <DialogClose
+            className="absolute left-3 top-3 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-white/95 text-gray-800 shadow-lg ring-1 ring-black/10 transition hover:bg-white hover:text-altm-gold-600 focus:outline-none focus:ring-2 focus:ring-altm-gold-500"
+            aria-label="Fechar revista"
+          >
+            <X className="h-5 w-5" />
+          </DialogClose>
 
-          <style>{`
-            .revista-embed iframe {
-              display: block;
-              margin-left: auto;
-              margin-right: auto;
-              max-width: 100%;
-              min-height: 70vh;
-              border: 0;
-            }
-            .revista-embed embed,
-            .revista-embed object {
-              display: block;
-              margin-left: auto;
-              margin-right: auto;
-              max-width: 100%;
-            }
-          `}</style>
+          <div
+            className="revista-embed min-h-0 flex-1 w-full overflow-hidden [&_iframe]:!block [&_iframe]:!h-full [&_iframe]:!min-h-full [&_iframe]:!w-full [&_iframe]:!max-w-full [&_iframe]:!border-0 [&_embed]:!block [&_embed]:!h-full [&_embed]:!w-full [&_object]:!block [&_object]:!h-full [&_object]:!w-full"
+            dangerouslySetInnerHTML={{ __html: selectedCodigo }}
+          />
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   )
 }
