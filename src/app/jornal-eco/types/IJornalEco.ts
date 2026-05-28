@@ -1,7 +1,7 @@
 export interface IJornalEcoItem {
   titulo_do_jornal: string
   capa: string
-  pdf: string[] // galeria de páginas (urls)
+  pdf: string
 }
 
 export interface IJornalEco {
